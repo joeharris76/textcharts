@@ -2,7 +2,7 @@ id: "de-benchbox-example-datasets-and-position-chart-specific-apis"
 title: "De-BenchBox example datasets and position chart-specific APIs clearly"
 worktree: "main"
 priority: "High"
-status: "In Progress"
+status: "Completed"
 description: |
   Replace the current documentation example universe, which is still dominated
   by BenchBox-style benchmark labels and performance-report framing, with a
@@ -107,7 +107,7 @@ work:
   - id: w6
     summary: "Rebuild screenshots and run a docs review pass to confirm the site no longer reads like a benchmark-report product"
     needs: [w3, w4, w5]
-    status: pending
+    status: done
     notes: |
       Validate that the gallery shows genuinely different domains across chart
       types, that labels are no longer clustered around queries/platforms, and
@@ -123,7 +123,8 @@ metadata:
     - "positioning"
   estimated_effort: "Medium"
   created_date: "2026-03-06"
-  last_updated: "2026-03-06T11:55:00"
+  last_updated: "2026-03-06T12:05:00"
+completed_date: "2026-03-06"
 impact:
   business_value: |
     Makes the library marketable as a standalone public package instead of an

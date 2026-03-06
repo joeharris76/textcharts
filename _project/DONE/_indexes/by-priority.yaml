@@ -1,9 +1,14 @@
-generated_at: '2026-03-06T09:39:31.800462'
-total_items: 4
+generated_at: '2026-03-06T12:05:00'
+total_items: 5
 priorities:
   High:
-    count: 3
+    count: 4
     items:
+    - id: de-benchbox-example-datasets-and-position-chart-specific-apis
+      file: DONE/main/planning/de-benchbox-example-datasets-and-position-chart-specific-apis.yaml
+      title: De-BenchBox example datasets and position chart-specific APIs clearly
+      category: Documentation
+      status: Completed
     - id: fix-terminal-capability-defaults-and-color-contract
       file: DONE/main/planning/fix-terminal-capability-defaults-and-color-contract.yaml
       title: Fix terminal capability defaults and color contract

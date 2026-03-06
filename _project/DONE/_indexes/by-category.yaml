@@ -1,4 +1,4 @@
-generated_at: '2026-03-06T09:39:31.800329'
+generated_at: '2026-03-06T12:05:00'
 total_categories: 3
 categories:
   Core Functionality:
@@ -15,8 +15,13 @@ categories:
       priority: High
       status: Completed
   Documentation:
-    count: 1
+    count: 2
     items:
+    - id: de-benchbox-example-datasets-and-position-chart-specific-apis
+      file: DONE/main/planning/de-benchbox-example-datasets-and-position-chart-specific-apis.yaml
+      title: De-BenchBox example datasets and position chart-specific APIs clearly
+      priority: High
+      status: Completed
     - id: finalize-public-api-docs-and-release-tooling
       file: DONE/main/planning/finalize-public-api-docs-and-release-tooling.yaml
       title: Finalize public API, docs, and release tooling
