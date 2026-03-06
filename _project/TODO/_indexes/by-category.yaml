@@ -1,3 +1,11 @@
-generated_at: '2026-03-06T12:05:00'
-total_categories: 0
-categories: {}
+generated_at: '2026-03-06T12:35:00'
+total_categories: 1
+categories:
+  Documentation:
+    count: 1
+    items:
+      - id: fix-gallery-chart-clarity-and-labeling
+        title: Fix gallery chart clarity, labeling, and legend issues
+        path: _project/TODO/main/active/fix-gallery-chart-clarity-and-labeling.yaml
+        priority: High
+        status: In Progress
