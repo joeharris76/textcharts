@@ -56,7 +56,7 @@ class ASCIIHeatmap(ASCIIChartBase):
 
     def __init__(
         self,
-        matrix: Sequence[Sequence[float]],
+        matrix: Sequence[Sequence[float | None]],
         row_labels: Sequence[str],
         col_labels: Sequence[str],
         title: str | None = None,
@@ -70,11 +70,32 @@ class ASCIIHeatmap(ASCIIChartBase):
         self.matrix = [list(row) for row in matrix]
         self.row_labels = list(row_labels)
         self.col_labels = list(col_labels)
+        self._validate_dimensions()
         self.title = title or "Heatmap"
         self.value_label = value_label
         self._show_values = show_values
         self._color_scale = self.COLOR_SCALE_SEQUENTIAL if color_scheme == "sequential" else self.COLOR_SCALE_DIVERGING
+        self._bg_scale = self.BG_SCALE_SEQUENTIAL if color_scheme == "sequential" else self.BG_SCALE_DIVERGING
+        self._fg_on_bg = self.FG_ON_BG_SEQUENTIAL if color_scheme == "sequential" else self.FG_ON_BG
         self._scale_max = float("inf")
+
+    # Background colors for heatmap cells (dark text on colored background)
+    BG_SCALE_SEQUENTIAL = [
+        "#1b9e77",  # Fast - teal
+        "#66a61e",  # Good - green
+        "#e6ab02",  # Medium - yellow
+        "#d95f02",  # Slow - orange
+        "#e7298a",  # Very slow - magenta/red
+    ]
+
+    # Text colors for contrast against each sequential background
+    FG_ON_BG_SEQUENTIAL = [
+        "#000000",
+        "#000000",
+        "#000000",
+        "#000000",
+        "#ffffff",
+    ]
 
     # Background colors for heatmap cells (dark text on colored background)
     # Diverging: blue (fast) → neutral → red (slow)
@@ -94,6 +115,23 @@ class ASCIIHeatmap(ASCIIChartBase):
         "#000000",  # dark text on light orange
         "#ffffff",  # white text on red
     ]
+
+    def _validate_dimensions(self) -> None:
+        """Validate matrix and label dimensions for public API callers."""
+        if not self.matrix:
+            if self.row_labels or self.col_labels:
+                raise ValueError("matrix, row_labels, and col_labels must all be empty together")
+            return
+
+        if len(self.matrix) != len(self.row_labels):
+            raise ValueError("row_labels length must match the number of matrix rows")
+
+        expected_cols = len(self.col_labels)
+        for row_idx, row in enumerate(self.matrix, start=1):
+            if len(row) != expected_cols:
+                raise ValueError(
+                    f"matrix row {row_idx} has {len(row)} columns but expected {expected_cols} to match col_labels"
+                )
 
     def render(self) -> str:
         """Render the heatmap as a string."""
@@ -166,7 +204,7 @@ class ASCIIHeatmap(ASCIIChartBase):
 
         # Data rows
         use_bg = colors.color_mode != ColorMode.NONE
-        bg_scale = self.BG_SCALE_DIVERGING
+        bg_scale = self._bg_scale
 
         for row_label, row_data in zip(display_row_labels, display_matrix):
             row_str = self._render_data_row(
@@ -299,7 +337,7 @@ class ASCIIHeatmap(ASCIIChartBase):
             padded = value_str.center(cell_width)
             return colors.colorize(
                 padded,
-                fg_color=self.FG_ON_BG[color_idx],
+                fg_color=self._fg_on_bg[color_idx],
                 bg_color=bg_scale[color_idx],
             )
 
@@ -322,7 +360,7 @@ class ASCIIHeatmap(ASCIIChartBase):
             scale_labels = ["fast", "", "", "", "slow"]
             for i, lbl in enumerate(scale_labels):
                 block = f" {lbl} " if lbl else "   "
-                scale_line += colors.colorize(block, fg_color=self.FG_ON_BG[i], bg_color=bg_scale[i])
+                scale_line += colors.colorize(block, fg_color=self._fg_on_bg[i], bg_color=bg_scale[i])
             scale_line += f"  ({self.value_label})"
             return scale_line
 

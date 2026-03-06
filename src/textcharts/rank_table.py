@@ -211,11 +211,20 @@ def from_heatmap_data(
     Returns:
         Configured ASCIIRankTable instance.
     """
+    if len(matrix) != len(queries):
+        raise ValueError("queries length must match the number of matrix rows")
+
+    expected_cols = len(platforms)
+    for row_idx, row in enumerate(matrix, start=1):
+        if len(row) != expected_cols:
+            raise ValueError(
+                f"matrix row {row_idx} has {len(row)} columns but expected {expected_cols} to match platforms"
+            )
+
     times: dict[tuple[str, str], float] = {}
     for qi, query in enumerate(queries):
         for pi, platform in enumerate(platforms):
-            if qi < len(matrix) and pi < len(matrix[qi]):
-                times[(platform, query)] = matrix[qi][pi]
+            times[(platform, query)] = matrix[qi][pi]
 
     data = RankTableData(
         queries=list(queries),

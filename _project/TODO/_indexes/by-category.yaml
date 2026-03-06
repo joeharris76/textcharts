@@ -1,0 +1,19 @@
+generated_at: '2026-03-06T09:31:18.192421'
+total_categories: 2
+categories:
+  Documentation:
+    count: 1
+    items:
+    - id: finalize-public-api-docs-and-release-tooling
+      file: TODO/main/planning/finalize-public-api-docs-and-release-tooling.yaml
+      title: Finalize public API, docs, and release tooling
+      priority: Medium-High
+      status: Not Started
+  Testing and Quality Assurance:
+    count: 1
+    items:
+    - id: restore-standalone-renderer-regression-coverage
+      file: TODO/main/planning/restore-standalone-renderer-regression-coverage.yaml
+      title: Restore standalone renderer regression coverage
+      priority: High
+      status: Not Started

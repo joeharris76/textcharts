@@ -396,11 +396,9 @@ class ASCIIChartOptions:
         """Get terminal colors instance based on options."""
         if not self.use_color:
             return TerminalColors(color_mode=ColorMode.NONE)
-        # When use_color=True is explicitly set, force EXTENDED color mode
-        # even if terminal detection says otherwise (e.g., in MCP/subprocess context)
-        if self._capabilities and self._capabilities.color_mode != ColorMode.NONE:
-            return TerminalColors(color_mode=self._capabilities.color_mode)
-        return TerminalColors(color_mode=ColorMode.EXTENDED)
+        if self._capabilities is None:
+            self._capabilities = detect_terminal_capabilities()
+        return TerminalColors(color_mode=self._capabilities.color_mode)
 
     def _has_unicode(self) -> bool:
         """Check if unicode is available."""

@@ -1,6 +1,6 @@
 # textcharts
 
-Beautiful ASCII charts for your terminal — zero dependencies.
+Beautiful text based charts for your terminal — zero dependencies.
 
 15 chart types with Unicode box-drawing, ANSI colors, and automatic terminal
 width detection. Pure Python, no external dependencies, Python 3.10+.
@@ -37,23 +37,23 @@ Java   ▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓�
 
 ## Chart Types
 
-| Chart | Class | Data Model |
-|-------|-------|-----------|
-| Bar chart | `BarChart` | `BarData` |
-| Histogram | `Histogram` | `HistogramBar` |
-| Heatmap | `Heatmap` | matrix + labels |
-| Box plot | `BoxPlot` | `BoxPlotSeries` |
-| Line chart | `LineChart` | `LinePoint` |
-| Scatter plot | `ScatterPlot` | `ScatterPoint` |
-| Comparison bar | `ComparisonBar` | `ComparisonBarData` |
-| Diverging bar | `DivergingBar` | `DivergingBarData` |
-| Summary box | `SummaryBox` | `SummaryStats` |
-| Percentile ladder | `PercentileLadder` | `PercentileData` |
-| Normalized speedup | `NormalizedSpeedup` | `SpeedupData` |
-| Stacked bar | `StackedBar` | `StackedBarData` |
-| Sparkline table | `SparklineTable` | `SparklineTableData` |
-| CDF chart | `CDFChart` | `CDFSeriesData` |
-| Rank table | `RankTable` | `RankTableData` |
+| Chart              | Class               | Data Model           |
+| ------------------ | ------------------- | -------------------- |
+| Bar chart          | `BarChart`          | `BarData`            |
+| Histogram          | `Histogram`         | `HistogramBar`       |
+| Heatmap            | `Heatmap`           | matrix + labels      |
+| Box plot           | `BoxPlot`           | `BoxPlotSeries`      |
+| Line chart         | `LineChart`         | `LinePoint`          |
+| Scatter plot       | `ScatterPlot`       | `ScatterPoint`       |
+| Comparison bar     | `ComparisonBar`     | `ComparisonBarData`  |
+| Diverging bar      | `DivergingBar`      | `DivergingBarData`   |
+| Summary box        | `SummaryBox`        | `SummaryStats`       |
+| Percentile ladder  | `PercentileLadder`  | `PercentileData`     |
+| Normalized speedup | `NormalizedSpeedup` | `SpeedupData`        |
+| Stacked bar        | `StackedBar`        | `StackedBarData`     |
+| Sparkline table    | `SparklineTable`    | `SparklineTableData` |
+| CDF chart          | `CDFChart`          | `CDFSeriesData`      |
+| Rank table         | `RankTable`         | `RankTableData`      |
 
 ## Configuration
 
@@ -61,12 +61,22 @@ Java   ▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓�
 from textcharts import ChartOptions, ColorMode
 
 opts = ChartOptions(
-    use_color=True,       # ANSI color output
+    use_color=True,       # Auto-detect ANSI color support; set False to force plain text
     use_unicode=True,     # Unicode box-drawing characters
     width=80,             # Chart width (None for auto-detect)
     theme="dark",         # "dark" or "light"
 )
 ```
+
+`use_color=True` respects terminal detection and `NO_COLOR`. In non-interactive
+contexts, renders default to plain text without ANSI escapes.
+
+Heatmaps support `color_scheme="diverging"` (default) or
+`color_scheme="sequential"`.
+
+Matrix-based APIs require exact dimensions:
+- `len(row_labels) == len(matrix)`
+- every matrix row length must equal `len(col_labels)`
 
 ## Features
 

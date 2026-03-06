@@ -1,0 +1,39 @@
+generated_at: '2026-03-06T09:31:18.198962'
+total_items: 2
+items:
+- id: fix-terminal-capability-defaults-and-color-contract
+  file: DONE/main/planning/fix-terminal-capability-defaults-and-color-contract.yaml
+  title: Fix terminal capability defaults and color contract
+  worktree: main
+  category: Core Functionality
+  priority: High
+  status: Completed
+  tags:
+  - release
+  - terminal
+  - ansi
+  owners:
+  - joe
+  estimated_effort: Small
+  completed_date: '2026-03-06'
+  work_total: 3
+  work_done: 3
+  work_ready: 0
+- id: make-heatmap-and-matrix-apis-explicit-and-safe
+  file: DONE/main/planning/make-heatmap-and-matrix-apis-explicit-and-safe.yaml
+  title: Make heatmap and matrix APIs explicit and safe
+  worktree: main
+  category: Core Functionality
+  priority: High
+  status: Completed
+  tags:
+  - release
+  - heatmap
+  - api-contract
+  owners:
+  - joe
+  estimated_effort: Medium
+  completed_date: '2026-03-06'
+  work_total: 4
+  work_done: 4
+  work_ready: 0
