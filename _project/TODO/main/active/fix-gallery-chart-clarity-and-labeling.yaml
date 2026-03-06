@@ -48,7 +48,7 @@ work:
   - id: w2
     summary: "Fix renderer-level labeling and legend defects in Heatmap, LineChart, ScatterPlot, BarChart, and SparklineTable"
     needs: [w1]
-    status: pending
+    status: done
     notes: |
       Replace the hardcoded Heatmap X-axis label with context-appropriate text,
       render the missing LineChart X-axis label, compact ScatterPlot axis
@@ -94,7 +94,7 @@ metadata:
     - "usability"
   estimated_effort: "Medium"
   created_date: "2026-03-06"
-  last_updated: "2026-03-06T12:35:00"
+  last_updated: "2026-03-06T12:45:00"
 
 impact:
   business_value: |

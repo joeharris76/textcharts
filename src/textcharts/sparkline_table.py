@@ -6,7 +6,7 @@ import logging
 import math
 from dataclasses import dataclass, field
 
-from textcharts.base import ASCIIChartBase, ASCIIChartOptions
+from textcharts.base import ASCIIChartBase, ASCIIChartOptions, ColorMode
 
 logger = logging.getLogger(__name__)
 
@@ -125,6 +125,9 @@ class ASCIISparklineTable(ASCIIChartBase):
 
         best_block = blocks[-1] if blocks else "#"
         worst_block = blocks[1] if len(blocks) > 1 else "."
+        if colors.color_mode != ColorMode.NONE:
+            best_block = colors.colorize(best_block, fg_color="#1b9e77")
+            worst_block = colors.colorize(worst_block, fg_color="#d95f02")
         lines.append(f"{best_block}=best  {worst_block}=worst  (bars scaled per column)")
 
         return "\n".join(lines)

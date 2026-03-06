@@ -61,6 +61,7 @@ class ASCIIHeatmap(ASCIIChartBase):
         col_labels: Sequence[str],
         title: str | None = None,
         value_label: str = "ms",
+        x_label: str = "Columns",
         show_values: bool = True,
         color_scheme: str = "diverging",
         options: ASCIIChartOptions | None = None,
@@ -73,6 +74,7 @@ class ASCIIHeatmap(ASCIIChartBase):
         self._validate_dimensions()
         self.title = title or "Heatmap"
         self.value_label = value_label
+        self.x_label = x_label
         self._show_values = show_values
         self._color_scale = self.COLOR_SCALE_SEQUENTIAL if color_scheme == "sequential" else self.COLOR_SCALE_DIVERGING
         self._bg_scale = self.BG_SCALE_SEQUENTIAL if color_scheme == "sequential" else self.BG_SCALE_DIVERGING
@@ -228,7 +230,7 @@ class ASCIIHeatmap(ASCIIChartBase):
             lines.append(f"... ({len(self.row_labels) - len(display_row_labels)} more rows)")
 
         # Footer
-        lines.append(self._render_axis_label("Platform", width, axis="x"))
+        lines.append(self._render_axis_label(self.x_label, width, axis="x"))
         lines.append("")
         lines.append(self._render_scale_legend(use_bg, bg_scale, colors, intensity_chars))
         range_str = f"Range: {self._format_value(min_val)} - {self._format_value(max_val)} {self.value_label}"
@@ -377,6 +379,7 @@ def from_matrix(
     platforms: Sequence[str],
     title: str | None = None,
     value_label: str = "ms",
+    x_label: str = "Platform",
     show_values: bool = True,
     color_scheme: str = "diverging",
     options: ASCIIChartOptions | None = None,
@@ -388,6 +391,7 @@ def from_matrix(
         col_labels=platforms,
         title=title,
         value_label=value_label,
+        x_label=x_label,
         show_values=show_values,
         color_scheme=color_scheme,
         options=options,

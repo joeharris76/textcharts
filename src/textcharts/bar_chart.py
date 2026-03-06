@@ -189,6 +189,9 @@ class ASCIIBarChart(ASCIIChartBase):
         if use_groups:
             legend_items = [(group, group_colors[group]) for group in groups]
             lines.extend(self._render_legend(legend_items, colors))
+        elif len(sorted_data) > 1 and self.options.show_legend:
+            legend_items = [(datum.label, palette[i % len(palette)]) for i, datum in enumerate(sorted_data)]
+            lines.extend(self._render_legend(legend_items, colors))
 
         return "\n".join(lines)
 

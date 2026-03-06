@@ -249,8 +249,7 @@ class ASCIIScatterPlot(ASCIIChartBase):
 
         # Axis labels
         lines.append("")
-        lines.append(self._render_axis_label(self.y_label, width, axis="y"))
-        lines.append(self._render_axis_label(self.x_label, width, axis="x"))
+        lines.append(self._render_compact_axis_labels(width))
 
         # Legend with point names
         lines.append("")
@@ -270,6 +269,15 @@ class ASCIIScatterPlot(ASCIIChartBase):
             lines.append(f"  {marker_colored} {point.name}: x={x_val}, y={y_val}{pareto_note}{truncated_note}")
 
         return "\n".join(lines)
+
+    def _render_compact_axis_labels(self, width: int) -> str:
+        """Render both axis labels on one compact line."""
+        colors = self.options.get_colors()
+        right_arrow = "\u2192" if self.options.use_unicode else "->"
+        up_arrow = "\u2191" if self.options.use_unicode else "^"
+        text = f"{up_arrow} {self.y_label} / {self.x_label} {right_arrow}"
+        text = text[:width] if len(text) > width else text
+        return colors.colorize(text.center(width), fg_color="#666666")
 
     def _compute_pareto(self) -> list[ScatterPoint]:
         """Compute Pareto frontier (higher y is better, lower x is better)."""
