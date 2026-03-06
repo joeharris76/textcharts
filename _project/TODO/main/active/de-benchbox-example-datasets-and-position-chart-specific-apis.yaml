@@ -56,7 +56,7 @@ work:
   - id: w2
     summary: "Redesign the screenshot generator inputs chart by chart using the approved non-BenchBox dataset map"
     needs: [w1]
-    status: pending
+    status: done
     notes: |
       Implement the concrete dataset map from the review:
       bookstore revenue, delivery delays, classroom scores, apartment rents,
@@ -123,7 +123,7 @@ metadata:
     - "positioning"
   estimated_effort: "Medium"
   created_date: "2026-03-06"
-  last_updated: "2026-03-06T10:55:00"
+  last_updated: "2026-03-06T11:05:00"
 impact:
   business_value: |
     Makes the library marketable as a standalone public package instead of an

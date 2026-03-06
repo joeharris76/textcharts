@@ -147,39 +147,40 @@ def _render_chart(chart, mode: str) -> str:
 
 def _bar_chart(mode: str) -> str:
     data = [
-        BarData(label="DuckDB", value=1234.5, is_best=True),
-        BarData(label="SQLite", value=3456.7, is_worst=True),
-        BarData(label="Polars", value=2100.0),
+        BarData(label="Fiction", value=18400.0, is_best=True),
+        BarData(label="Children", value=12650.0),
+        BarData(label="Comics", value=9300.0, is_worst=True),
     ]
-    chart = ASCIIBarChart(data=data, title="Total Runtime", metric_label="ms", options=_options(mode))
+    chart = ASCIIBarChart(data=data, title="April Bookstore Revenue", metric_label="USD", options=_options(mode))
     return _render_chart(chart, mode)
 
 
 def _histogram(mode: str) -> str:
     bars = [
-        HistogramBar(query_id="Q1", latency_ms=120.5, is_best=True),
-        HistogramBar(query_id="Q2", latency_ms=340.2),
-        HistogramBar(query_id="Q3", latency_ms=89.1),
-        HistogramBar(query_id="Q4", latency_ms=567.8, is_worst=True),
-        HistogramBar(query_id="Q5", latency_ms=210.0),
-        HistogramBar(query_id="Q6", latency_ms=150.3),
+        HistogramBar(query_id="Route 1", latency_ms=12.0, is_best=True),
+        HistogramBar(query_id="Route 2", latency_ms=28.0),
+        HistogramBar(query_id="Route 3", latency_ms=9.0),
+        HistogramBar(query_id="Route 4", latency_ms=45.0, is_worst=True),
+        HistogramBar(query_id="Route 5", latency_ms=19.0),
+        HistogramBar(query_id="Route 6", latency_ms=14.0),
     ]
-    chart = ASCIIHistogram(data=bars, title="Query Latency", options=_options(mode))
+    chart = ASCIIHistogram(data=bars, title="Delivery Delays", y_label="Delay (min)", options=_options(mode))
     return _render_chart(chart, mode)
 
 
 def _heatmap(mode: str) -> str:
     matrix = [
-        [120.0, 150.0, 200.0],
-        [340.0, 280.0, 310.0],
-        [89.0, 95.0, 110.0],
-        [560.0, 480.0, 520.0],
+        [88.0, 91.0, 84.0],
+        [74.0, 79.0, 82.0],
+        [93.0, 89.0, 95.0],
+        [81.0, 86.0, 78.0],
     ]
     chart = ASCIIHeatmap(
         matrix=matrix,
-        row_labels=["Q1", "Q2", "Q3", "Q4"],
-        col_labels=["DuckDB", "SQLite", "Polars"],
-        title="Query Heatmap",
+        row_labels=["Class A", "Class B", "Class C", "Class D"],
+        col_labels=["Math", "Science", "History"],
+        title="Classroom Scores",
+        value_label="points",
         options=_options(mode),
     )
     return _render_chart(chart, mode)
@@ -187,80 +188,80 @@ def _heatmap(mode: str) -> str:
 
 def _box_plot(mode: str) -> str:
     series = [
-        BoxPlotSeries(name="DuckDB", values=[80, 95, 110, 130, 150, 200, 250, 300, 500]),
-        BoxPlotSeries(name="SQLite", values=[200, 250, 300, 350, 400, 450, 500, 600, 800]),
-        BoxPlotSeries(name="Polars", values=[100, 120, 140, 160, 180, 200, 220, 280, 350]),
+        BoxPlotSeries(name="Downtown", values=[1825, 1900, 1980, 2100, 2250, 2400, 2550, 2710, 2980]),
+        BoxPlotSeries(name="Riverside", values=[1450, 1525, 1600, 1680, 1750, 1820, 1950, 2080, 2220]),
+        BoxPlotSeries(name="Midtown", values=[1650, 1710, 1780, 1840, 1920, 2010, 2140, 2280, 2450]),
     ]
-    chart = ASCIIBoxPlot(series=series, title="Query Time Distribution", options=_options(mode))
+    chart = ASCIIBoxPlot(series=series, title="Apartment Rents", options=_options(mode))
     return _render_chart(chart, mode)
 
 
 def _line_chart(mode: str) -> str:
     points = [
-        LinePoint(series="DuckDB", x=1, y=120.0, label="Run 1"),
-        LinePoint(series="DuckDB", x=2, y=115.0, label="Run 2"),
-        LinePoint(series="DuckDB", x=3, y=110.0, label="Run 3"),
-        LinePoint(series="SQLite", x=1, y=340.0, label="Run 1"),
-        LinePoint(series="SQLite", x=2, y=320.0, label="Run 2"),
-        LinePoint(series="SQLite", x=3, y=310.0, label="Run 3"),
+        LinePoint(series="Organic", x=1, y=320.0, label="Week 1"),
+        LinePoint(series="Organic", x=2, y=355.0, label="Week 2"),
+        LinePoint(series="Organic", x=3, y=410.0, label="Week 3"),
+        LinePoint(series="Referral", x=1, y=180.0, label="Week 1"),
+        LinePoint(series="Referral", x=2, y=205.0, label="Week 2"),
+        LinePoint(series="Referral", x=3, y=260.0, label="Week 3"),
     ]
-    chart = ASCIILineChart(points=points, title="Performance Trend", options=_options(mode))
+    chart = ASCIILineChart(points=points, title="Weekly Signups", options=_options(mode))
     return _render_chart(chart, mode)
 
 
 def _scatter_plot(mode: str) -> str:
     points = [
-        ScatterPoint(name="DuckDB", x=0.05, y=1234.5),
-        ScatterPoint(name="SQLite", x=0.0, y=3456.7),
-        ScatterPoint(name="Snowflake", x=2.5, y=890.0),
-        ScatterPoint(name="Databricks", x=5.0, y=650.0),
+        ScatterPoint(name="Spring Launch", x=8.0, y=410.0),
+        ScatterPoint(name="Retargeting", x=5.5, y=360.0),
+        ScatterPoint(name="Video Ads", x=11.0, y=470.0),
+        ScatterPoint(name="Newsletter", x=2.0, y=220.0),
     ]
-    chart = ASCIIScatterPlot(points=points, title="Cost vs Performance", options=_options(mode))
+    chart = ASCIIScatterPlot(points=points, title="Ad Spend vs Conversions", options=_options(mode))
     return _render_chart(chart, mode)
 
 
 def _comparison_bar(mode: str) -> str:
     data = [
         ComparisonBarData(
-            label="Q1", baseline_value=120.0, comparison_value=95.0, baseline_name="v1.0", comparison_name="v1.1"
+            label="Marketing", baseline_value=140.0, comparison_value=152.0, baseline_name="Planned", comparison_name="Actual"
         ),
         ComparisonBarData(
-            label="Q2", baseline_value=340.0, comparison_value=380.0, baseline_name="v1.0", comparison_name="v1.1"
+            label="Operations", baseline_value=110.0, comparison_value=101.0, baseline_name="Planned", comparison_name="Actual"
         ),
         ComparisonBarData(
-            label="Q3", baseline_value=89.0, comparison_value=72.0, baseline_name="v1.0", comparison_name="v1.1"
+            label="Support", baseline_value=75.0, comparison_value=81.0, baseline_name="Planned", comparison_name="Actual"
         ),
         ComparisonBarData(
-            label="Q4", baseline_value=560.0, comparison_value=540.0, baseline_name="v1.0", comparison_name="v1.1"
+            label="Research", baseline_value=95.0, comparison_value=88.0, baseline_name="Planned", comparison_name="Actual"
         ),
     ]
-    chart = ASCIIComparisonBar(data=data, title="Version Comparison", options=_options(mode))
+    chart = ASCIIComparisonBar(data=data, title="Budget vs Actual", options=_options(mode))
     return _render_chart(chart, mode)
 
 
 def _diverging_bar(mode: str) -> str:
     data = [
-        DivergingBarData(label="Q1", pct_change=-20.8),
-        DivergingBarData(label="Q2", pct_change=11.8),
-        DivergingBarData(label="Q3", pct_change=-19.1),
-        DivergingBarData(label="Q4", pct_change=-3.6),
-        DivergingBarData(label="Q5", pct_change=45.2),
+        DivergingBarData(label="Design", pct_change=12.0),
+        DivergingBarData(label="Sales", pct_change=-8.0),
+        DivergingBarData(label="Support", pct_change=18.0),
+        DivergingBarData(label="Product", pct_change=4.0),
+        DivergingBarData(label="Finance", pct_change=-5.0),
     ]
-    chart = ASCIIDivergingBar(data=data, title="Regression Analysis", options=_options(mode))
+    chart = ASCIIDivergingBar(data=data, title="Sentiment Change by Team", options=_options(mode))
     return _render_chart(chart, mode)
 
 
 def _summary_box(mode: str) -> str:
     stats = SummaryStats(
-        title="TPC-H on DuckDB (SF 1)",
-        geo_mean_ms=156.3,
-        median_ms=142.0,
-        total_time_ms=3450.0,
-        num_queries=22,
-        best_queries=[("Q6", 12.5), ("Q1", 45.2), ("Q3", 67.8)],
-        worst_queries=[("Q21", 890.0), ("Q18", 670.0), ("Q9", 450.0)],
-        environment={"OS": "macOS 15.3", "CPUs": "12 (arm64)", "Memory": "36 GB"},
-        platform_config={"Driver": "DuckDB 1.2.0", "Tuning": "Tuned"},
+        title="Riverfront Festival Attendance",
+        geo_mean_ms=420.0,
+        median_ms=390.0,
+        total_time_ms=18600.0,
+        num_queries=18,
+        best_queries=[("Gate A", 180.0), ("Gate C", 240.0), ("Gate D", 275.0)],
+        worst_queries=[("Gate F", 860.0), ("Gate B", 710.0), ("Gate E", 650.0)],
+        environment={"Venue": "Riverfront Park", "Days": "3", "Volunteers": "48"},
+        platform_config={"Ticket Type": "All-access", "Peak Window": "Sat 6-8pm"},
     )
     chart = ASCIISummaryBox(stats=stats, options=_options(mode))
     return _render_chart(chart, mode)
@@ -268,90 +269,90 @@ def _summary_box(mode: str) -> str:
 
 def _percentile_ladder(mode: str) -> str:
     data = [
-        PercentileData(name="DuckDB", p50=120.0, p90=350.0, p95=480.0, p99=890.0),
-        PercentileData(name="SQLite", p50=280.0, p90=520.0, p95=650.0, p99=1200.0),
-        PercentileData(name="Polars", p50=150.0, p90=310.0, p95=420.0, p99=700.0),
+        PercentileData(name="Algebra", p50=72.0, p90=89.0, p95=94.0, p99=98.0),
+        PercentileData(name="Biology", p50=76.0, p90=91.0, p95=95.0, p99=99.0),
+        PercentileData(name="History", p50=68.0, p90=85.0, p95=90.0, p99=96.0),
     ]
-    chart = ASCIIPercentileLadder(data=data, title="Tail Latency", options=_options(mode))
+    chart = ASCIIPercentileLadder(data=data, title="Exam Score Percentiles", options=_options(mode))
     return _render_chart(chart, mode)
 
 
 def _normalized_speedup(mode: str) -> str:
     data = [
-        SpeedupData(name="DuckDB", ratio=1.0, is_baseline=True),
-        SpeedupData(name="SQLite", ratio=0.36),
-        SpeedupData(name="Polars", ratio=0.85),
-        SpeedupData(name="Snowflake", ratio=1.42),
+        SpeedupData(name="Laptop CPU", ratio=1.0, is_baseline=True),
+        SpeedupData(name="Mobile GPU", ratio=1.65),
+        SpeedupData(name="Workstation GPU", ratio=3.80),
+        SpeedupData(name="Small VM", ratio=0.72),
     ]
-    chart = ASCIINormalizedSpeedup(data=data, title="Relative Speedup", options=_options(mode))
+    chart = ASCIINormalizedSpeedup(data=data, title="Inference Speedup vs CPU Baseline", options=_options(mode))
     return _render_chart(chart, mode)
 
 
 def _stacked_bar(mode: str) -> str:
     data = [
         StackedBarData(
-            label="DuckDB",
+            label="Apartment",
             segments=[
-                StackedBarSegment(phase_name="Generate", value=5.0),
-                StackedBarSegment(phase_name="Load", value=12.0),
-                StackedBarSegment(phase_name="Query", value=1234.5),
+                StackedBarSegment(phase_name="Grid", value=180.0),
+                StackedBarSegment(phase_name="Solar", value=95.0),
+                StackedBarSegment(phase_name="Battery", value=40.0),
             ],
         ),
         StackedBarData(
-            label="SQLite",
+            label="Townhouse",
             segments=[
-                StackedBarSegment(phase_name="Generate", value=5.0),
-                StackedBarSegment(phase_name="Load", value=45.0),
-                StackedBarSegment(phase_name="Query", value=3456.7),
+                StackedBarSegment(phase_name="Grid", value=220.0),
+                StackedBarSegment(phase_name="Solar", value=130.0),
+                StackedBarSegment(phase_name="Battery", value=55.0),
             ],
         ),
     ]
-    chart = ASCIIStackedBar(data=data, title="Phase Breakdown", options=_options(mode))
+    chart = ASCIIStackedBar(data=data, title="Household Energy Mix", options=_options(mode))
     return _render_chart(chart, mode)
 
 
 def _sparkline_table(mode: str) -> str:
     data = SparklineTableData(
-        platforms=["DuckDB", "SQLite", "Polars"],
+        platforms=["North Store", "Central Store", "South Store"],
         columns=[
-            SparklineColumn(name="Total (ms)", values={"DuckDB": 1234.5, "SQLite": 3456.7, "Polars": 2100.0}),
-            SparklineColumn(name="Geo Mean", values={"DuckDB": 156.3, "SQLite": 420.1, "Polars": 210.5}),
-            SparklineColumn(name="P99 (ms)", values={"DuckDB": 890.0, "SQLite": 1200.0, "Polars": 700.0}),
+            SparklineColumn(name="Revenue", values={"North Store": 82.0, "Central Store": 95.0, "South Store": 78.0}),
+            SparklineColumn(name="Orders", values={"North Store": 64.0, "Central Store": 88.0, "South Store": 72.0}),
+            SparklineColumn(name="Returns", values={"North Store": 6.0, "Central Store": 4.0, "South Store": 7.0}),
         ],
     )
-    chart = ASCIISparklineTable(data=data, title="Platform Overview", options=_options(mode))
+    chart = ASCIISparklineTable(data=data, title="Store KPI Snapshot", options=_options(mode))
     return _render_chart(chart, mode)
 
 
 def _cdf_chart(mode: str) -> str:
     data = [
-        CDFSeriesData(name="DuckDB", values=[80, 95, 110, 130, 150, 200, 250, 300, 500]),
-        CDFSeriesData(name="SQLite", values=[200, 250, 300, 350, 400, 450, 500, 600, 800]),
+        CDFSeriesData(name="Weekday", values=[2, 3, 4, 5, 6, 8, 10, 12, 15]),
+        CDFSeriesData(name="Weekend", values=[3, 4, 5, 7, 9, 11, 14, 18, 24]),
     ]
-    chart = ASCIICDFChart(data=data, title="Cumulative Distribution", options=_options(mode))
+    chart = ASCIICDFChart(data=data, title="Customer Wait Time Distribution", options=_options(mode))
     return _render_chart(chart, mode)
 
 
 def _rank_table(mode: str) -> str:
     data = RankTableData(
-        queries=["Q1", "Q2", "Q3", "Q4"],
-        platforms=["DuckDB", "SQLite", "Polars"],
+        queries=["Delivery", "Support", "Accuracy", "Onboarding"],
+        platforms=["Vendor A", "Vendor B", "Vendor C"],
         times={
-            ("DuckDB", "Q1"): 120.0,
-            ("SQLite", "Q1"): 150.0,
-            ("Polars", "Q1"): 135.0,
-            ("DuckDB", "Q2"): 340.0,
-            ("SQLite", "Q2"): 280.0,
-            ("Polars", "Q2"): 310.0,
-            ("DuckDB", "Q3"): 89.0,
-            ("SQLite", "Q3"): 110.0,
-            ("Polars", "Q3"): 95.0,
-            ("DuckDB", "Q4"): 560.0,
-            ("SQLite", "Q4"): 480.0,
-            ("Polars", "Q4"): 520.0,
+            ("Vendor A", "Delivery"): 4.2,
+            ("Vendor B", "Delivery"): 5.1,
+            ("Vendor C", "Delivery"): 4.8,
+            ("Vendor A", "Support"): 2.5,
+            ("Vendor B", "Support"): 1.9,
+            ("Vendor C", "Support"): 2.2,
+            ("Vendor A", "Accuracy"): 1.8,
+            ("Vendor B", "Accuracy"): 2.4,
+            ("Vendor C", "Accuracy"): 1.6,
+            ("Vendor A", "Onboarding"): 3.1,
+            ("Vendor B", "Onboarding"): 2.7,
+            ("Vendor C", "Onboarding"): 3.5,
         },
     )
-    chart = ASCIIRankTable(data=data, title="Platform Rankings", options=_options(mode))
+    chart = ASCIIRankTable(data=data, title="Vendor Evaluation Rankings", options=_options(mode))
     return _render_chart(chart, mode)
 
 
