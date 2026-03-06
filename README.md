@@ -104,8 +104,11 @@ Run the same checks used for release verification:
 ```bash
 uv run --group dev ruff check src/ tests/
 uv run --group dev python -m pytest -q
+uv run --group dev sphinx-build -W -b html docs docs/_build/html
 uv build
 ```
+
+Project documentation lives under `docs/` and is built with Sphinx.
 
 Golden regression snapshots live under `tests/fixtures/golden/ascii/`. To
 intentionally update them after a renderer change:
