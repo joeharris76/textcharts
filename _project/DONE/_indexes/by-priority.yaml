@@ -1,8 +1,8 @@
-generated_at: '2026-03-06T09:31:18.199667'
-total_items: 2
+generated_at: '2026-03-06T09:39:31.800462'
+total_items: 4
 priorities:
   High:
-    count: 2
+    count: 3
     items:
     - id: fix-terminal-capability-defaults-and-color-contract
       file: DONE/main/planning/fix-terminal-capability-defaults-and-color-contract.yaml
@@ -13,4 +13,17 @@ priorities:
       file: DONE/main/planning/make-heatmap-and-matrix-apis-explicit-and-safe.yaml
       title: Make heatmap and matrix APIs explicit and safe
       category: Core Functionality
+      status: Completed
+    - id: restore-standalone-renderer-regression-coverage
+      file: DONE/main/planning/restore-standalone-renderer-regression-coverage.yaml
+      title: Restore standalone renderer regression coverage
+      category: Testing and Quality Assurance
+      status: Completed
+  Medium-High:
+    count: 1
+    items:
+    - id: finalize-public-api-docs-and-release-tooling
+      file: DONE/main/planning/finalize-public-api-docs-and-release-tooling.yaml
+      title: Finalize public API, docs, and release tooling
+      category: Documentation
       status: Completed

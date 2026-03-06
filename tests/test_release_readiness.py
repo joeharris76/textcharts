@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import pytest
+
 import textcharts.base as base
 from textcharts import BarChart, BarData, ChartOptions, Heatmap
 from textcharts.base import ColorMode, TerminalCapabilities

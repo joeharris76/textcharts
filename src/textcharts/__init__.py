@@ -5,6 +5,16 @@ bar, histogram, heatmap, box plot, line, scatter, comparison bar, diverging bar,
 summary box, percentile ladder, normalized speedup, stacked bar, sparkline table,
 CDF chart, and rank table.
 
+Preferred public API:
+    - Clean chart names such as ``BarChart`` and ``Heatmap``
+    - Data models such as ``BarData`` and ``LinePoint``
+    - Shared configuration via ``ChartOptions`` and ``ColorMode``
+
+Compatibility API:
+    - ``ASCII*`` aliases are retained for BenchBox migrations
+    - Domain-specific factory helpers remain available but are secondary to the
+      chart classes and data models above
+
 Basic usage::
 
     from textcharts import BarChart, BarData, ChartOptions
@@ -56,7 +66,7 @@ from textcharts.stacked_bar import ASCIIStackedBar, StackedBarData, StackedBarSe
 from textcharts.summary_box import ASCIISummaryBox, SummaryStats
 
 # ---------------------------------------------------------------------------
-# Clean standalone aliases (drop ASCII prefix)
+# Clean standalone aliases (preferred public API)
 # ---------------------------------------------------------------------------
 ChartBase = ASCIIChartBase
 ChartOptions = ASCIIChartOptions
@@ -96,7 +106,7 @@ __all__ = [
     "SparklineTable",
     "StackedBar",
     "SummaryBox",
-    # BenchBox-compatible names (aliases)
+    # BenchBox-compatible aliases retained for migration compatibility
     "ASCIIBarChart",
     "ASCIIBoxPlot",
     "ASCIICDFChart",
@@ -141,7 +151,7 @@ __all__ = [
     "StackedBarData",
     "StackedBarSegment",
     "SummaryStats",
-    # Factory functions
+    # Factory functions (secondary convenience/compatibility helpers)
     "cdf_from_query_results",
     "from_bar_data",
     "from_comparison_data",

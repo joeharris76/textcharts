@@ -1,5 +1,5 @@
-generated_at: '2026-03-06T09:31:18.198962'
-total_items: 2
+generated_at: '2026-03-06T09:39:31.800091'
+total_items: 4
 items:
 - id: fix-terminal-capability-defaults-and-color-contract
   file: DONE/main/planning/fix-terminal-capability-defaults-and-color-contract.yaml
@@ -37,3 +37,44 @@ items:
   work_total: 4
   work_done: 4
   work_ready: 0
+- id: restore-standalone-renderer-regression-coverage
+  file: DONE/main/planning/restore-standalone-renderer-regression-coverage.yaml
+  title: Restore standalone renderer regression coverage
+  worktree: main
+  category: Testing and Quality Assurance
+  priority: High
+  status: Completed
+  tags:
+  - release
+  - tests
+  - golden
+  owners:
+  - joe
+  estimated_effort: Large
+  completed_date: '2026-03-06'
+  work_total: 4
+  work_done: 4
+  work_ready: 0
+  needs:
+  - fix-terminal-capability-defaults-and-color-contract
+  - make-heatmap-and-matrix-apis-explicit-and-safe
+- id: finalize-public-api-docs-and-release-tooling
+  file: DONE/main/planning/finalize-public-api-docs-and-release-tooling.yaml
+  title: Finalize public API, docs, and release tooling
+  worktree: main
+  category: Documentation
+  priority: Medium-High
+  status: Completed
+  tags:
+  - release
+  - docs
+  - packaging
+  owners:
+  - joe
+  estimated_effort: Medium
+  completed_date: '2026-03-06'
+  work_total: 4
+  work_done: 4
+  work_ready: 0
+  needs:
+  - restore-standalone-renderer-regression-coverage

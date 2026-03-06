@@ -18,7 +18,7 @@ jobs:
       - name: Set up Python ${{ matrix.python-version }}
         run: uv python install ${{ matrix.python-version }}
       - name: Lint
-        run: uv run --python ${{ matrix.python-version }} ruff check src/ tests/
+        run: uv run --python ${{ matrix.python-version }} --group dev -- ruff check src/ tests/
       - name: Test
         run: uv run --python ${{ matrix.python-version }} --group dev -- python -m pytest -q
 

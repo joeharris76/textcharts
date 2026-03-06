@@ -2,7 +2,7 @@ id: "restore-standalone-renderer-regression-coverage"
 title: "Restore standalone renderer regression coverage"
 worktree: "main"
 priority: "High"
-status: "Not Started"
+status: "Completed"
 description: |
   Bring back enough behavioral coverage from BenchBox to make the extracted
   library safe to publish. The current repo only has smoke tests, while the
@@ -13,19 +13,19 @@ category: "Testing and Quality Assurance"
 work:
   - id: w1
     summary: "Inventory the BenchBox chart tests and select the portable subset to migrate"
-    status: pending
+    status: done
   - id: w2
     summary: "Port golden-output snapshot coverage for all public chart types"
     needs: [w1]
-    status: pending
+    status: done
   - id: w3
     summary: "Port high-value edge-case tests for NaN, inf, single-point, and layout behavior"
     needs: [w1]
-    status: pending
+    status: done
   - id: w4
     summary: "Replace the smoke-only strategy with documented standalone verification targets"
     needs: [w2, w3]
-    status: pending
+    status: done
 metadata:
   owners:
     - "joe"
@@ -84,4 +84,17 @@ deps:
 success_metrics:
   - "Each public chart type has deterministic regression coverage"
   - "High-value edge cases from the extracted source are covered in the standalone repo"
+completed_date: "2026-03-06"
 
+sections:
+  "Implementation Summary": |
+    Migrated the full 15-chart golden-output suite into the standalone
+    repository with local fixtures and a `--update-golden` pytest option.
+    Added a focused edge-case test module covering single-point renderers,
+    NaN/inf handling, narrow-width behavior, ANSI sanitization, and layout
+    compression/truncation behavior.
+
+  "Verification": |
+    .venv/bin/python -m pytest -q
+    uv run --group dev ruff check src/ tests/
+    uv build

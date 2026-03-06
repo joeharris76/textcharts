@@ -36,7 +36,7 @@ Repository = "https://github.com/benchbox-dev/textcharts"
 Issues = "https://github.com/benchbox-dev/textcharts/issues"
 
 [dependency-groups]
-dev = ["pytest>=7.0"]
+dev = ["pytest>=7.0", "ruff>=0.11"]
 
 [tool.hatch.build.targets.wheel]
 packages = ["src/textcharts"]

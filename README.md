@@ -55,6 +55,19 @@ Java   ▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓�
 | CDF chart          | `CDFChart`          | `CDFSeriesData`      |
 | Rank table         | `RankTable`         | `RankTableData`      |
 
+## Public API
+
+Preferred API for new code:
+- Clean chart classes such as `BarChart`, `Heatmap`, `LineChart`, and `SummaryBox`
+- Data models such as `BarData`, `HistogramBar`, `LinePoint`, and `SummaryStats`
+- Shared configuration and helpers such as `ChartOptions` and `ColorMode`
+
+Compatibility API:
+- `ASCII*` aliases are retained for BenchBox migration compatibility
+- Domain-specific factory helpers such as `from_query_latency_data` and
+  `from_phase_data` remain available, but new code should prefer constructing
+  the chart classes directly from their data models
+
 ## Configuration
 
 ```python
@@ -77,6 +90,29 @@ Heatmaps support `color_scheme="diverging"` (default) or
 Matrix-based APIs require exact dimensions:
 - `len(row_labels) == len(matrix)`
 - every matrix row length must equal `len(col_labels)`
+
+## Development
+
+Install dev tools:
+
+```bash
+uv sync --group dev
+```
+
+Run the same checks used for release verification:
+
+```bash
+uv run --group dev ruff check src/ tests/
+uv run --group dev python -m pytest -q
+uv build
+```
+
+Golden regression snapshots live under `tests/fixtures/golden/ascii/`. To
+intentionally update them after a renderer change:
+
+```bash
+uv run --group dev python -m pytest tests/test_golden_output.py -q --update-golden
+```
 
 ## Features
 
