@@ -81,6 +81,21 @@ HTML_TEMPLATE = """\
     white-space: pre;
   }}
   .ansi1 {{ font-weight: bold; }}
+  .ansi32 {{ color: #4ec9b0; }}
+  .ansi33 {{ color: #e6ab02; }}
+  .ansi34 {{ color: #569cd6; }}
+  .ansi35 {{ color: #c586c0; }}
+  .ansi36 {{ color: #4ec9b0; }}
+  .ansi37 {{ color: #d8dee9; }}
+  .ansi38-5-36 {{ color: #4ec9b0; }}
+  .ansi38-5-60 {{ color: #5a6478; }}
+  .ansi38-5-70 {{ color: #6aaf6a; }}
+  .ansi38-5-97 {{ color: #8b7fd6; }}
+  .ansi38-5-130 {{ color: #b88746; }}
+  .ansi38-5-162 {{ color: #d16ba5; }}
+  .ansi38-5-166 {{ color: #d7875f; }}
+  .ansi38-5-178 {{ color: #d6b34e; }}
+  .ansi38-5-242 {{ color: #6b7075; }}
 </style>
 </head>
 <body>
@@ -119,13 +134,25 @@ def _options(mode: str) -> ASCIIChartOptions:
     raise ValueError(f"unsupported mode: {mode}")
 
 
+def _render_chart(chart, mode: str) -> str:
+    """Force deterministic terminal capabilities for screenshot generation."""
+    chart._capabilities = _caps(
+        ColorMode.EXTENDED if mode == "color" else ColorMode.NONE,
+        unicode_support=(mode == "color"),
+        interactive=(mode == "color"),
+    )
+    chart.options._capabilities = chart._capabilities
+    return chart.render()
+
+
 def _bar_chart(mode: str) -> str:
     data = [
         BarData(label="DuckDB", value=1234.5, is_best=True),
         BarData(label="SQLite", value=3456.7, is_worst=True),
         BarData(label="Polars", value=2100.0),
     ]
-    return ASCIIBarChart(data=data, title="Total Runtime", metric_label="ms", options=_options(mode)).render()
+    chart = ASCIIBarChart(data=data, title="Total Runtime", metric_label="ms", options=_options(mode))
+    return _render_chart(chart, mode)
 
 
 def _histogram(mode: str) -> str:
@@ -137,7 +164,8 @@ def _histogram(mode: str) -> str:
         HistogramBar(query_id="Q5", latency_ms=210.0),
         HistogramBar(query_id="Q6", latency_ms=150.3),
     ]
-    return ASCIIHistogram(data=bars, title="Query Latency", options=_options(mode)).render()
+    chart = ASCIIHistogram(data=bars, title="Query Latency", options=_options(mode))
+    return _render_chart(chart, mode)
 
 
 def _heatmap(mode: str) -> str:
@@ -154,7 +182,7 @@ def _heatmap(mode: str) -> str:
         title="Query Heatmap",
         options=_options(mode),
     )
-    return chart.render()
+    return _render_chart(chart, mode)
 
 
 def _box_plot(mode: str) -> str:
@@ -163,7 +191,8 @@ def _box_plot(mode: str) -> str:
         BoxPlotSeries(name="SQLite", values=[200, 250, 300, 350, 400, 450, 500, 600, 800]),
         BoxPlotSeries(name="Polars", values=[100, 120, 140, 160, 180, 200, 220, 280, 350]),
     ]
-    return ASCIIBoxPlot(series=series, title="Query Time Distribution", options=_options(mode)).render()
+    chart = ASCIIBoxPlot(series=series, title="Query Time Distribution", options=_options(mode))
+    return _render_chart(chart, mode)
 
 
 def _line_chart(mode: str) -> str:
@@ -175,7 +204,8 @@ def _line_chart(mode: str) -> str:
         LinePoint(series="SQLite", x=2, y=320.0, label="Run 2"),
         LinePoint(series="SQLite", x=3, y=310.0, label="Run 3"),
     ]
-    return ASCIILineChart(points=points, title="Performance Trend", options=_options(mode)).render()
+    chart = ASCIILineChart(points=points, title="Performance Trend", options=_options(mode))
+    return _render_chart(chart, mode)
 
 
 def _scatter_plot(mode: str) -> str:
@@ -185,7 +215,8 @@ def _scatter_plot(mode: str) -> str:
         ScatterPoint(name="Snowflake", x=2.5, y=890.0),
         ScatterPoint(name="Databricks", x=5.0, y=650.0),
     ]
-    return ASCIIScatterPlot(points=points, title="Cost vs Performance", options=_options(mode)).render()
+    chart = ASCIIScatterPlot(points=points, title="Cost vs Performance", options=_options(mode))
+    return _render_chart(chart, mode)
 
 
 def _comparison_bar(mode: str) -> str:
@@ -203,7 +234,8 @@ def _comparison_bar(mode: str) -> str:
             label="Q4", baseline_value=560.0, comparison_value=540.0, baseline_name="v1.0", comparison_name="v1.1"
         ),
     ]
-    return ASCIIComparisonBar(data=data, title="Version Comparison", options=_options(mode)).render()
+    chart = ASCIIComparisonBar(data=data, title="Version Comparison", options=_options(mode))
+    return _render_chart(chart, mode)
 
 
 def _diverging_bar(mode: str) -> str:
@@ -214,7 +246,8 @@ def _diverging_bar(mode: str) -> str:
         DivergingBarData(label="Q4", pct_change=-3.6),
         DivergingBarData(label="Q5", pct_change=45.2),
     ]
-    return ASCIIDivergingBar(data=data, title="Regression Analysis", options=_options(mode)).render()
+    chart = ASCIIDivergingBar(data=data, title="Regression Analysis", options=_options(mode))
+    return _render_chart(chart, mode)
 
 
 def _summary_box(mode: str) -> str:
@@ -229,7 +262,8 @@ def _summary_box(mode: str) -> str:
         environment={"OS": "macOS 15.3", "CPUs": "12 (arm64)", "Memory": "36 GB"},
         platform_config={"Driver": "DuckDB 1.2.0", "Tuning": "Tuned"},
     )
-    return ASCIISummaryBox(stats=stats, options=_options(mode)).render()
+    chart = ASCIISummaryBox(stats=stats, options=_options(mode))
+    return _render_chart(chart, mode)
 
 
 def _percentile_ladder(mode: str) -> str:
@@ -238,7 +272,8 @@ def _percentile_ladder(mode: str) -> str:
         PercentileData(name="SQLite", p50=280.0, p90=520.0, p95=650.0, p99=1200.0),
         PercentileData(name="Polars", p50=150.0, p90=310.0, p95=420.0, p99=700.0),
     ]
-    return ASCIIPercentileLadder(data=data, title="Tail Latency", options=_options(mode)).render()
+    chart = ASCIIPercentileLadder(data=data, title="Tail Latency", options=_options(mode))
+    return _render_chart(chart, mode)
 
 
 def _normalized_speedup(mode: str) -> str:
@@ -248,7 +283,8 @@ def _normalized_speedup(mode: str) -> str:
         SpeedupData(name="Polars", ratio=0.85),
         SpeedupData(name="Snowflake", ratio=1.42),
     ]
-    return ASCIINormalizedSpeedup(data=data, title="Relative Speedup", options=_options(mode)).render()
+    chart = ASCIINormalizedSpeedup(data=data, title="Relative Speedup", options=_options(mode))
+    return _render_chart(chart, mode)
 
 
 def _stacked_bar(mode: str) -> str:
@@ -270,7 +306,8 @@ def _stacked_bar(mode: str) -> str:
             ],
         ),
     ]
-    return ASCIIStackedBar(data=data, title="Phase Breakdown", options=_options(mode)).render()
+    chart = ASCIIStackedBar(data=data, title="Phase Breakdown", options=_options(mode))
+    return _render_chart(chart, mode)
 
 
 def _sparkline_table(mode: str) -> str:
@@ -282,7 +319,8 @@ def _sparkline_table(mode: str) -> str:
             SparklineColumn(name="P99 (ms)", values={"DuckDB": 890.0, "SQLite": 1200.0, "Polars": 700.0}),
         ],
     )
-    return ASCIISparklineTable(data=data, title="Platform Overview", options=_options(mode)).render()
+    chart = ASCIISparklineTable(data=data, title="Platform Overview", options=_options(mode))
+    return _render_chart(chart, mode)
 
 
 def _cdf_chart(mode: str) -> str:
@@ -290,7 +328,8 @@ def _cdf_chart(mode: str) -> str:
         CDFSeriesData(name="DuckDB", values=[80, 95, 110, 130, 150, 200, 250, 300, 500]),
         CDFSeriesData(name="SQLite", values=[200, 250, 300, 350, 400, 450, 500, 600, 800]),
     ]
-    return ASCIICDFChart(data=data, title="Cumulative Distribution", options=_options(mode)).render()
+    chart = ASCIICDFChart(data=data, title="Cumulative Distribution", options=_options(mode))
+    return _render_chart(chart, mode)
 
 
 def _rank_table(mode: str) -> str:
@@ -312,7 +351,8 @@ def _rank_table(mode: str) -> str:
             ("Polars", "Q4"): 520.0,
         },
     )
-    return ASCIIRankTable(data=data, title="Platform Rankings", options=_options(mode)).render()
+    chart = ASCIIRankTable(data=data, title="Platform Rankings", options=_options(mode))
+    return _render_chart(chart, mode)
 
 
 CHARTS = {

@@ -20,3 +20,4 @@ htmlcov/
 .vscode/
 *.swp
 .DS_Store
+/docs/_build/html
