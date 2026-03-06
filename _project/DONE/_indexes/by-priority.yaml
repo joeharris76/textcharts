@@ -1,9 +1,14 @@
-generated_at: '2026-03-06T12:05:00'
-total_items: 5
+generated_at: '2026-03-06T13:12:00'
+total_items: 6
 priorities:
   High:
-    count: 4
+    count: 5
     items:
+    - id: fix-gallery-chart-clarity-and-labeling
+      file: DONE/main/planning/fix-gallery-chart-clarity-and-labeling.yaml
+      title: Fix gallery chart clarity, labeling, and legend issues
+      category: Documentation
+      status: Completed
     - id: de-benchbox-example-datasets-and-position-chart-specific-apis
       file: DONE/main/planning/de-benchbox-example-datasets-and-position-chart-specific-apis.yaml
       title: De-BenchBox example datasets and position chart-specific APIs clearly

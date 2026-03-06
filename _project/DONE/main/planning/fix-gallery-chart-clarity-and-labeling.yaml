@@ -2,7 +2,7 @@ id: "fix-gallery-chart-clarity-and-labeling"
 title: "Fix gallery chart clarity, labeling, and legend issues"
 worktree: "main"
 priority: "High"
-status: "In Progress"
+status: "Completed"
 description: |
   Correct the remaining chart-gallery defects identified during docs review so
   the generated screenshots communicate chart semantics clearly in color,
@@ -94,7 +94,8 @@ metadata:
     - "usability"
   estimated_effort: "Medium"
   created_date: "2026-03-06"
-  last_updated: "2026-03-06T13:10:00"
+  last_updated: "2026-03-06T13:12:00"
+completed_date: "2026-03-06"
 
 impact:
   business_value: |
