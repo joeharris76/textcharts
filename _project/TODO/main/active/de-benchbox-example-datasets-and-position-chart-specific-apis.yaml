@@ -71,7 +71,7 @@ work:
   - id: w3
     summary: "Regenerate all gallery screenshots and review the visual outputs chart by chart for domain variety and color fidelity"
     needs: [w2]
-    status: pending
+    status: done
     notes: |
       Regenerate the 45 checked-in screenshots under docs/_static/screenshots/.
       Verify that each chart now reflects the intended domain, that color and
@@ -123,7 +123,7 @@ metadata:
     - "positioning"
   estimated_effort: "Medium"
   created_date: "2026-03-06"
-  last_updated: "2026-03-06T11:05:00"
+  last_updated: "2026-03-06T11:15:00"
 impact:
   business_value: |
     Makes the library marketable as a standalone public package instead of an

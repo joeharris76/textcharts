@@ -235,7 +235,12 @@ def _comparison_bar(mode: str) -> str:
             label="Research", baseline_value=95.0, comparison_value=88.0, baseline_name="Planned", comparison_name="Actual"
         ),
     ]
-    chart = ASCIIComparisonBar(data=data, title="Budget vs Actual", options=_options(mode))
+    chart = ASCIIComparisonBar(
+        data=data,
+        title="Budget vs Actual",
+        metric_label="Budget (k USD)",
+        options=_options(mode),
+    )
     return _render_chart(chart, mode)
 
 
@@ -273,7 +278,12 @@ def _percentile_ladder(mode: str) -> str:
         PercentileData(name="Biology", p50=76.0, p90=91.0, p95=95.0, p99=99.0),
         PercentileData(name="History", p50=68.0, p90=85.0, p95=90.0, p99=96.0),
     ]
-    chart = ASCIIPercentileLadder(data=data, title="Exam Score Percentiles", options=_options(mode))
+    chart = ASCIIPercentileLadder(
+        data=data,
+        title="Exam Score Percentiles",
+        metric_label="points",
+        options=_options(mode),
+    )
     return _render_chart(chart, mode)
 
 
@@ -291,23 +301,23 @@ def _normalized_speedup(mode: str) -> str:
 def _stacked_bar(mode: str) -> str:
     data = [
         StackedBarData(
-            label="Apartment",
+            label="Weeknight Dinner",
             segments=[
-                StackedBarSegment(phase_name="Grid", value=180.0),
-                StackedBarSegment(phase_name="Solar", value=95.0),
-                StackedBarSegment(phase_name="Battery", value=40.0),
+                StackedBarSegment(phase_name="Prep", value=12_000.0),
+                StackedBarSegment(phase_name="Cooking", value=22_000.0),
+                StackedBarSegment(phase_name="Plating", value=6_000.0),
             ],
         ),
         StackedBarData(
-            label="Townhouse",
+            label="Weekend Brunch",
             segments=[
-                StackedBarSegment(phase_name="Grid", value=220.0),
-                StackedBarSegment(phase_name="Solar", value=130.0),
-                StackedBarSegment(phase_name="Battery", value=55.0),
+                StackedBarSegment(phase_name="Prep", value=18_000.0),
+                StackedBarSegment(phase_name="Cooking", value=28_000.0),
+                StackedBarSegment(phase_name="Plating", value=8_000.0),
             ],
         ),
     ]
-    chart = ASCIIStackedBar(data=data, title="Household Energy Mix", options=_options(mode))
+    chart = ASCIIStackedBar(data=data, title="Cooking Time Breakdown", options=_options(mode))
     return _render_chart(chart, mode)
 
 
