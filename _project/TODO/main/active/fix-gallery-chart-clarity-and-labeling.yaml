@@ -59,7 +59,7 @@ work:
   - id: w3
     summary: "Add or update regression tests that lock in the renderer fixes and prevent the reviewed screenshot issues from returning"
     needs: [w2]
-    status: pending
+    status: done
     notes: |
       Tests should assert observable output, including corrected axis labels,
       legend presence, single-line ScatterPlot axis labels, and colored/footer
@@ -94,7 +94,7 @@ metadata:
     - "usability"
   estimated_effort: "Medium"
   created_date: "2026-03-06"
-  last_updated: "2026-03-06T12:45:00"
+  last_updated: "2026-03-06T12:50:00"
 
 impact:
   business_value: |
