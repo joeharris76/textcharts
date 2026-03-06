@@ -104,6 +104,39 @@ HTML_TEMPLATE = """\
 </html>
 """
 
+GREYSCALE_COLOR_MAP = {
+    "#1B9E77": "#F0F0F0",
+    "#66A61E": "#D9D9D9",
+    "#E6AB02": "#BFBFBF",
+    "#D95F02": "#8F8F8F",
+    "#E7298A": "#696969",
+    "#7570B3": "#A6A6A6",
+    "#666666": "#7A7A7A",
+    "#2166AC": "#E6E6E6",
+    "#67A9CF": "#CBCBCB",
+    "#F7F7F7": "#B3B3B3",
+    "#EF8A62": "#8C8C8C",
+    "#B2182B": "#5E5E5E",
+    "#4393C3": "#E8E8E8",
+    "#92C5DE": "#CECECE",
+    "#D1E5F0": "#B7B7B7",
+    "#FDB863": "#909090",
+    "#D6604D": "#626262",
+    "#4EC9B0": "#E3E3E3",
+    "#E6AB02": "#BFBFBF",
+    "#569CD6": "#C9C9C9",
+    "#C586C0": "#A1A1A1",
+    "#D8DEE9": "#D8D8D8",
+    "#5A6478": "#7E7E7E",
+    "#6AAF6A": "#B5B5B5",
+    "#8B7FD6": "#999999",
+    "#B88746": "#A8A8A8",
+    "#D16BA5": "#8A8A8A",
+    "#D7875F": "#9B9B9B",
+    "#D6B34E": "#AEAEAE",
+    "#6B7075": "#787878",
+}
+
 
 def _chrome_binary() -> str:
     for candidate in CHROME_CANDIDATES:
@@ -123,7 +156,7 @@ def _caps(color_mode: ColorMode, *, unicode_support: bool, interactive: bool) ->
 
 
 def _options(mode: str) -> ASCIIChartOptions:
-    if mode == "color":
+    if mode in {"color", "greyscale"}:
         opts = ASCIIChartOptions(width=96, use_color=True, use_unicode=True)
         opts._capabilities = _caps(ColorMode.EXTENDED, unicode_support=True, interactive=True)
         return opts
@@ -137,9 +170,9 @@ def _options(mode: str) -> ASCIIChartOptions:
 def _render_chart(chart, mode: str) -> str:
     """Force deterministic terminal capabilities for screenshot generation."""
     chart._capabilities = _caps(
-        ColorMode.EXTENDED if mode == "color" else ColorMode.NONE,
-        unicode_support=(mode == "color"),
-        interactive=(mode == "color"),
+        ColorMode.EXTENDED if mode in {"color", "greyscale"} else ColorMode.NONE,
+        unicode_support=(mode in {"color", "greyscale"}),
+        interactive=(mode in {"color", "greyscale"}),
     )
     chart.options._capabilities = chart._capabilities
     return chart.render()
@@ -385,9 +418,14 @@ CHARTS = {
 }
 
 
-def _ansi_to_html(text: str) -> str:
+def _ansi_to_html(text: str, color_map: dict[str, str] | None = None) -> str:
     converter = Ansi2HTMLConverter(inline=True, scheme="ansi2html", dark_bg=True)
-    return converter.convert(text, full=False)
+    html_text = converter.convert(text, full=False)
+    if not color_map:
+        return html_text
+    for src, dst in color_map.items():
+        html_text = html_text.replace(src, dst)
+    return html_text
 
 
 def _estimate_height(text: str, pad: int = 72) -> int:
@@ -446,6 +484,8 @@ def _render_mode(chart_name: str, mode: str) -> Path:
     out_path = out_dir / f"{mode}.png"
     if mode == "color":
         html_body = _ansi_to_html(text)
+    elif mode == "greyscale":
+        html_body = _ansi_to_html(text, GREYSCALE_COLOR_MAP)
     else:
         html_body = html.escape(text)
     _save_png(HTML_TEMPLATE.format(content=html_body), out_path, text)
@@ -453,19 +493,11 @@ def _render_mode(chart_name: str, mode: str) -> Path:
     return out_path
 
 
-def _make_greyscale(chart_name: str) -> Path:
-    color_path = OUT / chart_name / "color.png"
-    greyscale_path = OUT / chart_name / "greyscale.png"
-    image = Image.open(color_path).convert("L").convert("RGB")
-    image.save(greyscale_path)
-    return greyscale_path
-
-
 def main() -> None:
     for chart_name in CHARTS:
         print(f"Generating {chart_name}")
         _render_mode(chart_name, "color")
-        _make_greyscale(chart_name)
+        _render_mode(chart_name, "greyscale")
         _render_mode(chart_name, "monochrome")
     print(f"Generated screenshots in {OUT}")
 

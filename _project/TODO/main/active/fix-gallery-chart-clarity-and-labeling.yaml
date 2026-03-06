@@ -68,7 +68,7 @@ work:
   - id: w4
     summary: "Redesign greyscale screenshot generation so BarChart and Histogram remain distinguishable without relying on hue"
     needs: [w1]
-    status: pending
+    status: done
     notes: |
       Do not keep simple desaturation as the only greyscale mechanism. Reuse
       renderer capabilities where possible or add a dedicated greyscale capture
@@ -94,7 +94,7 @@ metadata:
     - "usability"
   estimated_effort: "Medium"
   created_date: "2026-03-06"
-  last_updated: "2026-03-06T12:50:00"
+  last_updated: "2026-03-06T12:58:00"
 
 impact:
   business_value: |
