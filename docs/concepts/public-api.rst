@@ -21,10 +21,25 @@ Compatibility API
 The package also exports:
 
 - ``ASCII*`` aliases for chart classes
-- Factory helpers such as ``from_query_latency_data`` and ``from_phase_data``
+- Factory helpers such as ``from_query_latency_data``,
+  ``from_query_results``, ``from_regression_data``,
+  ``from_normalized_results``, and ``from_phase_data``
 
 These exist to preserve BenchBox migration paths. They are public and supported,
 but they are not the recommended way to write new code against the library.
+
+Performance-oriented surfaces
+-----------------------------
+
+Most chart types are documented with general-purpose examples that transfer to
+domains such as retail, operations, education, and product analytics.
+``NormalizedSpeedup`` is the clearest exception: it is intentionally aimed at
+benchmark and performance-analysis workflows.
+
+``ComparisonBar``, ``DivergingBar``, ``PercentileLadder``, ``SummaryBox``, and
+``RankTable`` remain broadly useful, but they also overlap naturally with
+performance reporting. The docs therefore show generic examples first and then
+point to compatibility helpers only where that history matters.
 
 Documentation strategy
 ----------------------
