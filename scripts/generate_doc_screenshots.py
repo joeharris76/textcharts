@@ -253,7 +253,7 @@ def _line_chart(mode: str) -> str:
 def _scatter_plot(mode: str) -> str:
     points = [
         ScatterPoint(name="Spring Launch", x=8.0, y=410.0),
-        ScatterPoint(name="Retargeting", x=5.5, y=360.0),
+        ScatterPoint(name="Retargeting", x=5.5, y=180.0),
         ScatterPoint(name="Video Ads", x=11.0, y=470.0),
         ScatterPoint(name="Newsletter", x=2.0, y=220.0),
     ]
@@ -386,7 +386,13 @@ def _cdf_chart(mode: str) -> str:
         CDFSeriesData(name="Weekday", values=[2, 3, 4, 5, 6, 8, 10, 12, 15]),
         CDFSeriesData(name="Weekend", values=[3, 4, 5, 7, 9, 11, 14, 18, 24]),
     ]
-    chart = ASCIICDFChart(data=data, title="Customer Wait Time Distribution", options=_options(mode))
+    chart = ASCIICDFChart(
+        data=data,
+        title="Customer Wait Time Distribution",
+        x_label="Wait Time (min)",
+        y_label="Cumulative Share",
+        options=_options(mode),
+    )
     return _render_chart(chart, mode)
 
 

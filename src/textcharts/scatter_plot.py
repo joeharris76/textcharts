@@ -8,14 +8,7 @@ from typing import TYPE_CHECKING
 
 logger = logging.getLogger(__name__)
 
-from textcharts.base import (
-    DEFAULT_PALETTE,
-    TRUNCATION_MARKER,
-    ASCIIChartBase,
-    ASCIIChartOptions,
-    ColorMode,
-    robust_p95,
-)
+from textcharts.base import DEFAULT_PALETTE, TRUNCATION_MARKER, ASCIIChartBase, ASCIIChartOptions, ColorMode, robust_p95
 
 if TYPE_CHECKING:
     from collections.abc import Sequence
@@ -54,9 +47,8 @@ class ASCIIScatterPlot(ASCIIChartBase):
     ```
     """
 
-    # Markers for different purposes
-    MARKER_NORMAL = "*"
-    MARKER_PARETO = "◆"
+    # Point markers follow the same rotating pattern used by CDF/Line charts.
+    MARKERS = ("*", "+", "o", "x", "^", "v", "#", "@")
     MARKER_FRONTIER = "─"
 
     def __init__(
@@ -159,6 +151,9 @@ class ASCIIScatterPlot(ASCIIChartBase):
             return max(0, min(plot_width - 1, gx)), max(0, min(plot_height - 1, gy))
 
         palette = list(DEFAULT_PALETTE)
+        point_styles = {
+            point.name: (self.MARKERS[i % len(self.MARKERS)], palette[i % len(palette)]) for i, point in enumerate(self.points)
+        }
 
         # Plot Pareto frontier line first (so points overlay it)
         if self.show_pareto and len(pareto_points) >= 2:
@@ -190,7 +185,7 @@ class ASCIIScatterPlot(ASCIIChartBase):
 
         for (gx, gy), pts in point_positions.items():
             # Use first point's properties for marker
-            marker = self.MARKER_PARETO if pts[0].is_pareto else self.MARKER_NORMAL
+            marker, _ = point_styles[pts[0].name]
             grid[gy][gx] = marker
 
         # Build output with y-axis
@@ -211,8 +206,10 @@ class ASCIIScatterPlot(ASCIIChartBase):
             if colors.color_mode != ColorMode.NONE:
                 colored_cells = []
                 for cell in row:
-                    if cell == self.MARKER_PARETO:
-                        colored_cells.append(colors.colorize(cell, fg_color="#1b9e77"))
+                    marker_match = next((style for style in point_styles.values() if style[0] == cell), None)
+                    if marker_match is not None:
+                        _, color = marker_match
+                        colored_cells.append(colors.colorize(cell, fg_color=color))
                     elif cell == self.MARKER_FRONTIER:
                         colored_cells.append(colors.colorize(cell, fg_color="#666666"))
                     else:
@@ -249,14 +246,13 @@ class ASCIIScatterPlot(ASCIIChartBase):
 
         # Axis labels
         lines.append("")
-        lines.append(self._render_compact_axis_labels(width))
+        lines.append(self._render_compact_axis_labels(self.y_label, self.x_label, width))
 
         # Legend with point names
         lines.append("")
         lines.append("Points:")
-        for i, point in enumerate(self.points):
-            marker = self.MARKER_PARETO if point.is_pareto else self.MARKER_NORMAL
-            color = "#1b9e77" if point.is_pareto else palette[i % len(palette)]
+        for point in self.points:
+            marker, color = point_styles[point.name]
             if colors.color_mode != ColorMode.NONE:
                 marker_colored = colors.colorize(marker, fg_color=color)
             else:
@@ -269,15 +265,6 @@ class ASCIIScatterPlot(ASCIIChartBase):
             lines.append(f"  {marker_colored} {point.name}: x={x_val}, y={y_val}{pareto_note}{truncated_note}")
 
         return "\n".join(lines)
-
-    def _render_compact_axis_labels(self, width: int) -> str:
-        """Render both axis labels on one compact line."""
-        colors = self.options.get_colors()
-        right_arrow = "\u2192" if self.options.use_unicode else "->"
-        up_arrow = "\u2191" if self.options.use_unicode else "^"
-        text = f"{up_arrow} {self.y_label} / {self.x_label} {right_arrow}"
-        text = text[:width] if len(text) > width else text
-        return colors.colorize(text.center(width), fg_color="#666666")
 
     def _compute_pareto(self) -> list[ScatterPoint]:
         """Compute Pareto frontier (higher y is better, lower x is better)."""

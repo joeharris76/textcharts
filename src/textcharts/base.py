@@ -557,6 +557,15 @@ class ASCIIChartBase(ABC):
         padded = text.center(width)
         return colors.colorize(padded, fg_color="#666666")
 
+    def _render_compact_axis_labels(self, y_label: str, x_label: str, width: int) -> str:
+        """Render both axis labels on one compact centered line."""
+        colors = self.options.get_colors()
+        right_arrow = "\u2192" if self.options.use_unicode else "->"
+        up_arrow = "\u2191" if self.options.use_unicode else "^"
+        text = f"{up_arrow} {y_label} / {x_label} {right_arrow}"
+        text = text[:width] if len(text) > width else text
+        return colors.colorize(text.center(width), fg_color="#666666")
+
     def _render_legend(self, items: Sequence[tuple[str, str]], colors: TerminalColors) -> list[str]:
         """Render a compact horizontal legend with colored markers.
 

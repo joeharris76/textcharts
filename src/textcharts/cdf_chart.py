@@ -62,6 +62,8 @@ class ASCIICDFChart(ASCIIChartBase):
         self,
         data: Sequence[CDFSeriesData],
         title: str | None = None,
+        x_label: str = "Value",
+        y_label: str = "Cumulative Share",
         height: int = PLOT_HEIGHT,
         options: ASCIIChartOptions | None = None,
         metadata: dict | None = None,
@@ -69,6 +71,8 @@ class ASCIICDFChart(ASCIIChartBase):
         super().__init__(options, metadata=metadata)
         self.data = list(data)
         self.title = title or "Cumulative Distribution of Query Latency"
+        self.x_label = x_label
+        self.y_label = y_label
         self.height = max(5, height)
         self._x_capped = False
 
@@ -194,6 +198,8 @@ class ASCIICDFChart(ASCIIChartBase):
             x_label_parts[0] = x_label_parts[0][: start + 1] + label + x_label_parts[0][start + 1 + len(label) :]
 
         lines.append(f"{x_label_line}{x_label_parts[0].rstrip()}")
+        lines.append("")
+        lines.append(self._render_compact_axis_labels(self.y_label, self.x_label, width))
 
         # Legend
         legend_parts: list[str] = []
@@ -213,6 +219,8 @@ class ASCIICDFChart(ASCIIChartBase):
 def from_query_results(
     platform_queries: Sequence[tuple[str, Sequence[float]]],
     title: str | None = None,
+    x_label: str = "Execution Time (ms)",
+    y_label: str = "Cumulative Share",
     options: ASCIIChartOptions | None = None,
 ) -> ASCIICDFChart:
     """Create ASCIICDFChart from raw query timing data.
@@ -226,4 +234,4 @@ def from_query_results(
         Configured ASCIICDFChart instance.
     """
     data = [CDFSeriesData(name=name, values=list(values)) for name, values in platform_queries]
-    return ASCIICDFChart(data=data, title=title, options=options)
+    return ASCIICDFChart(data=data, title=title, x_label=x_label, y_label=y_label, options=options)

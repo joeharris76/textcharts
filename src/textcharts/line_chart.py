@@ -283,8 +283,7 @@ class ASCIILineChart(ASCIIChartBase):
 
         # Axis labels
         lines.append("")
-        lines.append(self._render_axis_label(self.y_label, width, axis="y"))
-        lines.append(self._render_axis_label(self.x_label, width, axis="x"))
+        lines.append(self._render_compact_axis_labels(self.y_label, self.x_label, width))
 
         # Legend
         if len(series_map) > 1 or self.options.show_legend:

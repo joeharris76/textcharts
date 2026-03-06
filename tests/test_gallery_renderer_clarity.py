@@ -5,12 +5,14 @@ import pytest
 import textcharts.base as base
 from textcharts import (
     ASCIIBarChart,
+    ASCIICDFChart,
     ASCIIChartOptions,
     ASCIIHeatmap,
     ASCIILineChart,
     ASCIIScatterPlot,
     ASCIISparklineTable,
     BarData,
+    CDFSeriesData,
     LinePoint,
     ScatterPoint,
     SparklineColumn,
@@ -44,7 +46,7 @@ def test_heatmap_uses_configured_x_axis_label():
     assert "Platform →" not in result
 
 
-def test_line_chart_renders_both_axis_labels():
+def test_line_chart_compacts_axis_labels_onto_one_line():
     chart = ASCIILineChart(
         points=[LinePoint(series="Organic", x=1, y=320.0), LinePoint(series="Organic", x=2, y=355.0)],
         x_label="Week",
@@ -54,8 +56,9 @@ def test_line_chart_renders_both_axis_labels():
 
     result = chart.render()
 
-    assert "↑ Signups" in result
-    assert "Week →" in result
+    assert "↑ Signups / Week →" in result
+    assert result.count("↑ Signups") == 1
+    assert result.count("Week →") == 1
 
 
 def test_scatter_plot_compacts_axis_labels_onto_one_line():
@@ -71,6 +74,41 @@ def test_scatter_plot_compacts_axis_labels_onto_one_line():
     assert "↑ Performance / Cost (USD) →" in result
     assert result.count("↑ Performance") == 1
     assert result.count("Cost (USD) →") == 1
+
+
+def test_cdf_chart_compacts_axis_labels_onto_one_line():
+    chart = ASCIICDFChart(
+        data=[
+            CDFSeriesData(name="Weekday", values=[2, 3, 4, 5]),
+            CDFSeriesData(name="Weekend", values=[3, 5, 7, 9]),
+        ],
+        x_label="Wait Time (min)",
+        y_label="Cumulative Share",
+        options=ASCIIChartOptions(width=96, use_color=False),
+    )
+
+    result = chart.render()
+
+    assert "↑ Cumulative Share / Wait Time (min) →" in result
+
+
+def test_scatter_plot_uses_distinct_markers_for_points():
+    chart = ASCIIScatterPlot(
+        points=[
+            ScatterPoint(name="Launch", x=8.0, y=410.0),
+            ScatterPoint(name="Retargeting", x=5.5, y=280.0),
+            ScatterPoint(name="Newsletter", x=2.0, y=220.0),
+        ],
+        x_label="Cost (USD)",
+        y_label="Conversions",
+        options=ASCIIChartOptions(width=96, use_color=False),
+    )
+
+    result = chart.render()
+
+    assert "* Launch" in result
+    assert "+ Retargeting" in result
+    assert "o Newsletter" in result
 
 
 def test_bar_chart_renders_legend_for_multi_bar_output():
