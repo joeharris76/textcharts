@@ -7,6 +7,7 @@ import html
 import os
 import subprocess
 import tempfile
+import time
 from pathlib import Path
 
 from ansi2html import Ansi2HTMLConverter
@@ -158,7 +159,7 @@ def _caps(color_mode: ColorMode, *, unicode_support: bool, interactive: bool) ->
 def _options(mode: str) -> ASCIIChartOptions:
     if mode in {"color", "greyscale"}:
         opts = ASCIIChartOptions(width=96, use_color=True, use_unicode=True)
-        opts._capabilities = _caps(ColorMode.EXTENDED, unicode_support=True, interactive=True)
+        opts._capabilities = _caps(ColorMode.TRUECOLOR, unicode_support=True, interactive=True)
         return opts
     if mode == "monochrome":
         opts = ASCIIChartOptions(width=96, use_color=False, use_unicode=False)
@@ -170,7 +171,7 @@ def _options(mode: str) -> ASCIIChartOptions:
 def _render_chart(chart, mode: str) -> str:
     """Force deterministic terminal capabilities for screenshot generation."""
     chart._capabilities = _caps(
-        ColorMode.EXTENDED if mode in {"color", "greyscale"} else ColorMode.NONE,
+        ColorMode.TRUECOLOR if mode in {"color", "greyscale"} else ColorMode.NONE,
         unicode_support=(mode in {"color", "greyscale"}),
         interactive=(mode in {"color", "greyscale"}),
     )
@@ -214,6 +215,7 @@ def _heatmap(mode: str) -> str:
         col_labels=["Math", "Science", "History"],
         title="Classroom Scores",
         value_label="points",
+        x_label="Subjects",
         options=_options(mode),
     )
     return _render_chart(chart, mode)
@@ -238,7 +240,13 @@ def _line_chart(mode: str) -> str:
         LinePoint(series="Referral", x=2, y=205.0, label="Week 2"),
         LinePoint(series="Referral", x=3, y=260.0, label="Week 3"),
     ]
-    chart = ASCIILineChart(points=points, title="Weekly Signups", options=_options(mode))
+    chart = ASCIILineChart(
+        points=points,
+        title="Weekly Signups",
+        x_label="Week",
+        y_label="Signups",
+        options=_options(mode),
+    )
     return _render_chart(chart, mode)
 
 
@@ -249,7 +257,13 @@ def _scatter_plot(mode: str) -> str:
         ScatterPoint(name="Video Ads", x=11.0, y=470.0),
         ScatterPoint(name="Newsletter", x=2.0, y=220.0),
     ]
-    chart = ASCIIScatterPlot(points=points, title="Ad Spend vs Conversions", options=_options(mode))
+    chart = ASCIIScatterPlot(
+        points=points,
+        title="Ad Spend vs Conversions",
+        x_label="Cost (USD)",
+        y_label="Conversions",
+        options=_options(mode),
+    )
     return _render_chart(chart, mode)
 
 
@@ -440,21 +454,25 @@ def _save_png(html_content: str, out_path: Path, text: str, *, width: int = 1100
         handle.write(html_content)
         tmp_html = handle.name
     try:
-        subprocess.run(
-            [
-                chrome,
-                "--headless=new",
-                "--disable-gpu",
-                "--no-sandbox",
-                "--hide-scrollbars",
-                f"--window-size={width},{height}",
-                "--screenshot=" + str(out_path),
-                "file://" + tmp_html,
-            ],
-            check=True,
-            capture_output=True,
-            env={**os.environ, "TERM": "xterm-256color", "FORCE_COLOR": "1"},
-        )
+        command = [
+            chrome,
+            "--headless=new",
+            "--disable-gpu",
+            "--no-sandbox",
+            "--hide-scrollbars",
+            f"--window-size={width},{height}",
+            "--screenshot=" + str(out_path),
+            "file://" + tmp_html,
+        ]
+        env = {**os.environ, "TERM": "xterm-256color", "FORCE_COLOR": "1"}
+        for attempt in range(3):
+            try:
+                subprocess.run(command, check=True, capture_output=True, env=env)
+                break
+            except subprocess.CalledProcessError:
+                if attempt == 2:
+                    raise
+                time.sleep(0.5)
     finally:
         Path(tmp_html).unlink(missing_ok=True)
 

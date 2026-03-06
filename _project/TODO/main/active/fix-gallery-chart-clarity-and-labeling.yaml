@@ -77,7 +77,7 @@ work:
   - id: w5
     summary: "Regenerate gallery screenshots and verify the reviewed charts now communicate clearly in all three modes"
     needs: [w2, w3, w4]
-    status: pending
+    status: done
     notes: |
       Regenerate the assets, visually inspect the six reviewed chart types,
       and confirm the gallery still includes color, greyscale, and monochrome
@@ -94,7 +94,7 @@ metadata:
     - "usability"
   estimated_effort: "Medium"
   created_date: "2026-03-06"
-  last_updated: "2026-03-06T12:58:00"
+  last_updated: "2026-03-06T13:10:00"
 
 impact:
   business_value: |
