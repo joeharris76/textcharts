@@ -18,15 +18,15 @@ Render a basic bar chart
    from textcharts import BarChart, BarData
 
    data = [
-       BarData(label="DuckDB", value=1.0, is_best=True),
-       BarData(label="SQLite", value=1.8),
-       BarData(label="Postgres", value=2.4, is_worst=True),
+       BarData(label="Fiction", value=18.4, is_best=True),
+       BarData(label="Children", value=14.2),
+       BarData(label="Comics", value=9.8, is_worst=True),
    ]
 
    chart = BarChart(
        data=data,
-       title="Median query latency",
-       metric_label="seconds",
+       title="April Bookstore Revenue",
+       metric_label="k USD",
    )
 
    print(chart.render())
@@ -54,8 +54,8 @@ All chart types accept :class:`textcharts.ChartOptions`.
    )
 
    chart = BarChart(
-       data=[BarData(label="Python", value=89.5)],
-       title="Compatibility mode",
+       data=[BarData(label="Saturday Tickets", value=412)],
+       title="Festival Check-ins",
        options=options,
    )
 

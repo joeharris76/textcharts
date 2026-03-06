@@ -81,7 +81,7 @@ work:
   - id: w4
     summary: "Rewrite the tutorial, README, and chart-selection guide to reflect multiple domains instead of a single benchmark narrative"
     needs: [w1]
-    status: pending
+    status: done
     notes: |
       The first-contact examples should stop centering on query latency and
       platform comparisons. Ensure the Quick Start and tutorial use broad,
@@ -92,7 +92,7 @@ work:
   - id: w5
     summary: "Document which chart types and factory helpers are performance-oriented or BenchBox-compatibility surfaces"
     needs: [w1]
-    status: pending
+    status: done
     notes: |
       Explicitly classify:
       - NormalizedSpeedup as performance-specific
@@ -123,7 +123,7 @@ metadata:
     - "positioning"
   estimated_effort: "Medium"
   created_date: "2026-03-06"
-  last_updated: "2026-03-06T11:15:00"
+  last_updated: "2026-03-06T11:55:00"
 impact:
   business_value: |
     Makes the library marketable as a standalone public package instead of an

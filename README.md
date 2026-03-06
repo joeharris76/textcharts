@@ -17,22 +17,22 @@ pip install textcharts
 from textcharts import BarChart, BarData, ChartOptions
 
 data = [
-    BarData(label="Python", value=89.5, is_best=True),
-    BarData(label="Rust", value=95.2),
-    BarData(label="Go", value=78.0),
-    BarData(label="Java", value=72.3, is_worst=True),
+    BarData(label="Fiction", value=18.4, is_best=True),
+    BarData(label="Children", value=14.2),
+    BarData(label="Comics", value=9.8),
+    BarData(label="Stationery", value=6.1, is_worst=True),
 ]
-chart = BarChart(data=data, title="Language Benchmark", metric_label="score")
+chart = BarChart(data=data, title="April Bookstore Revenue", metric_label="k USD")
 print(chart.render())
 ```
 
 ```
-Language Benchmark (score)
+April Bookstore Revenue (k USD)
 ────────────────────────────────────────────────────────────────────────────────
-Rust   ████████████████████████████████████████████████████████████████████ 95.2
-Python ██████████████████████████████████████████████████████████████████   89.5
-Go     █████████████████████████████████████████████████████████             78
-Java   ▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓             72.3
+Fiction   ████████████████████████████████████████████████████████████████ 18.4
+Children  ██████████████████████████████████████████████████               14.2
+Comics    ██████████████████████████████                                    9.8
+Stationery ▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓                                               6.1
 ```
 
 ## Chart Types
@@ -67,6 +67,8 @@ Compatibility API:
 - Domain-specific factory helpers such as `from_query_latency_data` and
   `from_phase_data` remain available, but new code should prefer constructing
   the chart classes directly from their data models
+- `NormalizedSpeedup` is intentionally performance-oriented; most other chart
+  types are documented with broader cross-domain examples
 
 ## Configuration
 
