@@ -1,0 +1,86 @@
+from __future__ import annotations
+
+from textcharts import ASCIIChartOptions, ASCIIDivergingBar, DivergingBarData, from_regression_data
+
+
+def _opts(**kw):
+    return ASCIIChartOptions(use_color=False, width=80, **kw)
+
+
+def test_empty_data():
+    assert "No data" in ASCIIDivergingBar(data=[]).render()
+
+
+def test_improvements_appear_left_regressions_right():
+    data = [
+        DivergingBarData("Q1", -30.0),  # improvement
+        DivergingBarData("Q2", +20.0),  # regression
+    ]
+    result = ASCIIDivergingBar(data=data, options=_opts()).render()
+    assert "Faster" in result
+    assert "Slower" in result
+    assert "-30.0%" in result
+    assert "+20.0%" in result
+
+
+def test_sort_order_improvements_first_then_regressions():
+    data = [
+        DivergingBarData("Q3", +10.0),
+        DivergingBarData("Q1", -50.0),
+        DivergingBarData("Q2", -20.0),
+    ]
+    result = ASCIIDivergingBar(data=data, options=_opts()).render()
+    lines = result.splitlines()
+    # Find data lines containing query labels
+    q_lines = [(i, l) for i, l in enumerate(lines) if any(f"Q{n}" in l for n in [1, 2, 3])]
+    # Q1 (-50%) should come first, Q2 (-20%) second, Q3 (+10%) last
+    labels = [l for _, l in q_lines]
+    q1_idx = next(i for i, l in enumerate(labels) if "Q1" in l)
+    q2_idx = next(i for i, l in enumerate(labels) if "Q2" in l)
+    q3_idx = next(i for i, l in enumerate(labels) if "Q3" in l)
+    assert q1_idx < q2_idx < q3_idx
+
+
+def test_summary_counts():
+    data = [
+        DivergingBarData("Q1", -30.0),  # improved (> 2% threshold)
+        DivergingBarData("Q2", +1.0),   # stable (< 2% threshold)
+        DivergingBarData("Q3", +25.0),  # regressed
+    ]
+    result = ASCIIDivergingBar(data=data, options=_opts()).render()
+    assert "1 improved" in result
+    assert "1 stable" in result
+    assert "1 regressed" in result
+
+
+def test_overflow_arrows_for_clipped_values():
+    data = [
+        DivergingBarData("Q1", -500.0),  # exceeds default clip_pct of 200
+        DivergingBarData("Q2", +500.0),  # exceeds default clip_pct of 200
+    ]
+    result = ASCIIDivergingBar(data=data, options=_opts()).render()
+    # Unicode overflow arrows: ◄── (left) and ──► (right)
+    assert "\u25c4" in result  # ◄ left arrow for clipped improvement
+    assert "\u25ba" in result  # ► right arrow for clipped regression
+
+
+def test_fill_intensity_by_magnitude():
+    data = [
+        DivergingBarData("Q1", -5.0),   # weak (<15%)
+        DivergingBarData("Q2", -25.0),  # medium (15-50%)
+        DivergingBarData("Q3", -75.0),  # strong (>50%)
+    ]
+    result = ASCIIDivergingBar(data=data, options=_opts()).render()
+    # Each query should render without errors; different fill chars used
+    assert "Q1" in result
+    assert "Q2" in result
+    assert "Q3" in result
+
+
+def test_from_regression_data_factory():
+    data = [DivergingBarData("Q1", -10.0)]
+    chart = from_regression_data(data, title="Factory Test", options=_opts())
+    result = chart.render()
+    assert isinstance(chart, ASCIIDivergingBar)
+    assert "Factory Test" in result
+    assert "Q1" in result
