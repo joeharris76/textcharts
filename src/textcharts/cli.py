@@ -58,7 +58,7 @@ def _build_parser() -> argparse.ArgumentParser:
 
 
 def _format_description(desc: dict[str, Any]) -> str:
-    """Format a rich description for --help including data format and fields."""
+    """Format a rich description for --help including data format, fields, and example."""
     lines = [desc["description"], ""]
     lines.append(f"Input format: {desc['data_format']}")
     lines.append("")
@@ -67,7 +67,30 @@ def _format_description(desc: dict[str, Any]) -> str:
         req = "(required)" if field["required"] else "(optional)"
         default = f" [default: {field['default']}]" if "default" in field else ""
         lines.append(f"  {field['name']:20s} {field['type']:8s} {req} {field['description']}{default}")
+
+    # Generate minimal JSON example from required fields
+    example = _generate_example(desc)
+    if example:
+        lines.append("")
+        lines.append("Example:")
+        lines.append(f"  echo '{example}' | textcharts {desc['name']}")
     return "\n".join(lines)
+
+
+def _generate_example(desc: dict[str, Any]) -> str | None:
+    """Generate a minimal JSON example from required data fields."""
+    required_fields = [f for f in desc["data_fields"] if f["required"]]
+    if not required_fields:
+        return None
+
+    sample_values = {"string": '"example"', "number": "42", "integer": "10", "boolean": "true", "array": "[1, 2, 3]"}
+
+    if desc["data_format"] == "list of objects":
+        item = ", ".join(f'"{f["name"]}": {sample_values.get(f["type"], "null")}' for f in required_fields)
+        return f'[{{{item}}}]'
+    else:
+        pairs = ", ".join(f'"{f["name"]}": {sample_values.get(f["type"], "null")}' for f in required_fields)
+        return f'{{{pairs}}}'
 
 
 def _add_param_argument(parser: argparse.ArgumentParser, param: dict[str, Any]) -> None:
