@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 from unittest.mock import patch
+
 import pytest
 
 from textcharts.bar_chart import ASCIIBarChart, BarData, from_bar_data
@@ -12,7 +13,6 @@ from textcharts.base import (
     ColorMode,
     TerminalCapabilities,
     TerminalColors,
-    detect_terminal_capabilities,
 )
 from textcharts.box_plot import ASCIIBoxPlot, BoxPlotSeries, compute_quartiles
 from textcharts.comparison_bar import ASCIIComparisonBar, ComparisonBarData
@@ -345,7 +345,6 @@ class TestNewChartEdgeCases:
 
     def test_comparison_bar_nan_values(self):
         """ComparisonBar handles NaN values."""
-        from textcharts.comparison_bar import ASCIIComparisonBar, ComparisonBarData
 
         data = [ComparisonBarData(label="Q1", baseline_value=float("nan"), comparison_value=50)]
         opts = ASCIIChartOptions(use_color=False)
@@ -355,7 +354,6 @@ class TestNewChartEdgeCases:
 
     def test_comparison_bar_identical_values(self):
         """ComparisonBar handles identical baseline and comparison values."""
-        from textcharts.comparison_bar import ASCIIComparisonBar, ComparisonBarData
 
         data = [ComparisonBarData(label="Q1", baseline_value=100, comparison_value=100)]
         opts = ASCIIChartOptions(use_color=False)
@@ -365,7 +363,6 @@ class TestNewChartEdgeCases:
 
     def test_diverging_bar_zero_pct_change(self):
         """DivergingBar handles zero percentage change."""
-        from textcharts.diverging_bar import ASCIIDivergingBar, DivergingBarData
 
         data = [DivergingBarData(label="Q1", pct_change=0.0)]
         opts = ASCIIChartOptions(use_color=False)
@@ -376,7 +373,6 @@ class TestNewChartEdgeCases:
 
     def test_diverging_bar_extreme_values(self):
         """DivergingBar handles very large percentage changes."""
-        from textcharts.diverging_bar import ASCIIDivergingBar, DivergingBarData
 
         data = [
             DivergingBarData(label="Q1", pct_change=-95.0),
@@ -390,7 +386,6 @@ class TestNewChartEdgeCases:
 
     def test_summary_box_comparison_flag(self):
         """SummaryStats.is_comparison correctly detects comparison mode."""
-        from textcharts.summary_box import SummaryStats
 
         single = SummaryStats(geo_mean_ms=100)
         assert not single.is_comparison
@@ -400,7 +395,6 @@ class TestNewChartEdgeCases:
 
     def test_comparison_bar_narrow_width(self):
         """ComparisonBar renders at minimum width."""
-        from textcharts.comparison_bar import ASCIIComparisonBar, ComparisonBarData
 
         data = [ComparisonBarData(label="Q1", baseline_value=100, comparison_value=75)]
         opts = ASCIIChartOptions(width=40, use_color=False)
@@ -535,7 +529,7 @@ class TestHistogramWidthAware:
         hist._outlier_bar_keys = set()
         platform_colors = dict.fromkeys(platforms, "#ffffff")
         platform_fills = dict.fromkeys(platforms, "█")
-        from textcharts.base import ColorMode, TerminalColors
+        from textcharts.base import ColorMode
 
         colors = TerminalColors(color_mode=ColorMode.NONE)
         footer = hist._build_grouped_footer(
@@ -562,7 +556,7 @@ class TestHistogramWidthAware:
         hist._outlier_bar_keys = set()
         platform_colors = dict.fromkeys(platforms, "#ffffff")
         platform_fills = dict.fromkeys(platforms, "█")
-        from textcharts.base import ColorMode, TerminalColors
+        from textcharts.base import ColorMode
 
         colors = TerminalColors(color_mode=ColorMode.NONE)
         footer = hist._build_grouped_footer(
@@ -593,7 +587,7 @@ class TestHistogramWidthAware:
         hist._outlier_bar_keys = set()
         platform_colors = dict.fromkeys(platforms, "#ffffff")
         platform_fills = dict.fromkeys(platforms, "█")
-        from textcharts.base import ColorMode, TerminalColors
+        from textcharts.base import ColorMode
 
         colors = TerminalColors(color_mode=ColorMode.NONE)
         footer = hist._build_grouped_footer(
@@ -636,7 +630,6 @@ class TestLabelTruncation:
 
     def test_comparison_bar_shows_full_run_names(self):
         """ComparisonBar shows full run names up to 25 chars."""
-        from textcharts.comparison_bar import ASCIIComparisonBar, ComparisonBarData
 
         name = "DataFusion (sql)"  # 16 chars
         data = [ComparisonBarData(label="Q1", baseline_value=100, comparison_value=80, baseline_name=name)]
@@ -735,7 +728,6 @@ class TestColoredLabels:
 
     def test_comparison_bar_names_have_ansi(self):
         """ComparisonBar run names include ANSI color codes."""
-        from textcharts.comparison_bar import ASCIIComparisonBar, ComparisonBarData
 
         data = [ComparisonBarData(label="Q1", baseline_value=100, comparison_value=80)]
         opts = ASCIIChartOptions(use_color=True)
@@ -928,7 +920,6 @@ class TestSummaryBoxDotLeader:
 
     def test_dot_leader_present_in_comparison(self):
         """Comparison summary box uses dot-leader between values and percentage."""
-        from textcharts.summary_box import ASCIISummaryBox, SummaryStats
 
         stats = SummaryStats(
             geo_mean_baseline_ms=100.0,
@@ -945,7 +936,6 @@ class TestSummaryBoxDotLeader:
 
     def test_dot_leader_ascii_fallback(self):
         """Dot-leader uses period in ASCII mode."""
-        from textcharts.summary_box import ASCIISummaryBox, SummaryStats
 
         stats = SummaryStats(
             geo_mean_baseline_ms=100.0,
@@ -959,7 +949,6 @@ class TestSummaryBoxDotLeader:
 
     def test_no_wide_blank_gap(self):
         """No wide blank gap (>10 consecutive spaces) between value and percentage."""
-        from textcharts.summary_box import ASCIISummaryBox, SummaryStats
 
         stats = SummaryStats(
             geo_mean_baseline_ms=18.2,
@@ -977,7 +966,6 @@ class TestSummaryBoxDotLeader:
 
     def test_single_run_no_dot_leader(self):
         """Single-run summary box has no dot-leader (no percentage to trace to)."""
-        from textcharts.summary_box import ASCIISummaryBox, SummaryStats
 
         stats = SummaryStats(geo_mean_ms=100.0, total_time_ms=500.0, num_queries=5)
         opts = ASCIIChartOptions(use_color=False)
@@ -988,7 +976,6 @@ class TestSummaryBoxDotLeader:
 
     def test_no_color_percentage_arrows_do_not_overflow_box_width(self):
         """No-color percentage arrows are included in width calculations."""
-        from textcharts.summary_box import ASCIISummaryBox, SummaryStats
 
         width = 120
         stats = SummaryStats(

@@ -686,7 +686,6 @@ class TestASCIIComparisonBar:
 
     def test_empty_data(self):
         """Empty data returns message."""
-        from textcharts.comparison_bar import ASCIIComparisonBar
 
         chart = ASCIIComparisonBar(data=[])
         result = chart.render()
@@ -694,7 +693,6 @@ class TestASCIIComparisonBar:
 
     def test_single_query_comparison(self):
         """Single query renders both bars with percentage annotation."""
-        from textcharts.comparison_bar import ASCIIComparisonBar, ComparisonBarData
 
         data = [
             ComparisonBarData(
@@ -716,7 +714,6 @@ class TestASCIIComparisonBar:
 
     def test_percentage_change_annotation(self):
         """Percentage change is shown for non-trivial differences."""
-        from textcharts.comparison_bar import ASCIIComparisonBar, ComparisonBarData
 
         data = [
             ComparisonBarData(
@@ -734,7 +731,6 @@ class TestASCIIComparisonBar:
 
     def test_regression_annotation(self):
         """Positive percentage (regression) is annotated."""
-        from textcharts.comparison_bar import ASCIIComparisonBar, ComparisonBarData
 
         data = [
             ComparisonBarData(
@@ -752,7 +748,6 @@ class TestASCIIComparisonBar:
 
     def test_stable_no_annotation(self):
         """Near-zero percentage change shows no annotation."""
-        from textcharts.comparison_bar import ASCIIComparisonBar, ComparisonBarData
 
         data = [
             ComparisonBarData(
@@ -771,7 +766,6 @@ class TestASCIIComparisonBar:
 
     def test_multiple_queries(self):
         """Multiple queries render as separate pairs."""
-        from textcharts.comparison_bar import ASCIIComparisonBar, ComparisonBarData
 
         data = [
             ComparisonBarData(label="Q1", baseline_value=100, comparison_value=80),
@@ -786,7 +780,6 @@ class TestASCIIComparisonBar:
 
     def test_no_color_output(self):
         """Comparison bar renders without ANSI codes when color disabled."""
-        from textcharts.comparison_bar import ASCIIComparisonBar, ComparisonBarData
 
         data = [ComparisonBarData(label="Q1", baseline_value=100, comparison_value=50)]
         opts = ASCIIChartOptions(use_color=False)
@@ -796,7 +789,6 @@ class TestASCIIComparisonBar:
 
     def test_ascii_only_output(self):
         """Comparison bar renders with ASCII fallback characters."""
-        from textcharts.comparison_bar import ASCIIComparisonBar, ComparisonBarData
 
         data = [ComparisonBarData(label="Q1", baseline_value=100, comparison_value=50)]
         opts = ASCIIChartOptions(use_unicode=False, use_color=False)
@@ -807,7 +799,6 @@ class TestASCIIComparisonBar:
 
     def test_zero_baseline_no_crash(self):
         """Zero baseline value does not cause division by zero."""
-        from textcharts.comparison_bar import ASCIIComparisonBar, ComparisonBarData
 
         data = [ComparisonBarData(label="Q1", baseline_value=0, comparison_value=50)]
         opts = ASCIIChartOptions(use_color=False)
@@ -817,7 +808,6 @@ class TestASCIIComparisonBar:
 
     def test_scale_note_shown(self):
         """Scale note appears at bottom of chart."""
-        from textcharts.comparison_bar import ASCIIComparisonBar, ComparisonBarData
 
         data = [ComparisonBarData(label="Q1", baseline_value=100, comparison_value=50)]
         opts = ASCIIChartOptions(use_color=False)
@@ -827,7 +817,6 @@ class TestASCIIComparisonBar:
 
     def test_from_comparison_data_factory(self):
         """Factory function creates chart from ComparisonBarData."""
-        from textcharts.comparison_bar import ComparisonBarData, from_comparison_data
 
         data = [ComparisonBarData(label="Q1", baseline_value=100, comparison_value=75)]
         chart = from_comparison_data(data, title="Factory Test")
@@ -839,9 +828,8 @@ class TestASCIIComparisonBar:
         """Factory warns on unknown types."""
         import logging
 
-        from textcharts.comparison_bar import from_comparison_data
 
-        with caplog.at_level(logging.WARNING, logger="benchbox.core.visualization.ascii.comparison_bar"):
+        with caplog.at_level(logging.WARNING, logger="textcharts.comparison_bar"):
             from_comparison_data([{"label": "Q1", "baseline_value": 100, "comparison_value": 50}])
         assert "unexpected type" in caplog.text
 
@@ -854,7 +842,6 @@ class TestASCIIDivergingBar:
 
     def test_empty_data(self):
         """Empty data returns message."""
-        from textcharts.diverging_bar import ASCIIDivergingBar
 
         chart = ASCIIDivergingBar(data=[])
         result = chart.render()
@@ -862,7 +849,6 @@ class TestASCIIDivergingBar:
 
     def test_improvements_and_regressions(self):
         """Chart shows both improvements and regressions."""
-        from textcharts.diverging_bar import ASCIIDivergingBar, DivergingBarData
 
         data = [
             DivergingBarData(label="Q1", pct_change=-30.0),
@@ -882,7 +868,6 @@ class TestASCIIDivergingBar:
 
     def test_sorted_by_magnitude(self):
         """Items are sorted: improvements first (most negative), then regressions."""
-        from textcharts.diverging_bar import ASCIIDivergingBar, DivergingBarData
 
         data = [
             DivergingBarData(label="Q1", pct_change=-10.0),
@@ -900,7 +885,6 @@ class TestASCIIDivergingBar:
 
     def test_overflow_arrows_for_extreme_outliers(self):
         """Extreme outliers show overflow arrows."""
-        from textcharts.diverging_bar import ASCIIDivergingBar, DivergingBarData
 
         data = [
             DivergingBarData(label="Q1", pct_change=-10.0),
@@ -915,7 +899,6 @@ class TestASCIIDivergingBar:
 
     def test_all_improvements(self):
         """Chart handles all-improvement data."""
-        from textcharts.diverging_bar import ASCIIDivergingBar, DivergingBarData
 
         data = [
             DivergingBarData(label="Q1", pct_change=-20.0),
@@ -929,7 +912,6 @@ class TestASCIIDivergingBar:
 
     def test_all_regressions(self):
         """Chart handles all-regression data."""
-        from textcharts.diverging_bar import ASCIIDivergingBar, DivergingBarData
 
         data = [
             DivergingBarData(label="Q1", pct_change=+20.0),
@@ -943,7 +925,6 @@ class TestASCIIDivergingBar:
 
     def test_no_color_output(self):
         """Diverging bar renders without ANSI codes when color disabled."""
-        from textcharts.diverging_bar import ASCIIDivergingBar, DivergingBarData
 
         data = [DivergingBarData(label="Q1", pct_change=-25.0)]
         opts = ASCIIChartOptions(use_color=False)
@@ -953,7 +934,6 @@ class TestASCIIDivergingBar:
 
     def test_ascii_only_output(self):
         """Diverging bar renders with ASCII fallback characters."""
-        from textcharts.diverging_bar import ASCIIDivergingBar, DivergingBarData
 
         data = [
             DivergingBarData(label="Q1", pct_change=-30.0),
@@ -969,7 +949,6 @@ class TestASCIIDivergingBar:
 
     def test_summary_counts(self):
         """Summary line shows correct counts."""
-        from textcharts.diverging_bar import ASCIIDivergingBar, DivergingBarData
 
         data = [
             DivergingBarData(label="Q1", pct_change=-30.0),
@@ -985,7 +964,6 @@ class TestASCIIDivergingBar:
 
     def test_single_item(self):
         """Single item renders without crash."""
-        from textcharts.diverging_bar import ASCIIDivergingBar, DivergingBarData
 
         data = [DivergingBarData(label="Q1", pct_change=-15.0)]
         opts = ASCIIChartOptions(use_color=False)
@@ -996,7 +974,6 @@ class TestASCIIDivergingBar:
 
     def test_from_regression_data_factory(self):
         """Factory function creates chart from DivergingBarData."""
-        from textcharts.diverging_bar import DivergingBarData, from_regression_data
 
         data = [DivergingBarData(label="Q1", pct_change=-25.0)]
         chart = from_regression_data(data, title="Factory Test")
@@ -1008,7 +985,6 @@ class TestASCIIDivergingBar:
         """Factory warns on unknown types."""
         import logging
 
-        from textcharts.diverging_bar import from_regression_data
 
         with caplog.at_level(logging.WARNING, logger="benchbox.core.visualization.ascii.diverging_bar"):
             from_regression_data([{"label": "Q1", "pct_change": -10}])
@@ -1023,7 +999,6 @@ class TestASCIISummaryBox:
 
     def test_single_run_summary(self):
         """Single-run summary shows basic metrics."""
-        from textcharts.summary_box import ASCIISummaryBox, SummaryStats
 
         stats = SummaryStats(
             title="DuckDB Summary",
@@ -1043,7 +1018,6 @@ class TestASCIISummaryBox:
 
     def test_single_run_best_worst_shows_time_units(self):
         """Single-run best/worst values should include ms/s units."""
-        from textcharts.summary_box import ASCIISummaryBox, SummaryStats
 
         stats = SummaryStats(
             title="Unit Test",
@@ -1065,7 +1039,6 @@ class TestASCIISummaryBox:
 
     def test_comparison_summary(self):
         """Comparison summary shows both runs and percentage change."""
-        from textcharts.summary_box import ASCIISummaryBox, SummaryStats
 
         stats = SummaryStats(
             title="SQL vs DF Summary",
@@ -1097,7 +1070,6 @@ class TestASCIISummaryBox:
 
     def test_box_borders(self):
         """Summary box has proper Unicode borders."""
-        from textcharts.summary_box import ASCIISummaryBox, SummaryStats
 
         stats = SummaryStats(title="Test", geo_mean_ms=100)
         opts = ASCIIChartOptions(use_color=False)
@@ -1112,7 +1084,6 @@ class TestASCIISummaryBox:
 
     def test_ascii_only_borders(self):
         """Summary box uses ASCII borders when Unicode disabled."""
-        from textcharts.summary_box import ASCIISummaryBox, SummaryStats
 
         stats = SummaryStats(title="Test", geo_mean_ms=100)
         opts = ASCIIChartOptions(use_unicode=False, use_color=False)
@@ -1124,7 +1095,6 @@ class TestASCIISummaryBox:
 
     def test_no_color_output(self):
         """Summary box renders without ANSI codes when color disabled."""
-        from textcharts.summary_box import ASCIISummaryBox, SummaryStats
 
         stats = SummaryStats(
             title="Test",
@@ -1141,7 +1111,6 @@ class TestASCIISummaryBox:
 
     def test_time_formatting_minutes(self):
         """Large times are formatted as minutes."""
-        from textcharts.summary_box import ASCIISummaryBox, SummaryStats
 
         stats = SummaryStats(title="Test", total_time_ms=120_000)
         opts = ASCIIChartOptions(use_color=False)
@@ -1151,7 +1120,6 @@ class TestASCIISummaryBox:
 
     def test_time_formatting_seconds(self):
         """Medium times are formatted as seconds."""
-        from textcharts.summary_box import ASCIISummaryBox, SummaryStats
 
         stats = SummaryStats(title="Test", total_time_ms=5500)
         opts = ASCIIChartOptions(use_color=False)
@@ -1161,7 +1129,6 @@ class TestASCIISummaryBox:
 
     def test_time_formatting_milliseconds(self):
         """Small times stay as milliseconds."""
-        from textcharts.summary_box import ASCIISummaryBox, SummaryStats
 
         stats = SummaryStats(title="Test", total_time_ms=42.5)
         opts = ASCIIChartOptions(use_color=False)
@@ -1171,7 +1138,6 @@ class TestASCIISummaryBox:
 
     def test_empty_best_worst(self):
         """Summary box renders fine without best/worst queries."""
-        from textcharts.summary_box import ASCIISummaryBox, SummaryStats
 
         stats = SummaryStats(title="Test", geo_mean_ms=100, num_queries=5)
         opts = ASCIIChartOptions(use_color=False)
@@ -1182,7 +1148,6 @@ class TestASCIISummaryBox:
 
     def test_long_title_does_not_overflow_box_width(self):
         """Very long titles are truncated to fit the configured width."""
-        from textcharts.summary_box import ASCIISummaryBox, SummaryStats
 
         width = 80
         stats = SummaryStats(title="X" * 200, geo_mean_ms=100)
@@ -1194,7 +1159,6 @@ class TestASCIISummaryBox:
 
     def test_long_best_worst_text_does_not_overflow_box_width(self):
         """Best/worst rows are truncated to preserve box borders."""
-        from textcharts.summary_box import ASCIISummaryBox, SummaryStats
 
         width = 80
         stats = SummaryStats(
@@ -1222,7 +1186,6 @@ class TestASCIISummaryBox:
 
     def test_two_column_mode_includes_percentage_deltas(self):
         """Two-column summary mode keeps percentage deltas visible."""
-        from textcharts.summary_box import ASCIISummaryBox, SummaryStats
 
         stats = SummaryStats(
             title="Summary",
@@ -1241,7 +1204,6 @@ class TestASCIISummaryBox:
 
     def test_two_column_mode_colorizes_percentage_deltas_when_color_enabled(self):
         """Two-column mode keeps colored percentage deltas when color output is enabled."""
-        from textcharts.summary_box import ASCIISummaryBox, SummaryStats
 
         stats = SummaryStats(
             title="Summary",

@@ -2,7 +2,6 @@
 
 from __future__ import annotations
 
-from textcharts.bar_chart import BarData
 from textcharts.base import ASCIIChartOptions
 from textcharts.cdf_chart import ASCIICDFChart, CDFSeriesData
 from textcharts.cdf_chart import from_query_results as cdf_from_query_results

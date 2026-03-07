@@ -3,15 +3,15 @@
 from __future__ import annotations
 
 from unittest.mock import patch
+
 import pytest
 
 from textcharts.bar_chart import ASCIIBarChart, BarData
 from textcharts.base import (
+    TRUNCATION_MARKER,
     ASCIIChartOptions,
     ColorMode,
-    TRUNCATION_MARKER,
     TerminalCapabilities,
-    detect_terminal_capabilities,
     outlier_severity_markers,
     robust_p95,
 )
@@ -30,13 +30,11 @@ class TestOutlierSeverityMarkers:
     """Unit tests for the centralised outlier_severity_markers() helper."""
 
     def test_value_at_or_below_scale_returns_empty(self):
-        from textcharts.base import outlier_severity_markers
 
         assert outlier_severity_markers(100, 100) == ""
         assert outlier_severity_markers(50, 100) == ""
 
     def test_scale_zero_returns_empty(self):
-        from textcharts.base import outlier_severity_markers
 
         assert outlier_severity_markers(10, 0) == ""
 
@@ -54,7 +52,7 @@ class TestOutlierSeverityMarkers:
         ],
     )
     def test_severity_thresholds(self, value, scale_max, expected_count):
-        from textcharts.base import TRUNCATION_MARKER, outlier_severity_markers
+        from textcharts.base import TRUNCATION_MARKER
 
         result = outlier_severity_markers(value, scale_max)
         assert result == TRUNCATION_MARKER * expected_count
@@ -282,7 +280,6 @@ class TestComparisonBarOutlierSeverityMarkers:
 
     def test_extreme_outlier_shows_severity_markers(self):
         from textcharts.base import TRUNCATION_MARKER
-        from textcharts.comparison_bar import ASCIIComparisonBar, ComparisonBarData
 
         # One query with extreme baseline value to trigger truncation
         data = [
@@ -893,14 +890,12 @@ class TestRobustP95Fallback:
 
     def test_single_positive_does_not_artificially_shrink_p95(self):
         """One positive value among zeros should keep p95 at that value."""
-        from textcharts.base import robust_p95
 
         vals = [0.0] * 19 + [10.0]
         assert robust_p95(vals) == 10.0
 
     def test_sparse_positive_tail_uses_positive_rank(self):
         """With sparse positives, p95 should come from positive-tail nearest rank."""
-        from textcharts.base import robust_p95
 
         vals = [0.0] * 18 + [10.0, 50000.0]
         assert robust_p95(vals) == 10.0
