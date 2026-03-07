@@ -2,7 +2,8 @@ id: shared-command-layer
 title: "Design and implement shared command layer for CLI and MCP"
 worktree: main
 priority: Critical
-status: Not Started
+status: Completed
+completed_date: "2026-03-07"
 description: |
   Create a shared command layer that defines the unified command surface for
   textcharts. Both the CLI and MCP server will delegate to this layer, ensuring

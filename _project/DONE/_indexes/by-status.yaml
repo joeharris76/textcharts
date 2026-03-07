@@ -1,8 +1,8 @@
-generated_at: '2026-03-07T16:21:05.506504'
-total_items: 10
+generated_at: '2026-03-07T16:48:24.880133'
+total_items: 11
 statuses:
   Completed:
-    count: 10
+    count: 11
     items:
     - id: behavioral-tests-for-minimal-coverage-charts
       file: DONE/main/active/behavioral-tests-for-minimal-coverage-charts.yaml
@@ -29,6 +29,11 @@ statuses:
       title: De-BenchBox example datasets and position chart-specific APIs clearly
       priority: High
       category: Documentation
+    - id: shared-command-layer
+      file: DONE/main/active/shared-command-layer.yaml
+      title: Design and implement shared command layer for CLI and MCP
+      priority: Critical
+      category: Core Functionality
     - id: finalize-public-api-docs-and-release-tooling
       file: DONE/main/planning/finalize-public-api-docs-and-release-tooling.yaml
       title: Finalize public API, docs, and release tooling

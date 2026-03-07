@@ -1,9 +1,14 @@
-generated_at: '2026-03-07T16:21:05.506492'
+generated_at: '2026-03-07T16:48:24.880123'
 total_categories: 3
 categories:
   Core Functionality:
-    count: 2
+    count: 3
     items:
+    - id: shared-command-layer
+      file: DONE/main/active/shared-command-layer.yaml
+      title: Design and implement shared command layer for CLI and MCP
+      priority: Critical
+      status: Completed
     - id: fix-terminal-capability-defaults-and-color-contract
       file: DONE/main/planning/fix-terminal-capability-defaults-and-color-contract.yaml
       title: Fix terminal capability defaults and color contract

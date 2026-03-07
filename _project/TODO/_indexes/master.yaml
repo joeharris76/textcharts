@@ -1,24 +1,6 @@
-generated_at: '2026-03-07T16:31:03.442365'
-total_items: 4
+generated_at: '2026-03-07T16:48:24.857218'
+total_items: 3
 items:
-- id: shared-command-layer
-  file: TODO/main/planning/shared-command-layer.yaml
-  title: Design and implement shared command layer for CLI and MCP
-  worktree: main
-  category: Core Functionality
-  priority: Critical
-  status: Not Started
-  tags:
-  - cli
-  - mcp
-  - architecture
-  owners:
-  - joe
-  estimated_effort: 2-3 days
-  work_total: 5
-  work_done: 0
-  work_ready: 1
-  deferred_count: 2
 - id: cli-interface
   file: TODO/main/planning/cli-interface.yaml
   title: Implement CLI entry point wrapping the shared command layer

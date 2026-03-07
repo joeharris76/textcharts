@@ -1,14 +1,9 @@
-generated_at: '2026-03-07T16:31:03.442395'
-total_items: 4
+generated_at: '2026-03-07T16:48:24.857240'
+total_items: 3
 statuses:
   Not Started:
-    count: 4
+    count: 3
     items:
-    - id: shared-command-layer
-      file: TODO/main/planning/shared-command-layer.yaml
-      title: Design and implement shared command layer for CLI and MCP
-      priority: Critical
-      category: Core Functionality
     - id: cli-mcp-docs
       file: TODO/main/planning/cli-mcp-docs.yaml
       title: Documentation for CLI and MCP interfaces

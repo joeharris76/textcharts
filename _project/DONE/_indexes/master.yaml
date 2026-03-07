@@ -1,6 +1,25 @@
-generated_at: '2026-03-07T16:21:05.506480'
-total_items: 10
+generated_at: '2026-03-07T16:48:24.880116'
+total_items: 11
 items:
+- id: shared-command-layer
+  file: DONE/main/active/shared-command-layer.yaml
+  title: Design and implement shared command layer for CLI and MCP
+  worktree: main
+  category: Core Functionality
+  priority: Critical
+  status: Completed
+  tags:
+  - cli
+  - mcp
+  - architecture
+  owners:
+  - joe
+  estimated_effort: 2-3 days
+  completed_date: '2026-03-07'
+  work_total: 5
+  work_done: 0
+  work_ready: 1
+  deferred_count: 2
 - id: behavioral-tests-for-minimal-coverage-charts
   file: DONE/main/active/behavioral-tests-for-minimal-coverage-charts.yaml
   title: Add behavioral tests for 6 chart types with only golden-output coverage
