@@ -1,14 +1,9 @@
-generated_at: '2026-03-07T08:36:22.282831'
+generated_at: '2026-03-07T10:00:05.979050'
 total_categories: 1
 categories:
   Testing and Quality Assurance:
-    count: 4
+    count: 3
     items:
-    - id: behavioral-tests-for-minimal-coverage-charts
-      file: TODO/main/planning/behavioral-tests-for-minimal-coverage-charts.yaml
-      title: Add behavioral tests for 6 chart types with only golden-output coverage
-      priority: High
-      status: Not Started
     - id: test-factory-functions
       file: TODO/main/planning/test-factory-functions.yaml
       title: Add direct tests for all public factory functions

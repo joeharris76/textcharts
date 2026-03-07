@@ -2,7 +2,8 @@ id: behavioral-tests-for-minimal-coverage-charts
 title: "Add behavioral tests for 6 chart types with only golden-output coverage"
 worktree: main
 priority: High
-status: Not Started
+status: Completed
+completed_date: "2026-03-07"
 category: "Testing and Quality Assurance"
 description: |
   Six chart types currently have NO behavioral tests beyond golden-output snapshots:
@@ -17,7 +18,7 @@ description: |
 work:
   - id: w1
     summary: "Add ComparisonBar behavioral tests — percentage delta calculation, best/worst flagging, baseline vs comparison rendering"
-    status: pending
+    status: done
     notes: |
       Key logic to test in comparison_bar.py:
       - Percentage change annotation (lines 197-200, 221, 226-227)
@@ -27,7 +28,7 @@ work:
 
   - id: w2
     summary: "Add DivergingBar behavioral tests — center-aligned rendering, negative/positive bar direction, regression data handling"
-    status: pending
+    status: done
     notes: |
       Key logic to test in diverging_bar.py:
       - Center axis placement and bar direction (lines 186-191, 199)
@@ -37,7 +38,7 @@ work:
 
   - id: w3
     summary: "Add PercentileLadder behavioral tests — p50/p95/p99/p99.9 rung rendering, from_query_results factory, label formatting"
-    status: pending
+    status: done
     notes: |
       Key logic to test in percentile_ladder.py:
       - Percentile rung proportional widths (lines 138-144)
@@ -47,7 +48,7 @@ work:
 
   - id: w4
     summary: "Add StackedBar behavioral tests — multi-segment rendering, phase label legend, segment proportions"
-    status: pending
+    status: done
     notes: |
       Key logic to test in stacked_bar.py:
       - Segment proportional widths (lines 116-121)
@@ -57,7 +58,7 @@ work:
 
   - id: w5
     summary: "Add RankTable behavioral tests — per-query ranking logic, winner highlighting, from_heatmap_data factory happy path"
-    status: pending
+    status: done
     notes: |
       Key logic to test in rank_table.py:
       - Rank calculation and sorting (lines 106, 116, 133)
@@ -66,7 +67,7 @@ work:
 
   - id: w6
     summary: "Add SparklineTable behavioral tests — inline sparkline character selection, column alignment, from_metrics factory"
-    status: pending
+    status: done
     notes: |
       Key logic to test in sparkline_table.py:
       - Sparkline character mapping to values (lines 147-150, 166-167)

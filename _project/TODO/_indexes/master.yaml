@@ -1,20 +1,6 @@
-generated_at: '2026-03-07T08:36:22.282814'
-total_items: 4
+generated_at: '2026-03-07T10:00:05.979037'
+total_items: 3
 items:
-- id: behavioral-tests-for-minimal-coverage-charts
-  file: TODO/main/planning/behavioral-tests-for-minimal-coverage-charts.yaml
-  title: Add behavioral tests for 6 chart types with only golden-output coverage
-  worktree: main
-  category: Testing and Quality Assurance
-  priority: High
-  status: Not Started
-  tags:
-  - testing
-  - coverage
-  estimated_effort: 2-3 days
-  work_total: 6
-  work_done: 0
-  work_ready: 6
 - id: test-factory-functions
   file: TODO/main/planning/test-factory-functions.yaml
   title: Add direct tests for all public factory functions

@@ -1,6 +1,21 @@
-generated_at: '2026-03-07T08:36:22.297626'
-total_items: 6
+generated_at: '2026-03-07T10:00:05.995105'
+total_items: 7
 items:
+- id: behavioral-tests-for-minimal-coverage-charts
+  file: DONE/main/active/behavioral-tests-for-minimal-coverage-charts.yaml
+  title: Add behavioral tests for 6 chart types with only golden-output coverage
+  worktree: main
+  category: Testing and Quality Assurance
+  priority: High
+  status: Completed
+  tags:
+  - testing
+  - coverage
+  estimated_effort: 2-3 days
+  completed_date: '2026-03-07'
+  work_total: 6
+  work_done: 6
+  work_ready: 0
 - id: de-benchbox-example-datasets-and-position-chart-specific-apis
   file: DONE/main/planning/de-benchbox-example-datasets-and-position-chart-specific-apis.yaml
   title: De-BenchBox example datasets and position chart-specific APIs clearly
