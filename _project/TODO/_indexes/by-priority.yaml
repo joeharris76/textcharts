@@ -1,3 +1,32 @@
-generated_at: '2026-03-06T13:12:00'
-total_items: 0
-priorities: {}
+generated_at: '2026-03-07T08:36:22.282836'
+total_items: 4
+priorities:
+  High:
+    count: 2
+    items:
+    - id: behavioral-tests-for-minimal-coverage-charts
+      file: TODO/main/planning/behavioral-tests-for-minimal-coverage-charts.yaml
+      title: Add behavioral tests for 6 chart types with only golden-output coverage
+      category: Testing and Quality Assurance
+      status: Not Started
+    - id: test-factory-functions
+      file: TODO/main/planning/test-factory-functions.yaml
+      title: Add direct tests for all public factory functions
+      category: Testing and Quality Assurance
+      status: Not Started
+  Medium-High:
+    count: 1
+    items:
+    - id: test-line-chart-trend-and-rendering-paths
+      file: TODO/main/planning/test-line-chart-trend-and-rendering-paths.yaml
+      title: Add tests for LineChart trend line computation and rendering branches
+      category: Testing and Quality Assurance
+      status: Not Started
+  Medium:
+    count: 1
+    items:
+    - id: test-color-and-unicode-rendering-paths
+      file: TODO/main/planning/test-color-and-unicode-rendering-paths.yaml
+      title: Add tests for color output and Unicode/ASCII fallback rendering paths
+      category: Testing and Quality Assurance
+      status: Not Started
