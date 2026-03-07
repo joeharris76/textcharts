@@ -2,7 +2,8 @@ id: test-factory-functions
 title: "Add direct tests for all public factory functions"
 worktree: main
 priority: High
-status: Not Started
+status: Completed
+completed_date: "2026-03-07"
 category: "Testing and Quality Assurance"
 description: |
   Nine factory functions are part of the public API (exported in __all__) but have
@@ -21,7 +22,7 @@ description: |
 work:
   - id: w1
     summary: "Create test_factory_functions.py with tests for all 14 factory functions — happy path, return type, data passthrough"
-    status: pending
+    status: done
     notes: |
       For each factory function, test:
       1. Returns the correct chart class instance
@@ -34,7 +35,7 @@ work:
   - id: w2
     summary: "Add edge-case factory tests — empty data, single item, mismatched types"
     needs: [w1]
-    status: pending
+    status: done
     notes: |
       Test boundary conditions for factories that do data transformation:
       - from_bar_data with empty list

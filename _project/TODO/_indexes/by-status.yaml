@@ -1,21 +1,3 @@
-generated_at: '2026-03-07T10:00:05.979058'
-total_items: 3
-statuses:
-  Not Started:
-    count: 3
-    items:
-    - id: test-factory-functions
-      file: TODO/main/planning/test-factory-functions.yaml
-      title: Add direct tests for all public factory functions
-      priority: High
-      category: Testing and Quality Assurance
-    - id: test-line-chart-trend-and-rendering-paths
-      file: TODO/main/planning/test-line-chart-trend-and-rendering-paths.yaml
-      title: Add tests for LineChart trend line computation and rendering branches
-      priority: Medium-High
-      category: Testing and Quality Assurance
-    - id: test-color-and-unicode-rendering-paths
-      file: TODO/main/planning/test-color-and-unicode-rendering-paths.yaml
-      title: Add tests for color output and Unicode/ASCII fallback rendering paths
-      priority: Medium
-      category: Testing and Quality Assurance
+generated_at: '2026-03-07T10:15:25.672329'
+total_items: 0
+statuses: {}

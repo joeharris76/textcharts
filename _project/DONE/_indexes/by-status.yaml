@@ -1,13 +1,28 @@
-generated_at: '2026-03-07T10:00:05.995127'
-total_items: 7
+generated_at: '2026-03-07T10:15:25.690405'
+total_items: 10
 statuses:
   Completed:
-    count: 7
+    count: 10
     items:
     - id: behavioral-tests-for-minimal-coverage-charts
       file: DONE/main/active/behavioral-tests-for-minimal-coverage-charts.yaml
       title: Add behavioral tests for 6 chart types with only golden-output coverage
       priority: High
+      category: Testing and Quality Assurance
+    - id: test-factory-functions
+      file: DONE/main/active/test-factory-functions.yaml
+      title: Add direct tests for all public factory functions
+      priority: High
+      category: Testing and Quality Assurance
+    - id: test-line-chart-trend-and-rendering-paths
+      file: DONE/main/active/test-line-chart-trend-and-rendering-paths.yaml
+      title: Add tests for LineChart trend line computation and rendering branches
+      priority: Medium-High
+      category: Testing and Quality Assurance
+    - id: test-color-and-unicode-rendering-paths
+      file: DONE/main/active/test-color-and-unicode-rendering-paths.yaml
+      title: Add tests for color output and Unicode/ASCII fallback rendering paths
+      priority: Medium
       category: Testing and Quality Assurance
     - id: de-benchbox-example-datasets-and-position-chart-specific-apis
       file: DONE/main/planning/de-benchbox-example-datasets-and-position-chart-specific-apis.yaml

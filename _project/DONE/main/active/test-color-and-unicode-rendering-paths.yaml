@@ -2,7 +2,8 @@ id: test-color-and-unicode-rendering-paths
 title: "Add tests for color output and Unicode/ASCII fallback rendering paths"
 worktree: main
 priority: Medium
-status: Not Started
+status: Completed
+completed_date: "2026-03-07"
 category: "Testing and Quality Assurance"
 description: |
   Most tests run with use_color=False, leaving ANSI color output paths uncovered
@@ -18,7 +19,7 @@ description: |
 work:
   - id: w1
     summary: "Add color output tests — verify ANSI escape sequences appear in output when use_color=True for representative chart types"
-    status: pending
+    status: done
     notes: |
       Test 3-4 chart types (BarChart, Heatmap, Histogram, ScatterPlot) with
       use_color=True. Assert that output contains ANSI escape sequences
@@ -27,7 +28,7 @@ work:
 
   - id: w2
     summary: "Add ASCII fallback tests — verify box-drawing and block characters fall back correctly when use_unicode=False"
-    status: pending
+    status: done
     notes: |
       Test 3-4 chart types with use_unicode=False. Assert output uses ASCII
       fallback characters (e.g., +, -, |, #) instead of Unicode box-drawing
@@ -36,7 +37,7 @@ work:
   - id: w3
     summary: "Add theme tests — verify dark vs light theme affects color selection for representative charts"
     needs: [w1]
-    status: pending
+    status: done
     notes: |
       Test that theme='dark' and theme='light' produce different output when
       use_color=True. Cover BarChart and Heatmap at minimum.

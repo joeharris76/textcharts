@@ -2,7 +2,8 @@ id: test-line-chart-trend-and-rendering-paths
 title: "Add tests for LineChart trend line computation and rendering branches"
 worktree: main
 priority: Medium-High
-status: Not Started
+status: Completed
+completed_date: "2026-03-07"
 category: "Testing and Quality Assurance"
 description: |
   line_chart.py has the lowest coverage in the project at 70% (58 missed lines).
@@ -13,7 +14,7 @@ description: |
 work:
   - id: w1
     summary: "Test trend line rendering — verify moving average computation produces expected trend points for known input"
-    status: pending
+    status: done
     notes: |
       Key lines: 218-226 (trend computation), 244-250 (trend rendering),
       306-321 (trend line drawing). Test with a simple ascending series
@@ -22,7 +23,7 @@ work:
   - id: w2
     summary: "Test multi-series rendering — verify legend, series differentiation, and overlapping point handling"
     needs: [w1]
-    status: pending
+    status: done
     notes: |
       Key lines: 124-131 (series setup), 277-282 (multi-series drawing),
       294, 300, 333-347 (series legend/labels). Test with 2-3 named series.
@@ -30,7 +31,7 @@ work:
   - id: w3
     summary: "Test string x-axis labels and edge cases — non-numeric x values, single-point series"
     needs: [w1]
-    status: pending
+    status: done
     notes: |
       Key lines: 85, 106 (string x handling), 116-117 (single point),
       145, 154 (label formatting), 178-179, 206 (axis rendering)
