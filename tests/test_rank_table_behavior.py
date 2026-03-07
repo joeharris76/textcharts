@@ -57,7 +57,7 @@ def test_win_counts():
     assert "Wins" in result
     # A has 2 wins, B has 1 win
     lines = result.splitlines()
-    wins_line = next(l for l in lines if "Wins" in l)
+    wins_line = next(line for line in lines if "Wins" in line)
     assert "2" in wins_line
     assert "1" in wins_line
 
@@ -72,7 +72,7 @@ def test_georank_computation():
     assert "GeoRank" in result
     # A is rank 1, georank = 1.0; B is rank 2, georank = 2.0
     lines = result.splitlines()
-    geo_line = next(l for l in lines if "GeoRank" in l)
+    geo_line = next(line for line in lines if "GeoRank" in line)
     assert "1.0" in geo_line
     assert "2.0" in geo_line
 
@@ -85,16 +85,13 @@ def test_natural_sort_queries():
     )
     result = ASCIIRankTable(data=data, options=_opts()).render()
     lines = result.splitlines()
-    query_lines = [l for l in lines if any(f"Q{n}" in l for n in [1, 2, 10]) and "1st" in l]
-    # Q1 should appear before Q2 before Q10 in natural sort
-    q_positions = []
-    for l in lines:
-        if "Q1 " in l or "Q1" in l.split()[0:1]:
-            q_positions.append(("Q1", lines.index(l)))
-        if "Q2" in l and "Q10" not in l:
-            q_positions.append(("Q2", lines.index(l)))
-        if "Q10" in l:
-            q_positions.append(("Q10", lines.index(l)))
+    query_positions = {}
+    for idx, line in enumerate(lines):
+        first_token = line.split()[0] if line.split() else ""
+        if first_token in {"Q1", "Q2", "Q10"}:
+            query_positions[first_token] = idx
+
+    assert query_positions["Q1"] < query_positions["Q2"] < query_positions["Q10"]
 
 
 def test_from_heatmap_data_factory():

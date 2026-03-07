@@ -8,13 +8,7 @@ from typing import TYPE_CHECKING
 
 logger = logging.getLogger(__name__)
 
-from textcharts.base import (
-    DEFAULT_PALETTE,
-    ASCIIChartBase,
-    ASCIIChartOptions,
-    outlier_severity_markers,
-    robust_p95,
-)
+from textcharts.base import ASCIIChartBase, ASCIIChartOptions, outlier_severity_markers, robust_p95
 
 if TYPE_CHECKING:
     from collections.abc import Sequence
@@ -116,7 +110,7 @@ class ASCIIBarChart(ASCIIChartBase):
         use_groups = len(groups) > 1
 
         # Color palette and fill patterns
-        palette = list(DEFAULT_PALETTE)
+        palette = list(self.options.get_palette())
         group_colors: dict[str, str] = {}
         group_fills: dict[str, str] = {}
         if use_groups:

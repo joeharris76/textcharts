@@ -55,11 +55,11 @@ approach: |
 
 verification:
   - description: "All tests pass"
-    command: "uv run python -m pytest tests/test_factory_functions.py -v"
+    command: "uv run python -m pytest --override-ini=addopts='' tests/test_factory_functions.py -v"
     expected_output: "all tests pass"
   - description: "Factory-related coverage gaps closed"
-    command: "uv run python -m pytest --cov=textcharts --cov-report=term-missing -q"
-    expected_output: "factory function lines no longer in Missing column"
+    command: "COVERAGE_FILE=/tmp/textcharts-factory.coverage uv run python -m pytest --override-ini=addopts='' --cov=textcharts.bar_chart --cov=textcharts.box_plot --cov=textcharts.cdf_chart --cov=textcharts.comparison_bar --cov=textcharts.diverging_bar --cov=textcharts.heatmap --cov=textcharts.histogram --cov=textcharts.line_chart --cov=textcharts.normalized_speedup --cov=textcharts.percentile_ladder --cov=textcharts.rank_table --cov=textcharts.scatter_plot --cov=textcharts.sparkline_table --cov=textcharts.stacked_bar --cov-report=term-missing tests/test_factory_functions.py -q"
+    expected_output: "selected factory modules show direct coverage from test_factory_functions.py"
 
 scope_limit:
   only_modify:

@@ -16,7 +16,7 @@ if TYPE_CHECKING:
     from collections.abc import Callable, Sequence
 
 # Colorblind-friendly categorical palette (Okabe-Ito inspired)
-DEFAULT_PALETTE: tuple[str, ...] = (
+LIGHT_PALETTE: tuple[str, ...] = (
     "#1b9e77",
     "#d95f02",
     "#7570b3",
@@ -26,6 +26,20 @@ DEFAULT_PALETTE: tuple[str, ...] = (
     "#a6761d",
     "#666666",
 )
+
+# Higher-contrast palette for dark terminal themes.
+DARK_PALETTE: tuple[str, ...] = (
+    "#66d9b3",
+    "#ff9f4a",
+    "#a99cff",
+    "#ff6fb5",
+    "#9be564",
+    "#ffd166",
+    "#d6a56f",
+    "#c7c7c7",
+)
+
+DEFAULT_PALETTE = LIGHT_PALETTE
 
 # Unicode block characters for bar rendering (1/8 increments)
 LEFT_BLOCK_CHARS = " ▏▎▍▌▋▊▉█"
@@ -399,6 +413,12 @@ class ASCIIChartOptions:
         if self._capabilities is None:
             self._capabilities = detect_terminal_capabilities()
         return TerminalColors(color_mode=self._capabilities.color_mode)
+
+    def get_palette(self) -> tuple[str, ...]:
+        """Get the categorical palette for the configured theme."""
+        if self.theme == "dark":
+            return DARK_PALETTE
+        return LIGHT_PALETTE
 
     def _has_unicode(self) -> bool:
         """Check if unicode is available."""

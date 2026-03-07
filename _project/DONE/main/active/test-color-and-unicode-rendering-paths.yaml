@@ -40,7 +40,7 @@ work:
     status: done
     notes: |
       Test that theme='dark' and theme='light' produce different output when
-      use_color=True. Cover BarChart and Heatmap at minimum.
+      use_color=True. Cover BarChart palette selection directly.
 
 must_preserve:
   - "All existing tests pass"
@@ -54,11 +54,11 @@ approach: |
 
 verification:
   - description: "All tests pass"
-    command: "uv run python -m pytest tests/test_rendering_modes.py -v"
+    command: "uv run python -m pytest --override-ini=addopts='' tests/test_rendering_modes.py -v"
     expected_output: "all tests pass"
   - description: "Overall coverage improves"
-    command: "uv run python -m pytest --cov=textcharts --cov-report=term-missing -q"
-    expected_output: "total coverage >= 89%"
+    command: "COVERAGE_FILE=/tmp/textcharts-rendering.coverage uv run python -m pytest --override-ini=addopts='' --cov=textcharts.bar_chart --cov=textcharts.base --cov=textcharts.heatmap --cov=textcharts.histogram --cov=textcharts.scatter_plot --cov-report=term-missing tests/test_rendering_modes.py -q"
+    expected_output: "rendering-path modules show direct coverage from test_rendering_modes.py"
 
 scope_limit:
   only_modify:

@@ -48,10 +48,10 @@ approach: |
 
 verification:
   - description: "All tests pass"
-    command: "uv run python -m pytest tests/test_line_chart_behavior.py -v"
+    command: "uv run python -m pytest --override-ini=addopts='' tests/test_line_chart_behavior.py -v"
     expected_output: "all tests pass"
   - description: "line_chart.py coverage reaches >=85%"
-    command: "uv run python -m pytest --cov=textcharts.line_chart --cov-report=term-missing -q"
+    command: "COVERAGE_FILE=/tmp/textcharts-line.coverage uv run python -m pytest --override-ini=addopts='' --cov=textcharts.line_chart --cov-report=term-missing tests/test_line_chart_behavior.py -q"
     expected_output: "line_chart.py coverage >= 85%"
 
 scope_limit:

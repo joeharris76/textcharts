@@ -138,8 +138,5 @@ def test_dark_vs_light_theme_differ(monkeypatch: pytest.MonkeyPatch):
     ).render()
     assert ANSI_RE.search(dark)
     assert ANSI_RE.search(light)
-    # Both should render successfully with ANSI codes
-    dark_codes = set(ANSI_RE.findall(dark))
-    light_codes = set(ANSI_RE.findall(light))
-    assert len(dark_codes) > 0
-    assert len(light_codes) > 0
+    assert dark != light
+    assert set(ANSI_RE.findall(dark)) != set(ANSI_RE.findall(light))
