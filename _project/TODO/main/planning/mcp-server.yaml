@@ -34,46 +34,35 @@ deps:
 
 work:
   - id: w1
-    summary: "Create MCP server with tool registration from command registry"
+    summary: "Create MCP server with tool registration, input schemas, optional dependency, and console script"
     status: pending
     notes: |
       Create src/textcharts/mcp_server.py.
-      Use the `mcp` SDK (pip install mcp). Import and use FastMCP or the Server class.
-      For each command in the registry, register an MCP tool:
+      Use FastMCP from the `mcp` SDK. For each command in the registry, register
+      an MCP tool with schemas defined at registration time:
         - name: f"textcharts_{command_name}" (e.g., textcharts_bar)
         - description: from commands.describe_command()
         - input_schema: from commands.get_input_schema() + common options
+          (title, width, height, use_color, use_unicode, theme)
+      The data parameter is chart-type-specific. Ensure schema descriptions are
+      clear enough for LLMs to use the tools correctly without examples.
       Tool handler calls commands.execute_command() and returns the rendered string.
       Add textcharts_list and textcharts_describe meta-tools.
 
-  - id: w2
-    summary: "Define input schemas for MCP tools using JSON Schema from command registry"
-    needs: [w1]
-    status: pending
-    notes: |
-      Each tool's inputSchema is generated from the command registry's
-      get_input_schema(). Common parameters (title, width, height, use_color,
-      use_unicode, theme) are merged into each tool's schema. The data parameter
-      is chart-type-specific. Ensure schema descriptions are clear enough for
-      LLMs to use the tools correctly without examples.
+      Guard the mcp import with try/except so the module can be imported (for
+      testing) even when mcp is not installed. main() should handle ImportError
+      gracefully: "Install textcharts[mcp] to use the MCP server."
 
-  - id: w3
-    summary: "Add mcp optional dependency group and textcharts-mcp console script"
-    needs: [w1]
-    status: pending
-    notes: |
       In pyproject.toml:
         [project.optional-dependencies]
         mcp = ["mcp>=1.0"]
       Add entry point:
         [project.scripts]
         textcharts-mcp = "textcharts.mcp_server:main"
-      The mcp_server.py main() should handle ImportError for mcp gracefully
-      with a clear message: "Install textcharts[mcp] to use the MCP server."
 
-  - id: w4
+  - id: w2
     summary: "MCP server tests: tool listing, tool execution for all chart types, error handling"
-    needs: [w1, w2, w3]
+    needs: [w1]
     status: pending
     notes: |
       tests/test_mcp_server.py — test tool registration, schema generation,

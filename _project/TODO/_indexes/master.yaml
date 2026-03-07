@@ -1,4 +1,4 @@
-generated_at: '2026-03-07T16:21:05.486555'
+generated_at: '2026-03-07T16:31:03.442365'
 total_items: 4
 items:
 - id: shared-command-layer
@@ -31,10 +31,10 @@ items:
   owners:
   - joe
   estimated_effort: 1-2 days
-  work_total: 5
+  work_total: 3
   work_done: 0
   work_ready: 1
-  deferred_count: 3
+  deferred_count: 4
   needs:
   - shared-command-layer
 - id: mcp-server
@@ -49,7 +49,7 @@ items:
   owners:
   - joe
   estimated_effort: 1-2 days
-  work_total: 4
+  work_total: 2
   work_done: 0
   work_ready: 1
   deferred_count: 3
@@ -71,7 +71,7 @@ items:
   estimated_effort: 1 day
   work_total: 3
   work_done: 0
-  work_ready: 1
+  work_ready: 3
   deferred_count: 2
   needs:
   - cli-interface

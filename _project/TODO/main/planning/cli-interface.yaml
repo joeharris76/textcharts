@@ -30,7 +30,7 @@ deps:
 
 work:
   - id: w1
-    summary: "Create CLI entry point with argparse: subcommands from registry, common options, --file/stdin input"
+    summary: "Create CLI entry point with argparse, register console_scripts entry point in pyproject.toml"
     status: pending
     notes: |
       Create src/textcharts/cli.py with main() function.
@@ -41,6 +41,9 @@ work:
       --unicode/--no-unicode, --theme, --title, --file/-f.
       Input: if --file given, read that; else read stdin. Parse as JSON.
       Call commands.execute_command() and print result to stdout.
+      Add [project.scripts] section to pyproject.toml:
+        textcharts = "textcharts.cli:main"
+      Verify `uv run textcharts --help` works after install.
 
   - id: w2
     summary: "Add 'list' meta-command and --help enrichment from command introspection"
@@ -53,37 +56,20 @@ work:
       generate help text dynamically — no hardcoded docs.
 
   - id: w3
-    summary: "Register console_scripts entry point in pyproject.toml"
-    needs: [w1]
-    status: pending
-    notes: |
-      Add [project.scripts] section: textcharts = "textcharts.cli:main"
-      Verify `uv run textcharts --help` works after install.
-
-  - id: w4
-    summary: "Add CSV input support as alternative to JSON"
-    needs: [w1]
-    status: pending
-    notes: |
-      For chart types with flat data (bar, histogram, line, scatter, etc.),
-      accept CSV via --format csv flag or auto-detect from file extension.
-      Use stdlib csv module. Map CSV columns to dataclass fields by header name.
-      Not all chart types support CSV (heatmap matrix, sparkline, summary are
-      JSON-only) — document this clearly.
-
-  - id: w5
     summary: "CLI integration tests: all 15 chart types via subprocess, stdin and file input, error cases"
-    needs: [w1, w2, w3, w4]
+    needs: [w1, w2]
     status: pending
     notes: |
       tests/test_cli.py — invoke via subprocess (uv run textcharts ...).
       Test: each chart type with sample JSON, --file vs stdin, --no-color,
-      list command, --help output, invalid JSON error, unknown command error,
-      CSV input for supported types.
+      list command, --help output, invalid JSON error, unknown command error.
+      Also run the full existing test suite to confirm no regressions.
 
 deferred:
+  - summary: "CSV input support as alternative to JSON for flat data chart types"
+    reason: "Adds complexity to initial CLI; JSON covers all chart types uniformly and matches MCP input format. Can be added as a convenience layer later."
   - summary: "Interactive mode with prompts for data entry"
-    reason: "Niche use case; JSON/CSV input covers the main workflows"
+    reason: "Niche use case; JSON input covers the main workflows"
   - summary: "Output format flags (--output html, --output svg)"
     reason: "Rendering is text-only by design; format conversion is a separate tool"
   - summary: "Shell completions (bash/zsh/fish)"
@@ -134,14 +120,17 @@ anti_patterns:
 
 verification:
   - description: "CLI help shows all 15 chart types"
-    command: "uv run textcharts list"
+    command: "uv run -- textcharts list"
     expected_output: "lists 15 chart types with descriptions"
   - description: "Bar chart renders from stdin JSON"
-    command: "echo '[{\"label\":\"A\",\"value\":10},{\"label\":\"B\",\"value\":20}]' | uv run textcharts bar --no-color"
+    command: "echo '[{\"label\":\"A\",\"value\":10},{\"label\":\"B\",\"value\":20}]' | uv run -- textcharts bar --no-color"
     expected_output: "rendered bar chart text output"
   - description: "Integration tests pass"
     command: "uv run -- python -m pytest tests/test_cli.py -v"
     expected_output: "all tests pass"
+  - description: "Existing test suite still passes"
+    command: "uv run -- python -m pytest tests/ -v --no-header -q"
+    expected_output: "all tests pass, coverage >= 85%"
 
 scope_limit:
   only_modify:
