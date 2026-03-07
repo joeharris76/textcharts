@@ -590,9 +590,9 @@ class TestASCIIRankTable:
         result = chart.render()
         lines = result.split("\n")
         # Find data rows that start with Q and a digit (not header "Query", title, or separator)
-        data_lines = [l for l in lines if l.strip() and l.strip()[0:2] in ("Q1", "Q2")]
+        data_lines = [line for line in lines if line.strip() and line.strip()[0:2] in ("Q1", "Q2")]
         # Filter out title and header lines
-        data_lines = [l for l in data_lines if "Ranking" not in l and "Query " not in l]
+        data_lines = [line for line in data_lines if "Ranking" not in line and "Query " not in line]
         assert len(data_lines) == 3
         # Check order is Q1, Q2, Q10 (natural sort)
         assert data_lines[0].strip().startswith("Q1 ")
@@ -617,7 +617,7 @@ class TestASCIIRankTable:
         chart = ASCIIRankTable(data=data, options=opts)
         result = chart.render()
         # A wins 2 queries, B wins 1
-        lines = [l for l in result.split("\n") if "Wins" in l]
+        lines = [line for line in result.split("\n") if "Wins" in line]
         assert len(lines) == 1
         assert "2" in lines[0]
         assert "1" in lines[0]

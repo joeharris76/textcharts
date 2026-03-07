@@ -113,7 +113,11 @@ def test_scatter_plot_uses_distinct_markers_for_points():
 
 def test_bar_chart_renders_legend_for_multi_bar_output():
     chart = ASCIIBarChart(
-        data=[BarData(label="Fiction", value=18.4), BarData(label="Children", value=14.2), BarData(label="Comics", value=9.3)],
+        data=[
+            BarData(label="Fiction", value=18.4),
+            BarData(label="Children", value=14.2),
+            BarData(label="Comics", value=9.3),
+        ],
         options=ASCIIChartOptions(width=96, use_color=False),
     )
 

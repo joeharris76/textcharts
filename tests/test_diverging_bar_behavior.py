@@ -32,12 +32,12 @@ def test_sort_order_improvements_first_then_regressions():
     result = ASCIIDivergingBar(data=data, options=_opts()).render()
     lines = result.splitlines()
     # Find data lines containing query labels
-    q_lines = [(i, l) for i, l in enumerate(lines) if any(f"Q{n}" in l for n in [1, 2, 3])]
+    q_lines = [(i, line) for i, line in enumerate(lines) if any(f"Q{n}" in line for n in [1, 2, 3])]
     # Q1 (-50%) should come first, Q2 (-20%) second, Q3 (+10%) last
-    labels = [l for _, l in q_lines]
-    q1_idx = next(i for i, l in enumerate(labels) if "Q1" in l)
-    q2_idx = next(i for i, l in enumerate(labels) if "Q2" in l)
-    q3_idx = next(i for i, l in enumerate(labels) if "Q3" in l)
+    labels = [line for _, line in q_lines]
+    q1_idx = next(i for i, line in enumerate(labels) if "Q1" in line)
+    q2_idx = next(i for i, line in enumerate(labels) if "Q2" in line)
+    q3_idx = next(i for i, line in enumerate(labels) if "Q3" in line)
     assert q1_idx < q2_idx < q3_idx
 
 

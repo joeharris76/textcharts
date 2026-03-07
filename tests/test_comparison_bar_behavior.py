@@ -33,7 +33,7 @@ def test_stable_change_produces_no_annotation():
     result = ASCIIComparisonBar(data=data, options=_opts()).render()
     # 1% change is below STABLE_THRESHOLD_PCT (2.0)
     lines = result.splitlines()
-    comparison_line = [l for l in lines if "Comparison" in l or "101" in l]
+    comparison_line = [line for line in lines if "Comparison" in line or "101" in line]
     for line in comparison_line:
         assert "%" not in line
 

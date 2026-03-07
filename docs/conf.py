@@ -6,10 +6,24 @@ import os
 import sys
 from pathlib import Path
 
-
 ROOT = Path(__file__).resolve().parents[1]
 SRC = ROOT / "src"
 sys.path.insert(0, os.fspath(SRC))
+sys.path.insert(0, os.path.abspath("_static"))
+
+try:
+    from pygments import styles
+    from pygments_cobalt2 import Cobalt2Style
+
+    styles.STYLE_MAP["cobalt2"] = "pygments_cobalt2::Cobalt2Style"
+
+    import types
+
+    cobalt2_module = types.ModuleType("pygments.styles.cobalt2")
+    cobalt2_module.Cobalt2Style = Cobalt2Style
+    sys.modules["pygments.styles.cobalt2"] = cobalt2_module
+except ImportError as exc:
+    print(f"Warning: Could not import Cobalt2Style: {exc}")
 
 project = "textcharts"
 author = "Joe Harris"
@@ -35,16 +49,35 @@ autodoc_default_options = {
     "undoc-members": False,
 }
 
-html_theme = "alabaster"
+pygments_style = "cobalt2"
+
+html_theme = "furo"
 html_static_path = ["_static"]
 html_title = "textcharts documentation"
 html_theme_options = {
-    "description": "Zero-dependency terminal charts for Python",
-    "fixed_sidebar": True,
-    "page_width": "1200px",
-    "sidebar_width": "260px",
-    "body_max_width": "900px",
+    "sidebar_hide_name": False,
+    "navigation_with_keys": True,
+    "top_of_page_buttons": ["view"],
+    "light_css_variables": {
+        "color-brand-primary": "#0088ff",
+        "color-brand-content": "#0088ff",
+        "color-highlight-on-target": "#ffc600",
+    },
+    "dark_css_variables": {
+        "color-brand-primary": "#0088ff",
+        "color-brand-content": "#0088ff",
+        "color-highlight-on-target": "#ffc600",
+    },
+    "source_repository": "https://github.com/benchbox-dev/textcharts/",
+    "source_branch": "main",
+    "source_directory": "docs/",
 }
+html_css_files = [
+    "custom.css",
+]
+html_js_files = [
+    "collapsible-nav.js",
+]
 
 _MARKDOWN_CLASS_DOCS = {
     "textcharts.box_plot.ASCIIBoxPlot",

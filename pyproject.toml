@@ -38,6 +38,7 @@ Issues = "https://github.com/benchbox-dev/textcharts/issues"
 [dependency-groups]
 dev = [
     "ansi2html>=1.9",
+    "furo>=2025.9.25",
     "pillow>=11.0",
     "pytest>=7.0",
     "pytest-cov>=6.0",

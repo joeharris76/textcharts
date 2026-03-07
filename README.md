@@ -5,6 +5,17 @@ Beautiful text based charts for your terminal — zero dependencies.
 15 chart types with Unicode box-drawing, ANSI colors, and automatic terminal
 width detection. Pure Python, no external dependencies, Python 3.10+.
 
+## Provenance
+
+`textcharts` was extracted from the
+[BenchBox](https://github.com/joeharris76/benchbox) project so the terminal
+charting layer could be used as a standalone library.
+
+BenchBox remains the source of the most complete end-to-end usage examples for
+benchmarking and performance-analysis workflows. For canonical example-driven
+documentation, see the
+[BenchBox documentation](https://benchbox.dev/docs/index.html).
+
 ## Install
 
 ```bash
@@ -111,6 +122,10 @@ uv build
 ```
 
 Project documentation lives under `docs/` and is built with Sphinx.
+
+If you want richer real-world examples beyond the standalone library docs, use
+the [BenchBox documentation](https://benchbox.dev/docs/index.html) as the
+canonical reference for benchmark-oriented chart usage.
 
 Golden regression snapshots live under `tests/fixtures/golden/ascii/`. To
 intentionally update them after a renderer change:

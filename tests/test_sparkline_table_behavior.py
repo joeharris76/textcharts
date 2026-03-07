@@ -40,10 +40,9 @@ def test_best_worst_markers_no_color():
     result = ASCIISparklineTable(data=data, options=_opts()).render()
     # In no-color mode, best gets "+" marker, worst gets "-" marker
     lines = result.splitlines()
-    data_lines = [l for l in lines if "A" in l.split()[0:1] or "B" in l.split()[0:1]]
     # A (10) is best for lower-is-better
-    a_line = next((l for l in lines if l.strip().startswith("A")), "")
-    b_line = next((l for l in lines if l.strip().startswith("B")), "")
+    a_line = next((line for line in lines if line.strip().startswith("A")), "")
+    b_line = next((line for line in lines if line.strip().startswith("B")), "")
     assert "+" in a_line  # best marker
     assert "-" in b_line  # worst marker
 
@@ -58,8 +57,8 @@ def test_higher_is_better_inverts_best_worst():
     result = ASCIISparklineTable(data=data, options=_opts()).render()
     # B (100) is best for higher-is-better
     lines = result.splitlines()
-    a_line = next((l for l in lines if l.strip().startswith("A")), "")
-    b_line = next((l for l in lines if l.strip().startswith("B")), "")
+    a_line = next((line for line in lines if line.strip().startswith("A")), "")
+    b_line = next((line for line in lines if line.strip().startswith("B")), "")
     assert "-" in a_line  # worst
     assert "+" in b_line  # best
 

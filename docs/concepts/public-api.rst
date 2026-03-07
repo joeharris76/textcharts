@@ -15,6 +15,10 @@ The stable surface for new code is:
 This layer is concise, easy to document, and the right basis for external
 examples.
 
+For fuller workflow examples built around these APIs, especially benchmark
+reporting flows, use the `BenchBox documentation
+<https://benchbox.dev/docs/index.html>`_ as the canonical example set.
+
 Compatibility API
 -----------------
 

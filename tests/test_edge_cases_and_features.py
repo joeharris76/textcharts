@@ -703,8 +703,8 @@ class TestColoredLabels:
             chart = ASCIIBarChart(data=data, options=opts)
             result = chart.render()
         # The label line should contain ANSI escape codes
-        lines = [l for l in result.split("\n") if "DuckDB" in l]
-        assert any("\033[" in l for l in lines)
+        lines = [line for line in result.split("\n") if "DuckDB" in line]
+        assert any("\033[" in line for line in lines)
 
     def test_bar_chart_label_no_ansi_when_disabled(self):
         """Bar chart labels have no ANSI codes when color disabled."""
@@ -712,8 +712,8 @@ class TestColoredLabels:
         opts = ASCIIChartOptions(use_color=False)
         chart = ASCIIBarChart(data=data, options=opts)
         result = chart.render()
-        data_lines = [l for l in result.split("\n") if "DuckDB" in l]
-        assert all("\033[" not in l for l in data_lines)
+        data_lines = [line for line in result.split("\n") if "DuckDB" in line]
+        assert all("\033[" not in line for line in data_lines)
 
     def test_box_plot_label_has_ansi(self):
         """Box plot series labels include ANSI color codes."""
@@ -723,8 +723,8 @@ class TestColoredLabels:
         with patch("textcharts.base.detect_terminal_capabilities", return_value=_caps):
             chart = ASCIIBoxPlot(series=series, options=opts)
             result = chart.render()
-        label_lines = [l for l in result.split("\n") if "DuckDB" in l]
-        assert any("\033[" in l for l in label_lines)
+        label_lines = [line for line in result.split("\n") if "DuckDB" in line]
+        assert any("\033[" in line for line in label_lines)
 
     def test_comparison_bar_names_have_ansi(self):
         """ComparisonBar run names include ANSI color codes."""
@@ -735,8 +735,8 @@ class TestColoredLabels:
         with patch("textcharts.base.detect_terminal_capabilities", return_value=_caps):
             chart = ASCIIComparisonBar(data=data, options=opts)
             result = chart.render()
-        name_lines = [l for l in result.split("\n") if "Baseline" in l or "Comparison" in l]
-        assert any("\033[" in l for l in name_lines)
+        name_lines = [line for line in result.split("\n") if "Baseline" in line or "Comparison" in line]
+        assert any("\033[" in line for line in name_lines)
 
 
 class TestAxisLabels:

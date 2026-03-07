@@ -100,7 +100,7 @@ class TestBarChartOutlierSeverityMarkers:
         chart = ASCIIBarChart(data=data, options=opts)
         result = chart.render()
 
-        outlier_line = [l for l in result.split("\n") if "Outlier" in l]
+        outlier_line = [line for line in result.split("\n") if "Outlier" in line]
         assert outlier_line, "Outlier bar not found"
         marker_count = outlier_line[0].count(TRUNCATION_MARKER)
         assert marker_count >= 2, f"Expected ≥2 severity markers, got {marker_count}"
@@ -168,7 +168,7 @@ class TestBoxPlotOutlierTruncationMarkers:
         result = chart.render()
 
         # Find the middle line (contains the label)
-        mid_line = [l for l in result.split("\n") if "Test" in l]
+        mid_line = [line for line in result.split("\n") if "Test" in line]
         assert mid_line, "Box plot middle line not found"
         text = mid_line[0]
         # Extract the trailing marker region: everything after the last whisker end
@@ -189,7 +189,7 @@ class TestBoxPlotOutlierTruncationMarkers:
 
         lines = result.split("\n")
         # Find the axis label line (contains "→")
-        axis_idx = next((i for i, l in enumerate(lines) if "→" in l), None)
+        axis_idx = next((i for i, line in enumerate(lines) if "→" in line), None)
         assert axis_idx is not None, "Axis label not found"
         # The next line should be the stats header, not blank
         assert lines[axis_idx + 1].strip() != "", "Blank line between axis label and stats table"
@@ -210,7 +210,7 @@ class TestBoxPlotSeriesSpacing:
 
         lines = result.split("\n")
         # Find lines with series labels
-        label_indices = [i for i, l in enumerate(lines) if "A" in l.split()[0:1] or "B" in l.split()[0:1]]
+        label_indices = [i for i, line in enumerate(lines) if "A" in line.split()[0:1] or "B" in line.split()[0:1]]
         if len(label_indices) >= 2:
             # Between the bottom of series A (label_idx[0]+1) and top of series B
             # (label_idx[1]-1), there should be no blank line
@@ -244,7 +244,7 @@ class TestBoxPlotStatsTable:
 
         # Both medians should have .0 suffix for consistency
         lines = result.split("\n")
-        stat_lines = [l for l in lines if l.strip().startswith(("A", "B"))]
+        stat_lines = [line for line in lines if line.strip().startswith(("A", "B"))]
         for line in stat_lines:
             # Find numeric values — they should all have exactly one decimal place
             import re
@@ -269,7 +269,7 @@ class TestBoxPlotStatsTable:
         lines = result.split("\n")
         # Match stats rows like "A    1.0K  2.0K ..." — series name followed by whitespace then digit
         # This excludes visual box plot rows like "A  ├───│───┤"
-        stat_lines = [l for l in lines if re.match(r"^\s*(A|B)\s+\d", l)]
+        stat_lines = [line for line in lines if re.match(r"^\s*(A|B)\s+\d", line)]
         assert stat_lines, "No stat lines found in box plot output"
         for line in stat_lines:
             assert "K" in line, f"Expected K suffix in stats line: {line}"

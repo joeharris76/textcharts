@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from textcharts import ASCIISummaryBox, ASCIIChartOptions, SummaryStats
+from textcharts import ASCIIChartOptions, ASCIISummaryBox, SummaryStats
 
 
 def test_summary_box_single_run_shows_basic_metrics():

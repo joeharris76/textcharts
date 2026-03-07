@@ -152,7 +152,11 @@ class ASCIIScatterPlot(ASCIIChartBase):
 
         palette = list(DEFAULT_PALETTE)
         point_styles = {
-            point.name: (self.MARKERS[i % len(self.MARKERS)], palette[i % len(palette)]) for i, point in enumerate(self.points)
+            point.name: (
+                self.MARKERS[i % len(self.MARKERS)],
+                palette[i % len(palette)],
+            )
+            for i, point in enumerate(self.points)
         }
 
         # Plot Pareto frontier line first (so points overlay it)

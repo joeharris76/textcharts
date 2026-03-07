@@ -1,6 +1,11 @@
 from __future__ import annotations
 
-from textcharts import ASCIINormalizedSpeedup, ASCIIChartOptions, SpeedupData, from_normalized_results
+from textcharts import (
+    ASCIIChartOptions,
+    ASCIINormalizedSpeedup,
+    SpeedupData,
+    from_normalized_results,
+)
 
 
 def test_normalized_speedup_renders_faster_and_slower_sides():

@@ -1,0 +1,344 @@
+/**
+ * Custom CSS for textcharts documentation.
+ * Imported from BenchBox's standalone Furo configuration.
+ */
+
+.benchbox-site-nav {
+    position: sticky;
+    top: 0;
+    background-color: rgba(13, 17, 23, 0.95);
+    backdrop-filter: blur(10px);
+    border-bottom: 1px solid #30363d;
+    z-index: 100;
+    padding: 0.75rem 0;
+}
+
+.benchbox-site-nav-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 1.5rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.benchbox-site-nav-logo {
+    font-family: 'SF Mono', Monaco, monospace;
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: #58a6ff !important;
+    text-decoration: none !important;
+}
+
+.benchbox-site-nav-links {
+    display: flex;
+    gap: 2rem;
+}
+
+.benchbox-site-nav-links a {
+    color: #8b949e !important;
+    text-decoration: none !important;
+    font-weight: 500;
+    transition: color 0.2s ease;
+}
+
+.benchbox-site-nav-links a:hover {
+    color: #f0f6fc !important;
+}
+
+[data-theme="light"] .benchbox-site-nav {
+    background-color: rgba(13, 17, 23, 0.95);
+}
+
+[data-theme="light"] .benchbox-site-nav-logo {
+    color: #58a6ff !important;
+}
+
+[data-theme="light"] .benchbox-site-nav-links a {
+    color: #8b949e !important;
+}
+
+[data-theme="light"] .benchbox-site-nav-links a:hover {
+    color: #f0f6fc !important;
+}
+
+@media screen and (max-width: 768px) {
+    .benchbox-site-nav-links {
+        display: none;
+    }
+}
+
+div.highlight pre,
+div.highlight-python pre,
+div.highlight-bash pre,
+div.highlight-text pre,
+pre.literal-block {
+    background-color: #122738 !important;
+    color: #fff !important;
+    border: none !important;
+    border-radius: 6px !important;
+    padding: 16px !important;
+    margin: 0 !important;
+    font-family: 'Monaco', 'Consolas', 'Menlo', 'DejaVu Sans Mono', 'Courier New', monospace !important;
+    font-size: 14px !important;
+    line-height: 1.6 !important;
+    overflow-x: auto !important;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2) !important;
+}
+
+div.highlight {
+    background-color: transparent !important;
+    border-radius: 6px !important;
+    margin: 0 !important;
+    padding: 0 !important;
+}
+
+code.literal,
+code.docutils.literal {
+    background-color: #1a3548 !important;
+    color: #ffc600 !important;
+    padding: 2px 6px !important;
+    border-radius: 3px !important;
+    font-family: 'Monaco', 'Consolas', 'Menlo', 'DejaVu Sans Mono', 'Courier New', monospace !important;
+    font-size: 0.9em !important;
+    border: 1px solid #2a4558 !important;
+}
+
+h1 code.literal,
+h2 code.literal,
+h3 code.literal,
+h4 code.literal,
+h5 code.literal,
+h6 code.literal {
+    background-color: #1a3548 !important;
+    color: #ffc600 !important;
+    font-size: 0.85em !important;
+}
+
+.linenos {
+    background-color: #0d1f2d !important;
+    color: #668799 !important;
+    border-right: 1px solid #1a3548 !important;
+    padding-right: 8px !important;
+    margin-right: 8px !important;
+    user-select: none !important;
+}
+
+button.copybtn {
+    background-color: #0088ff !important;
+    color: #fff !important;
+    border: none !important;
+    border-radius: 3px !important;
+    padding: 4px 8px !important;
+    font-size: 12px !important;
+    cursor: pointer !important;
+    opacity: 0.7 !important;
+    transition: opacity 0.2s !important;
+}
+
+button.copybtn:hover {
+    opacity: 1 !important;
+}
+
+.admonition.note,
+.admonition.seealso {
+    border-left: 4px solid #0088ff;
+}
+
+.admonition.warning,
+.admonition.attention,
+.admonition.caution {
+    border-left: 4px solid #ff9d00;
+}
+
+.admonition.danger,
+.admonition.error {
+    border-left: 4px solid #ff628c;
+}
+
+.admonition.tip,
+.admonition.hint,
+.admonition.important {
+    border-left: 4px solid #3ad900;
+}
+
+.example {
+    background-color: #f8f9fa !important;
+    border-left: 4px solid #ffc600 !important;
+    padding: 12px !important;
+    margin: 16px 0 !important;
+    border-radius: 4px !important;
+}
+
+dt.sig {
+    background-color: #f8f9fa !important;
+    border-left: 3px solid #0088ff !important;
+    padding: 8px 12px !important;
+    font-family: 'Monaco', 'Consolas', 'Menlo', 'DejaVu Sans Mono', 'Courier New', monospace !important;
+}
+
+.sidebar-tree .caption {
+    cursor: pointer;
+    user-select: none;
+    position: relative;
+    padding-left: 20px;
+    font-weight: 600;
+    margin-top: 1rem;
+    margin-bottom: 0.5rem;
+}
+
+.sidebar-tree .caption::before {
+    content: "▼";
+    position: absolute;
+    left: 0;
+    font-size: 0.7em;
+    transition: transform 0.2s ease;
+}
+
+.sidebar-tree .caption.collapsed::before {
+    transform: rotate(-90deg);
+}
+
+.sidebar-tree .caption.collapsed + ul {
+    display: none !important;
+}
+
+.sidebar-tree .caption + ul {
+    transition: all 0.2s ease;
+}
+
+.content a:not(.reference.external):not([class*="headerlink"]) code.literal {
+    color: var(--color-brand-content);
+}
+
+.content a:hover code.literal {
+    color: #ffc600;
+}
+
+a.reference.external {
+    color: var(--color-brand-content);
+}
+
+a.reference.external:hover {
+    color: #ffc600;
+}
+
+table.docutils {
+    border-collapse: collapse !important;
+    border: 1px solid #e1e4e8 !important;
+}
+
+table.docutils thead,
+table.docutils th {
+    background-color: #f6f8fa !important;
+}
+
+table.docutils th,
+table.docutils td {
+    border: 1px solid #e1e4e8 !important;
+    padding: 8px 12px !important;
+}
+
+table.docutils th {
+    font-weight: 600 !important;
+}
+
+table.docutils tr:nth-child(even) {
+    background-color: #f9f9f9 !important;
+}
+
+[data-theme="dark"] table.docutils {
+    border: 1px solid #3d444d !important;
+}
+
+[data-theme="dark"] table.docutils thead,
+[data-theme="dark"] table.docutils th {
+    background-color: #1c2128 !important;
+}
+
+[data-theme="dark"] table.docutils th,
+[data-theme="dark"] table.docutils td {
+    border: 1px solid #3d444d !important;
+    color: #c9d1d9 !important;
+}
+
+[data-theme="dark"] table.docutils tbody tr:nth-child(even),
+[data-theme="dark"] table.docutils tbody tr:nth-child(even) td {
+    background-color: #161b22 !important;
+}
+
+[data-theme="dark"] table.docutils tbody tr:nth-child(odd),
+[data-theme="dark"] table.docutils tbody tr:nth-child(odd) td {
+    background-color: #0d1117 !important;
+}
+
+@media (prefers-color-scheme: dark) {
+    body:not([data-theme="light"]) table.docutils {
+        border: 1px solid #3d444d !important;
+    }
+
+    body:not([data-theme="light"]) table.docutils thead,
+    body:not([data-theme="light"]) table.docutils th {
+        background-color: #1c2128 !important;
+    }
+
+    body:not([data-theme="light"]) table.docutils th,
+    body:not([data-theme="light"]) table.docutils td {
+        border: 1px solid #3d444d !important;
+        color: #c9d1d9 !important;
+    }
+
+    body:not([data-theme="light"]) table.docutils tbody tr:nth-child(even),
+    body:not([data-theme="light"]) table.docutils tbody tr:nth-child(even) td {
+        background-color: #161b22 !important;
+    }
+
+    body:not([data-theme="light"]) table.docutils tbody tr:nth-child(odd),
+    body:not([data-theme="light"]) table.docutils tbody tr:nth-child(odd) td {
+        background-color: #0d1117 !important;
+    }
+}
+
+table.docutils code.literal {
+    white-space: nowrap !important;
+}
+
+.highlighted {
+    background-color: #ffc600 !important;
+    color: #122738 !important;
+    padding: 2px 4px !important;
+    border-radius: 2px !important;
+}
+
+@media screen and (max-width: 768px) {
+    div.highlight pre,
+    div.highlight-python pre,
+    div.highlight-bash pre,
+    pre.literal-block {
+        font-size: 12px !important;
+        padding: 12px !important;
+        margin: 0 !important;
+    }
+
+    code.literal,
+    code.docutils.literal {
+        font-size: 0.85em !important;
+        padding: 1px 4px !important;
+    }
+}
+
+@media print {
+    div.highlight pre,
+    div.highlight-python pre,
+    div.highlight-bash pre,
+    pre.literal-block {
+        border: 1px solid #000 !important;
+        page-break-inside: avoid !important;
+        margin: 0 !important;
+    }
+
+    code.literal,
+    code.docutils.literal {
+        border: 1px solid #000 !important;
+    }
+}

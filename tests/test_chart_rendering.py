@@ -148,12 +148,12 @@ class TestASCIIBarChart:
 
         # Find data lines (contain bar characters, exclude legend)
         bar_char = "█"
-        data_lines = [l for l in lines if ("High" in l or "Mid" in l or "Low" in l) and bar_char in l]
+        data_lines = [line for line in lines if ("High" in line or "Mid" in line or "Low" in line) and bar_char in line]
         assert len(data_lines) == 3
 
         # High should come before Low in sorted output
-        high_idx = next(i for i, l in enumerate(data_lines) if "High" in l)
-        low_idx = next(i for i, l in enumerate(data_lines) if "Low" in l)
+        high_idx = next(i for i, line in enumerate(data_lines) if "High" in line)
+        low_idx = next(i for i, line in enumerate(data_lines) if "Low" in line)
         assert high_idx < low_idx
 
     def test_best_worst_highlighting(self):
@@ -525,7 +525,7 @@ class TestASCIIQueryHistogram:
         result = chart.render()
         lines = result.split("\n")
         # Find the label line (has Q1, Q2, Q10)
-        label_line = [l for l in lines if "Q1" in l and "Q2" in l and "Q10" in l]
+        label_line = [line for line in lines if "Q1" in line and "Q2" in line and "Q10" in line]
         assert len(label_line) == 1
         # Q1 should appear before Q2 which should appear before Q10
         line = label_line[0]
@@ -879,8 +879,8 @@ class TestASCIIDivergingBar:
         result = chart.render()
         lines = result.split("\n")
         # Q2 (-50%) should come before Q1 (-10%) in the sorted output
-        q2_line = next(i for i, l in enumerate(lines) if "Q2" in l)
-        q1_line = next(i for i, l in enumerate(lines) if "Q1" in l)
+        q2_line = next(i for i, line in enumerate(lines) if "Q2" in line)
+        q1_line = next(i for i, line in enumerate(lines) if "Q1" in line)
         assert q2_line < q1_line
 
     def test_overflow_arrows_for_extreme_outliers(self):
