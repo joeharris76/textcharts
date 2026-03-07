@@ -4,8 +4,8 @@ Chart gallery
 This page shows every public chart type in three documentation modes:
 
 - **Color**: the chart rendered with ANSI color and Unicode enabled
-- **Greyscale**: the same terminal screenshot converted to greyscale for print
-  and accessibility review
+- **Greyscale**: the chart rendered through the same pipeline with ANSI colors
+  remapped to a greyscale palette for print and accessibility review
 - **Monochrome**: the chart rendered without ANSI color and with ASCII-safe
   characters
 
@@ -372,4 +372,3 @@ Monochrome
 .. image:: /_static/screenshots/rank_table/monochrome.png
    :alt: Monochrome screenshot of the RankTable renderer
    :width: 100%
-
