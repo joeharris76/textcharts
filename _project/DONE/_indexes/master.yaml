@@ -1,5 +1,5 @@
-generated_at: '2026-03-07T16:48:24.880116'
-total_items: 11
+generated_at: '2026-03-07T16:54:46.467918'
+total_items: 12
 items:
 - id: shared-command-layer
   file: DONE/main/active/shared-command-layer.yaml
@@ -108,6 +108,25 @@ items:
   work_total: 3
   work_done: 3
   work_ready: 0
+- id: cli-interface
+  file: DONE/main/active/cli-interface.yaml
+  title: Implement CLI entry point wrapping the shared command layer
+  worktree: main
+  category: Core Functionality
+  priority: High
+  status: Completed
+  tags:
+  - cli
+  owners:
+  - joe
+  estimated_effort: 1-2 days
+  completed_date: '2026-03-07'
+  work_total: 3
+  work_done: 0
+  work_ready: 1
+  deferred_count: 4
+  needs:
+  - shared-command-layer
 - id: make-heatmap-and-matrix-apis-explicit-and-safe
   file: DONE/main/planning/make-heatmap-and-matrix-apis-explicit-and-safe.yaml
   title: Make heatmap and matrix APIs explicit and safe

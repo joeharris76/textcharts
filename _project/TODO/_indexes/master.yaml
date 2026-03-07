@@ -1,24 +1,6 @@
-generated_at: '2026-03-07T16:48:24.857218'
-total_items: 3
+generated_at: '2026-03-07T16:54:46.442781'
+total_items: 2
 items:
-- id: cli-interface
-  file: TODO/main/planning/cli-interface.yaml
-  title: Implement CLI entry point wrapping the shared command layer
-  worktree: main
-  category: Core Functionality
-  priority: High
-  status: Not Started
-  tags:
-  - cli
-  owners:
-  - joe
-  estimated_effort: 1-2 days
-  work_total: 3
-  work_done: 0
-  work_ready: 1
-  deferred_count: 4
-  needs:
-  - shared-command-layer
 - id: mcp-server
   file: TODO/main/planning/mcp-server.yaml
   title: Implement MCP server exposing textcharts as tools

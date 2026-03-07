@@ -1,19 +1,14 @@
-generated_at: '2026-03-07T16:48:24.857240'
-total_items: 3
+generated_at: '2026-03-07T16:54:46.442801'
+total_items: 2
 statuses:
   Not Started:
-    count: 3
+    count: 2
     items:
     - id: cli-mcp-docs
       file: TODO/main/planning/cli-mcp-docs.yaml
       title: Documentation for CLI and MCP interfaces
       priority: Medium-High
       category: Documentation
-    - id: cli-interface
-      file: TODO/main/planning/cli-interface.yaml
-      title: Implement CLI entry point wrapping the shared command layer
-      priority: High
-      category: Core Functionality
     - id: mcp-server
       file: TODO/main/planning/mcp-server.yaml
       title: Implement MCP server exposing textcharts as tools

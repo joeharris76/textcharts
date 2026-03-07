@@ -1,5 +1,5 @@
-generated_at: '2026-03-07T16:48:24.880128'
-total_items: 11
+generated_at: '2026-03-07T16:54:46.467934'
+total_items: 12
 priorities:
   Critical:
     count: 1
@@ -10,7 +10,7 @@ priorities:
       category: Core Functionality
       status: Completed
   High:
-    count: 7
+    count: 8
     items:
     - id: behavioral-tests-for-minimal-coverage-charts
       file: DONE/main/active/behavioral-tests-for-minimal-coverage-charts.yaml
@@ -35,6 +35,11 @@ priorities:
     - id: fix-terminal-capability-defaults-and-color-contract
       file: DONE/main/planning/fix-terminal-capability-defaults-and-color-contract.yaml
       title: Fix terminal capability defaults and color contract
+      category: Core Functionality
+      status: Completed
+    - id: cli-interface
+      file: DONE/main/active/cli-interface.yaml
+      title: Implement CLI entry point wrapping the shared command layer
       category: Core Functionality
       status: Completed
     - id: make-heatmap-and-matrix-apis-explicit-and-safe

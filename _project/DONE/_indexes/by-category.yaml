@@ -1,8 +1,8 @@
-generated_at: '2026-03-07T16:48:24.880123'
+generated_at: '2026-03-07T16:54:46.467928'
 total_categories: 3
 categories:
   Core Functionality:
-    count: 3
+    count: 4
     items:
     - id: shared-command-layer
       file: DONE/main/active/shared-command-layer.yaml
@@ -12,6 +12,11 @@ categories:
     - id: fix-terminal-capability-defaults-and-color-contract
       file: DONE/main/planning/fix-terminal-capability-defaults-and-color-contract.yaml
       title: Fix terminal capability defaults and color contract
+      priority: High
+      status: Completed
+    - id: cli-interface
+      file: DONE/main/active/cli-interface.yaml
+      title: Implement CLI entry point wrapping the shared command layer
       priority: High
       status: Completed
     - id: make-heatmap-and-matrix-apis-explicit-and-safe

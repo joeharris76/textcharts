@@ -1,14 +1,9 @@
-generated_at: '2026-03-07T16:48:24.857237'
-total_items: 3
+generated_at: '2026-03-07T16:54:46.442798'
+total_items: 2
 priorities:
   High:
-    count: 2
+    count: 1
     items:
-    - id: cli-interface
-      file: TODO/main/planning/cli-interface.yaml
-      title: Implement CLI entry point wrapping the shared command layer
-      category: Core Functionality
-      status: Not Started
     - id: mcp-server
       file: TODO/main/planning/mcp-server.yaml
       title: Implement MCP server exposing textcharts as tools
