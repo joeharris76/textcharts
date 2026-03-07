@@ -2,7 +2,7 @@ id: cli-interface
 title: "Implement CLI entry point wrapping the shared command layer"
 worktree: main
 priority: High
-status: Not Started
+status: In Progress
 description: |
   Create a CLI for textcharts that exposes all 15 chart types as subcommands.
   The CLI is a thin wrapper around the shared command layer — it handles argument

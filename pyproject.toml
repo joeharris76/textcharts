@@ -35,6 +35,9 @@ Documentation = "https://github.com/benchbox-dev/textcharts#readme"
 Repository = "https://github.com/benchbox-dev/textcharts"
 Issues = "https://github.com/benchbox-dev/textcharts/issues"
 
+[project.scripts]
+textcharts = "textcharts.cli:main"
+
 [dependency-groups]
 dev = [
     "ansi2html>=1.9",
