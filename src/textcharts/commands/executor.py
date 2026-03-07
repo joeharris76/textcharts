@@ -56,7 +56,11 @@ def execute_command(
         ctor_kwargs[cmd_info.data_param_name] = parsed_data
 
     if title is not None:
-        ctor_kwargs["title"] = title
+        # SummaryBox has title inside the SummaryStats dataclass, not as a constructor param
+        if command == "summary":
+            parsed_data.title = title
+        else:
+            ctor_kwargs["title"] = title
 
     if chart_options is not None:
         ctor_kwargs["options"] = chart_options
