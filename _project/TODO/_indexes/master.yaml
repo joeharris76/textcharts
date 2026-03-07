@@ -1,3 +1,78 @@
-generated_at: '2026-03-07T10:15:25.672316'
-total_items: 0
-items: []
+generated_at: '2026-03-07T16:21:05.486555'
+total_items: 4
+items:
+- id: shared-command-layer
+  file: TODO/main/planning/shared-command-layer.yaml
+  title: Design and implement shared command layer for CLI and MCP
+  worktree: main
+  category: Core Functionality
+  priority: Critical
+  status: Not Started
+  tags:
+  - cli
+  - mcp
+  - architecture
+  owners:
+  - joe
+  estimated_effort: 2-3 days
+  work_total: 5
+  work_done: 0
+  work_ready: 1
+  deferred_count: 2
+- id: cli-interface
+  file: TODO/main/planning/cli-interface.yaml
+  title: Implement CLI entry point wrapping the shared command layer
+  worktree: main
+  category: Core Functionality
+  priority: High
+  status: Not Started
+  tags:
+  - cli
+  owners:
+  - joe
+  estimated_effort: 1-2 days
+  work_total: 5
+  work_done: 0
+  work_ready: 1
+  deferred_count: 3
+  needs:
+  - shared-command-layer
+- id: mcp-server
+  file: TODO/main/planning/mcp-server.yaml
+  title: Implement MCP server exposing textcharts as tools
+  worktree: main
+  category: Core Functionality
+  priority: High
+  status: Not Started
+  tags:
+  - mcp
+  owners:
+  - joe
+  estimated_effort: 1-2 days
+  work_total: 4
+  work_done: 0
+  work_ready: 1
+  deferred_count: 3
+  needs:
+  - shared-command-layer
+- id: cli-mcp-docs
+  file: TODO/main/planning/cli-mcp-docs.yaml
+  title: Documentation for CLI and MCP interfaces
+  worktree: main
+  category: Documentation
+  priority: Medium-High
+  status: Not Started
+  tags:
+  - docs
+  - cli
+  - mcp
+  owners:
+  - joe
+  estimated_effort: 1 day
+  work_total: 3
+  work_done: 0
+  work_ready: 1
+  deferred_count: 2
+  needs:
+  - cli-interface
+  - mcp-server

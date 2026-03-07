@@ -1,3 +1,26 @@
-generated_at: '2026-03-07T10:15:25.672329'
-total_items: 0
-statuses: {}
+generated_at: '2026-03-07T16:21:05.486578'
+total_items: 4
+statuses:
+  Not Started:
+    count: 4
+    items:
+    - id: shared-command-layer
+      file: TODO/main/planning/shared-command-layer.yaml
+      title: Design and implement shared command layer for CLI and MCP
+      priority: Critical
+      category: Core Functionality
+    - id: cli-mcp-docs
+      file: TODO/main/planning/cli-mcp-docs.yaml
+      title: Documentation for CLI and MCP interfaces
+      priority: Medium-High
+      category: Documentation
+    - id: cli-interface
+      file: TODO/main/planning/cli-interface.yaml
+      title: Implement CLI entry point wrapping the shared command layer
+      priority: High
+      category: Core Functionality
+    - id: mcp-server
+      file: TODO/main/planning/mcp-server.yaml
+      title: Implement MCP server exposing textcharts as tools
+      priority: High
+      category: Core Functionality
