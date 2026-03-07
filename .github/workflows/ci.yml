@@ -20,7 +20,7 @@ jobs:
       - name: Lint
         run: uv run --python ${{ matrix.python-version }} --group dev -- ruff check src/ tests/
       - name: Test
-        run: uv run --python ${{ matrix.python-version }} --group dev -- python -m pytest -q
+        run: uv run --python ${{ matrix.python-version }} --group dev -- python -m pytest -q --cov=textcharts --cov-report=term-missing --cov-fail-under=85
 
   publish:
     needs: test

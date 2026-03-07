@@ -57,3 +57,4 @@ ignore = ["E402"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
+addopts = "--cov=textcharts --cov-report=term-missing --cov-fail-under=85"
