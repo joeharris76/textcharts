@@ -246,7 +246,7 @@ def parse_summary(data: Any) -> Any:
         if field_name in d:
             kwargs[field_name] = _coerce_int(d[field_name], field_name, "summary")
 
-    str_fields = ["baseline_name", "comparison_name"]
+    str_fields = ["baseline_name", "comparison_name", "metric_label"]
     for field_name in str_fields:
         if field_name in d:
             kwargs[field_name] = str(d[field_name])

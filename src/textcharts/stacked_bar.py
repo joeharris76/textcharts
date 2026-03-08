@@ -72,10 +72,12 @@ class ASCIIStackedBar(ASCIIChartBase):
         title: str | None = None,
         options: ASCIIChartOptions | None = None,
         metadata: dict | None = None,
+        metric_label: str = "ms",
     ):
         super().__init__(options, metadata=metadata)
         self.data = list(data)
         self.title = title or "Phase Breakdown by Platform"
+        self.metric_label = metric_label
 
     def render(self) -> str:
         """Render the stacked bar chart as a string."""
@@ -138,9 +140,9 @@ class ASCIIStackedBar(ASCIIChartBase):
             is_truncated = (datum.total or 0) > scale_max
             bar = self._render_stacked_bar(datum, bar_width, scale_max, fills, phase_names, colors, is_truncated)
 
-            # Format total time annotation
+            # Format total annotation
             total = datum.total or 0
-            total_str = self._format_time(total).rjust(total_annotation_width)
+            total_str = self._format_total(total).rjust(total_annotation_width)
 
             # Colorize label
             colored_label = colors.colorize(label_padded, fg_color=DEFAULT_PALETTE[0])
@@ -224,6 +226,12 @@ class ASCIIStackedBar(ASCIIChartBase):
             bar_chars.append(" " * remaining)
 
         return "".join(bar_chars)
+
+    def _format_total(self, value: float) -> str:
+        """Format a total value with the appropriate unit label."""
+        if self.metric_label == "ms":
+            return self._format_time(value)
+        return f"{self._format_value(value)}{self.metric_label}"
 
     @staticmethod
     def _format_time(ms: float) -> str:

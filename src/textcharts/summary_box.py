@@ -41,6 +41,9 @@ class SummaryStats:
     best_queries: list[tuple[str, float]] = field(default_factory=list)
     worst_queries: list[tuple[str, float]] = field(default_factory=list)
 
+    # Unit label for metric values (e.g. "ms", "ops", "requests")
+    metric_label: str = "ms"
+
     # System environment info (displayed in middle column)
     # Expected keys: "OS", "Python", "CPUs", "Memory"
     environment: dict[str, str] | None = None
@@ -346,7 +349,7 @@ class ASCIISummaryBox(ASCIIChartBase):
             c_val = self.stats.geo_mean_comparison_ms
             pct = ((c_val - b_val) / b_val * 100) if b_val != 0 else 0.0
             arrow = "\u2192" if self.options.use_unicode else "->"
-            metric_text = f"Geo Mean:  {self._format_value(b_val)}ms {arrow} {self._format_value(c_val)}ms"
+            metric_text = f"Geo Mean:  {self._format_value(b_val)}{self.stats.metric_label} {arrow} {self._format_value(c_val)}{self.stats.metric_label}"
             pct_text = self._format_pct_colored(pct, colors)
             visible_len = len(metric_text) + len(self._format_pct_visible(pct))
             padding = max(0, inner - visible_len)
@@ -384,12 +387,12 @@ class ASCIISummaryBox(ASCIIChartBase):
         lines: list[str] = []
 
         if self.stats.geo_mean_ms is not None:
-            text = f"Geo Mean:  {self._format_value(self.stats.geo_mean_ms)}ms"
+            text = f"Geo Mean:  {self._format_value(self.stats.geo_mean_ms)}{self.stats.metric_label}"
             padding = max(0, inner - len(text))
             lines.append(f"{box['v']} {text}{' ' * padding} {box['v']}")
 
         if self.stats.median_ms is not None:
-            text = f"Median:    {self._format_value(self.stats.median_ms)}ms"
+            text = f"Median:    {self._format_value(self.stats.median_ms)}{self.stats.metric_label}"
             padding = max(0, inner - len(text))
             lines.append(f"{box['v']} {text}{' ' * padding} {box['v']}")
 
@@ -409,9 +412,9 @@ class ASCIISummaryBox(ASCIIChartBase):
         """Build plain metric text lines for single-run (no borders)."""
         texts: list[str] = []
         if self.stats.geo_mean_ms is not None:
-            texts.append(f"Geo Mean:  {self._format_value(self.stats.geo_mean_ms)}ms")
+            texts.append(f"Geo Mean:  {self._format_value(self.stats.geo_mean_ms)}{self.stats.metric_label}")
         if self.stats.median_ms is not None:
-            texts.append(f"Median:    {self._format_value(self.stats.median_ms)}ms")
+            texts.append(f"Median:    {self._format_value(self.stats.median_ms)}{self.stats.metric_label}")
         if self.stats.total_time_ms is not None:
             texts.append(f"Total:     {self._format_time(self.stats.total_time_ms)}")
         if self.stats.num_queries > 0:
@@ -426,7 +429,7 @@ class ASCIISummaryBox(ASCIIChartBase):
             b, c = self.stats.geo_mean_baseline_ms, self.stats.geo_mean_comparison_ms
             pct = ((c - b) / b * 100) if b != 0 else 0.0
             pct_text = self._format_pct_colored(pct, colors)
-            texts.append(f"Geo Mean:  {self._format_value(b)}ms {arrow} {self._format_value(c)}ms {pct_text}")
+            texts.append(f"Geo Mean:  {self._format_value(b)}{self.stats.metric_label} {arrow} {self._format_value(c)}{self.stats.metric_label} {pct_text}")
         if self.stats.total_time_baseline_ms is not None and self.stats.total_time_comparison_ms is not None:
             b, c = self.stats.total_time_baseline_ms, self.stats.total_time_comparison_ms
             b_str, c_str = self._format_time(b), self._format_time(c)

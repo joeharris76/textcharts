@@ -225,6 +225,7 @@ def _build_registry() -> dict[str, CommandInfo]:
                 ),
                 DataFieldInfo("environment", "object", "Environment info dict (OS, Python, etc.)", required=False),
                 DataFieldInfo("platform_config", "object", "Platform config dict", required=False),
+                DataFieldInfo("metric_label", "string", "Unit label for values (e.g. ms, ops)", required=False, default="ms"),
             ],
         ),
         "percentile": CommandInfo(
@@ -273,6 +274,9 @@ def _build_registry() -> dict[str, CommandInfo]:
                     "List of {phase_name, value, color?} segments",
                 ),
                 DataFieldInfo("total", "number", "Override total (auto-computed if omitted)", required=False),
+            ],
+            chart_params=[
+                ParamInfo("metric_label", "string", "Unit label for values", "ms"),
             ],
         ),
         "sparkline": CommandInfo(
