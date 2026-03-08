@@ -1,5 +1,5 @@
-generated_at: '2026-03-07T16:54:46.467934'
-total_items: 12
+generated_at: '2026-03-07T20:34:31.889536'
+total_items: 13
 priorities:
   Critical:
     count: 1
@@ -10,7 +10,7 @@ priorities:
       category: Core Functionality
       status: Completed
   High:
-    count: 8
+    count: 9
     items:
     - id: behavioral-tests-for-minimal-coverage-charts
       file: DONE/main/active/behavioral-tests-for-minimal-coverage-charts.yaml
@@ -40,6 +40,11 @@ priorities:
     - id: cli-interface
       file: DONE/main/active/cli-interface.yaml
       title: Implement CLI entry point wrapping the shared command layer
+      category: Core Functionality
+      status: Completed
+    - id: mcp-server
+      file: DONE/main/active/mcp-server.yaml
+      title: Implement MCP server exposing textcharts as tools
       category: Core Functionality
       status: Completed
     - id: make-heatmap-and-matrix-apis-explicit-and-safe

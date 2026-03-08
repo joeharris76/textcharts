@@ -1,5 +1,5 @@
-generated_at: '2026-03-07T16:54:46.467918'
-total_items: 12
+generated_at: '2026-03-07T20:34:31.889509'
+total_items: 13
 items:
 - id: shared-command-layer
   file: DONE/main/active/shared-command-layer.yaml
@@ -125,6 +125,25 @@ items:
   work_done: 0
   work_ready: 1
   deferred_count: 4
+  needs:
+  - shared-command-layer
+- id: mcp-server
+  file: DONE/main/active/mcp-server.yaml
+  title: Implement MCP server exposing textcharts as tools
+  worktree: main
+  category: Core Functionality
+  priority: High
+  status: Completed
+  tags:
+  - mcp
+  owners:
+  - joe
+  estimated_effort: 1-2 days
+  completed_date: '2026-03-07'
+  work_total: 2
+  work_done: 0
+  work_ready: 1
+  deferred_count: 3
   needs:
   - shared-command-layer
 - id: make-heatmap-and-matrix-apis-explicit-and-safe

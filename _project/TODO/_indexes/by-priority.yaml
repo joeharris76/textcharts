@@ -1,14 +1,6 @@
-generated_at: '2026-03-07T16:54:46.442798'
-total_items: 2
+generated_at: '2026-03-07T20:34:31.859288'
+total_items: 1
 priorities:
-  High:
-    count: 1
-    items:
-    - id: mcp-server
-      file: TODO/main/planning/mcp-server.yaml
-      title: Implement MCP server exposing textcharts as tools
-      category: Core Functionality
-      status: Not Started
   Medium-High:
     count: 1
     items:

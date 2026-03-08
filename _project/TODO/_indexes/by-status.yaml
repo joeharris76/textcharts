@@ -1,16 +1,11 @@
-generated_at: '2026-03-07T16:54:46.442801'
-total_items: 2
+generated_at: '2026-03-07T20:34:31.859290'
+total_items: 1
 statuses:
   Not Started:
-    count: 2
+    count: 1
     items:
     - id: cli-mcp-docs
       file: TODO/main/planning/cli-mcp-docs.yaml
       title: Documentation for CLI and MCP interfaces
       priority: Medium-High
       category: Documentation
-    - id: mcp-server
-      file: TODO/main/planning/mcp-server.yaml
-      title: Implement MCP server exposing textcharts as tools
-      priority: High
-      category: Core Functionality
