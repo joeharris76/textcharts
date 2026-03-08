@@ -1,4 +1,4 @@
-generated_at: '2026-03-07T20:34:31.889528'
+generated_at: '2026-03-07T20:42:34.444019'
 total_categories: 3
 categories:
   Core Functionality:
@@ -30,12 +30,17 @@ categories:
       priority: High
       status: Completed
   Documentation:
-    count: 3
+    count: 4
     items:
     - id: de-benchbox-example-datasets-and-position-chart-specific-apis
       file: DONE/main/planning/de-benchbox-example-datasets-and-position-chart-specific-apis.yaml
       title: De-BenchBox example datasets and position chart-specific APIs clearly
       priority: High
+      status: Completed
+    - id: cli-mcp-docs
+      file: DONE/main/active/cli-mcp-docs.yaml
+      title: Documentation for CLI and MCP interfaces
+      priority: Medium-High
       status: Completed
     - id: finalize-public-api-docs-and-release-tooling
       file: DONE/main/planning/finalize-public-api-docs-and-release-tooling.yaml

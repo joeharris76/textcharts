@@ -1,5 +1,5 @@
-generated_at: '2026-03-07T20:34:31.889536'
-total_items: 13
+generated_at: '2026-03-07T20:42:34.444032'
+total_items: 14
 priorities:
   Critical:
     count: 1
@@ -58,12 +58,17 @@ priorities:
       category: Testing and Quality Assurance
       status: Completed
   Medium-High:
-    count: 2
+    count: 3
     items:
     - id: test-line-chart-trend-and-rendering-paths
       file: DONE/main/active/test-line-chart-trend-and-rendering-paths.yaml
       title: Add tests for LineChart trend line computation and rendering branches
       category: Testing and Quality Assurance
+      status: Completed
+    - id: cli-mcp-docs
+      file: DONE/main/active/cli-mcp-docs.yaml
+      title: Documentation for CLI and MCP interfaces
+      category: Documentation
       status: Completed
     - id: finalize-public-api-docs-and-release-tooling
       file: DONE/main/planning/finalize-public-api-docs-and-release-tooling.yaml

@@ -1,5 +1,5 @@
-generated_at: '2026-03-07T20:34:31.889509'
-total_items: 13
+generated_at: '2026-03-07T20:42:34.443997'
+total_items: 14
 items:
 - id: shared-command-layer
   file: DONE/main/active/shared-command-layer.yaml
@@ -216,6 +216,28 @@ items:
   work_total: 3
   work_done: 3
   work_ready: 0
+- id: cli-mcp-docs
+  file: DONE/main/active/cli-mcp-docs.yaml
+  title: Documentation for CLI and MCP interfaces
+  worktree: main
+  category: Documentation
+  priority: Medium-High
+  status: Completed
+  tags:
+  - docs
+  - cli
+  - mcp
+  owners:
+  - joe
+  estimated_effort: 1 day
+  completed_date: '2026-03-07'
+  work_total: 3
+  work_done: 3
+  work_ready: 0
+  deferred_count: 2
+  needs:
+  - cli-interface
+  - mcp-server
 - id: finalize-public-api-docs-and-release-tooling
   file: DONE/main/planning/finalize-public-api-docs-and-release-tooling.yaml
   title: Finalize public API, docs, and release tooling

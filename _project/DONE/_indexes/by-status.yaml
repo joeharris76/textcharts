@@ -1,8 +1,8 @@
-generated_at: '2026-03-07T20:34:31.889542'
-total_items: 13
+generated_at: '2026-03-07T20:42:34.444041'
+total_items: 14
 statuses:
   Completed:
-    count: 13
+    count: 14
     items:
     - id: behavioral-tests-for-minimal-coverage-charts
       file: DONE/main/active/behavioral-tests-for-minimal-coverage-charts.yaml
@@ -34,6 +34,11 @@ statuses:
       title: Design and implement shared command layer for CLI and MCP
       priority: Critical
       category: Core Functionality
+    - id: cli-mcp-docs
+      file: DONE/main/active/cli-mcp-docs.yaml
+      title: Documentation for CLI and MCP interfaces
+      priority: Medium-High
+      category: Documentation
     - id: finalize-public-api-docs-and-release-tooling
       file: DONE/main/planning/finalize-public-api-docs-and-release-tooling.yaml
       title: Finalize public API, docs, and release tooling

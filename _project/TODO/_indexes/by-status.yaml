@@ -1,11 +1,3 @@
-generated_at: '2026-03-07T20:34:31.859290'
-total_items: 1
-statuses:
-  Not Started:
-    count: 1
-    items:
-    - id: cli-mcp-docs
-      file: TODO/main/planning/cli-mcp-docs.yaml
-      title: Documentation for CLI and MCP interfaces
-      priority: Medium-High
-      category: Documentation
+generated_at: '2026-03-07T20:42:34.411405'
+total_items: 0
+statuses: {}
