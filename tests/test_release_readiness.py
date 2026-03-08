@@ -18,16 +18,34 @@ def _capabilities(color_mode: ColorMode) -> TerminalCapabilities:
     )
 
 
-def test_get_colors_uses_detected_none_mode(monkeypatch: pytest.MonkeyPatch):
+def test_get_colors_falls_back_to_extended_when_use_color_true(monkeypatch: pytest.MonkeyPatch):
+    """When use_color=True (default) but terminal has no color, fall back to EXTENDED."""
     monkeypatch.setattr(base, "detect_terminal_capabilities", lambda: _capabilities(ColorMode.NONE))
     opts = ChartOptions()
+
+    assert opts.get_colors().color_mode == ColorMode.EXTENDED
+
+
+def test_get_colors_returns_none_when_use_color_false(monkeypatch: pytest.MonkeyPatch):
+    monkeypatch.setattr(base, "detect_terminal_capabilities", lambda: _capabilities(ColorMode.NONE))
+    opts = ChartOptions(use_color=False)
 
     assert opts.get_colors().color_mode == ColorMode.NONE
 
 
-def test_default_render_omits_ansi_when_output_is_not_a_tty(monkeypatch: pytest.MonkeyPatch):
+def test_default_render_includes_ansi_when_use_color_true(monkeypatch: pytest.MonkeyPatch):
+    """use_color=True (default) produces ANSI even on non-TTY (e.g. MCP stdio)."""
     monkeypatch.setattr(base, "detect_terminal_capabilities", lambda: _capabilities(ColorMode.NONE))
     chart = BarChart([BarData("A", 1), BarData("B", 2)], options=ChartOptions(width=80))
+
+    result = chart.render()
+
+    assert "\033[" in result
+
+
+def test_render_omits_ansi_when_use_color_false(monkeypatch: pytest.MonkeyPatch):
+    monkeypatch.setattr(base, "detect_terminal_capabilities", lambda: _capabilities(ColorMode.NONE))
+    chart = BarChart([BarData("A", 1), BarData("B", 2)], options=ChartOptions(width=80, use_color=False))
 
     result = chart.render()
 

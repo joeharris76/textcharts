@@ -412,7 +412,12 @@ class ASCIIChartOptions:
             return TerminalColors(color_mode=ColorMode.NONE)
         if self._capabilities is None:
             self._capabilities = detect_terminal_capabilities()
-        return TerminalColors(color_mode=self._capabilities.color_mode)
+        # When use_color is explicitly True but terminal detection found no color
+        # support (e.g. non-TTY MCP stdio), default to EXTENDED (256-color).
+        color_mode = self._capabilities.color_mode
+        if color_mode == ColorMode.NONE:
+            color_mode = ColorMode.EXTENDED
+        return TerminalColors(color_mode=color_mode)
 
     def get_palette(self) -> tuple[str, ...]:
         """Get the categorical palette for the configured theme."""
