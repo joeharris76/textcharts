@@ -81,6 +81,53 @@ Compatibility API:
 - `NormalizedSpeedup` is intentionally performance-oriented; most other chart
   types are documented with broader cross-domain examples
 
+## CLI
+
+Generate charts from the command line with JSON input:
+
+```bash
+# Pipe JSON data to any chart type
+echo '[{"label": "Fiction", "value": 18.4}, {"label": "Comics", "value": 9.8}]' \
+  | textcharts bar --title "Revenue" --no-color
+
+# Read from a file
+textcharts heatmap -f matrix.json --color-scheme sequential
+
+# List all 15 chart types
+textcharts list
+
+# See data format and options for any chart type
+textcharts scatter --help
+```
+
+See [docs/input-formats.md](docs/input-formats.md) for the JSON schema of each
+chart type.
+
+## MCP Server
+
+Use textcharts as an AI tool via the
+[Model Context Protocol](https://modelcontextprotocol.io):
+
+```bash
+pip install textcharts[mcp]
+```
+
+Add to your MCP client config (Claude Desktop, Claude Code, etc.):
+
+```json
+{
+  "mcpServers": {
+    "textcharts": {
+      "command": "textcharts-mcp"
+    }
+  }
+}
+```
+
+This exposes 17 tools: `textcharts_bar`, `textcharts_heatmap`, ...,
+`textcharts_list`, and `textcharts_describe`. See
+[docs/mcp-setup.md](docs/mcp-setup.md) for full configuration options.
+
 ## Configuration
 
 ```python

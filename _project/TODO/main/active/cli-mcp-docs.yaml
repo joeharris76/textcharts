@@ -2,7 +2,7 @@ id: cli-mcp-docs
 title: "Documentation for CLI and MCP interfaces"
 worktree: main
 priority: Medium-High
-status: Not Started
+status: In Progress
 description: |
   Add documentation covering the CLI and MCP server. This includes updating the
   README with CLI quickstart, adding a dedicated CLI reference, MCP setup guide,
