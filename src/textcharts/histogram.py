@@ -286,8 +286,7 @@ class ASCIIQueryHistogram(ASCIIChartBase):
 
         lines: list[str] = []
 
-        title_text = f"{title} ({self.y_label})"
-        lines.append(self._render_title(title_text, width))
+        lines.append(self._render_title(title, width))
         subtitle = self._render_subtitle(width)
         if subtitle:
             lines.append(subtitle)
@@ -460,8 +459,10 @@ class ASCIIQueryHistogram(ASCIIChartBase):
     ) -> str:
         """Build the footer line with mean and legend markers."""
         footer_parts: list[str] = []
+        bar_marker = self.options.get_series_marker(0)
+        footer_parts.append(f"{colors.colorize(bar_marker, fg_color='#1b9e77')} {self.y_label}")
         if self.show_mean_line and global_mean > 0:
-            mean_text = f"····· Mean: {self._format_value(global_mean)}"
+            mean_text = f"····· Mean {self.y_label}: {self._format_value(global_mean)}"
             footer_parts.append(colors.colorize(mean_text, fg_color="#6b7075"))
 
         has_best = any(d.is_best for d in chunk)
@@ -503,8 +504,7 @@ class ASCIIQueryHistogram(ASCIIChartBase):
 
         lines: list[str] = []
 
-        title_text = f"{title} ({self.y_label})"
-        lines.append(self._render_title(title_text, width))
+        lines.append(self._render_title(title, width))
         subtitle = self._render_subtitle(width)
         if subtitle:
             lines.append(subtitle)
@@ -691,7 +691,7 @@ class ASCIIQueryHistogram(ASCIIChartBase):
         """
         footer_parts: list[str] = []
         if self.show_mean_line and global_mean > 0:
-            mean_text = f"····· Mean: {self._format_value(global_mean)}"
+            mean_text = f"····· Mean {self.y_label}: {self._format_value(global_mean)}"
             footer_parts.append(colors.colorize(mean_text, fg_color="#6b7075"))
 
         for i, platform in enumerate(self._platforms):
