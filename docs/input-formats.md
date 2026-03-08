@@ -129,7 +129,7 @@ Line chart for time series or trend visualization.
 | Field  | Type   | Required | Description                    |
 |--------|--------|----------|--------------------------------|
 | series | string | yes      | Series name for grouping       |
-| x      | number | yes      | X-axis value                   |
+| x      | number | yes      | X-axis value (numeric or string) |
 | y      | number | yes      | Y-axis value                   |
 | label  | string | no       | Optional point label           |
 
@@ -238,13 +238,20 @@ Bordered summary box with aggregate statistics.
 | geo_mean_ms              | number  | no       | Geometric mean in ms               |
 | median_ms                | number  | no       | Median in ms                       |
 | total_time_ms            | number  | no       | Total time in ms                   |
+| geo_mean_baseline_ms     | number  | no       | Baseline geometric mean            |
+| geo_mean_comparison_ms   | number  | no       | Comparison geometric mean          |
+| total_time_baseline_ms   | number  | no       | Baseline total time                |
+| total_time_comparison_ms | number  | no       | Comparison total time              |
+| baseline_name            | string  | no       | Baseline label                     |
+| comparison_name          | string  | no       | Comparison label                   |
 | num_queries              | integer | no       | Number of queries                  |
 | num_improved             | integer | no       | Count of improved queries          |
 | num_stable               | integer | no       | Count of stable queries            |
 | num_regressed            | integer | no       | Count of regressed queries         |
-| best_queries             | array   | no       | List of [name, value] pairs        |
-| worst_queries            | array   | no       | List of [name, value] pairs        |
+| best_queries             | array   | no       | List of [name, value] pairs for best queries  |
+| worst_queries            | array   | no       | List of [name, value] pairs for worst queries |
 | environment              | object  | no       | Environment info dict              |
+| platform_config          | object  | no       | Platform config dict               |
 
 ```json
 {

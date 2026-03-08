@@ -43,7 +43,7 @@ def _build_tool_description(name: str) -> str:
 
     if desc["chart_params"]:
         lines.append("")
-        lines.append("Chart parameters (pass as top-level keys alongside 'data'):")
+        lines.append("Chart parameters (pass via 'chart_params' dict):")
         for param in desc["chart_params"]:
             default = f", default: {param['default']}" if "default" in param else ""
             enum = f", options: {param['enum']}" if "enum" in param else ""
@@ -65,6 +65,8 @@ def _create_chart_handler(chart_name: str):
         use_color: bool = True,
         use_unicode: bool = True,
         theme: str = "light",
+        show_legend: bool = True,
+        show_values: bool = True,
         chart_params: dict[str, Any] | None = None,
     ) -> str:
         """Render a chart from data.
@@ -77,12 +79,16 @@ def _create_chart_handler(chart_name: str):
             use_color: Enable ANSI color output.
             use_unicode: Enable Unicode box-drawing characters.
             theme: Color theme ("light" or "dark").
+            show_legend: Show chart legend.
+            show_values: Show numeric values on chart.
             chart_params: Chart-specific parameters (see tool description for available params).
         """
         options: dict[str, Any] = {
             "use_color": use_color,
             "use_unicode": use_unicode,
             "theme": theme,
+            "show_legend": show_legend,
+            "show_values": show_values,
         }
         if width is not None:
             options["width"] = width

@@ -145,14 +145,16 @@ Input: {
 
 All chart tools accept these top-level options:
 
-| Option       | Type    | Default | Description                     |
-|--------------|---------|---------|----------------------------------|
-| `title`      | string  | —       | Chart title                      |
-| `width`      | integer | auto    | Chart width in characters        |
-| `height`     | integer | auto    | Chart height in rows             |
-| `use_color`  | boolean | true    | Enable ANSI color output         |
-| `use_unicode`| boolean | true    | Enable Unicode box-drawing       |
-| `theme`      | string  | light   | Color theme (light or dark)      |
+| Option        | Type    | Default | Description                     |
+|---------------|---------|---------|----------------------------------|
+| `title`       | string  | —       | Chart title                      |
+| `width`       | integer | auto    | Chart width in characters        |
+| `height`      | integer | auto    | Chart height in rows             |
+| `use_color`   | boolean | true    | Enable ANSI color output         |
+| `use_unicode` | boolean | true    | Enable Unicode box-drawing       |
+| `theme`       | string  | light   | Color theme (light or dark)      |
+| `show_legend` | boolean | true    | Show chart legend                |
+| `show_values` | boolean | true    | Show numeric values on chart     |
 
 ## Transport
 
