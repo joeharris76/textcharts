@@ -35,8 +35,12 @@ Documentation = "https://github.com/benchbox-dev/textcharts#readme"
 Repository = "https://github.com/benchbox-dev/textcharts"
 Issues = "https://github.com/benchbox-dev/textcharts/issues"
 
+[project.optional-dependencies]
+mcp = ["mcp>=1.0"]
+
 [project.scripts]
 textcharts = "textcharts.cli:main"
+textcharts-mcp = "textcharts.mcp_server:main"
 
 [dependency-groups]
 dev = [
