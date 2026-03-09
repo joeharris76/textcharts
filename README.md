@@ -68,18 +68,9 @@ Stationery ▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓               
 
 ## Public API
 
-Preferred API for new code:
-- Clean chart classes such as `BarChart`, `Heatmap`, `LineChart`, and `SummaryBox`
-- Data models such as `BarData`, `HistogramBar`, `LinePoint`, and `SummaryStats`
-- Shared configuration and helpers such as `ChartOptions` and `ColorMode`
-
-Compatibility API:
-- `ASCII*` aliases are retained for BenchBox migration compatibility
-- Domain-specific factory helpers such as `from_query_latency_data` and
-  `from_phase_data` remain available, but new code should prefer constructing
-  the chart classes directly from their data models
-- `NormalizedSpeedup` is intentionally performance-oriented; most other chart
-  types are documented with broader cross-domain examples
+- Chart classes: `BarChart`, `Heatmap`, `LineChart`, `SummaryBox`, etc.
+- Data models: `BarData`, `HistogramBar`, `LinePoint`, `SummaryStats`, etc.
+- Configuration: `ChartOptions` and `ColorMode`
 
 ## CLI
 

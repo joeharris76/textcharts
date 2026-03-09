@@ -252,6 +252,7 @@ Bordered summary box with aggregate statistics.
 | worst_queries            | array   | no       | List of [name, value] pairs for worst queries |
 | environment              | object  | no       | Environment info dict              |
 | platform_config          | object  | no       | Platform config dict               |
+| metric_label             | string  | no       | Unit label for values (default: "ms") |
 
 ```json
 {
@@ -351,6 +352,8 @@ Stacked horizontal bar chart showing component breakdown.
 ]
 ```
 
+**Chart params:** `metric_label` (string, default "ms")
+
 ---
 
 ## sparkline
@@ -443,6 +446,7 @@ top-level keys in MCP tool calls:
 | Option      | Type    | Default | Description                          |
 |-------------|---------|---------|--------------------------------------|
 | title       | string  | —       | Chart title                          |
+| subtitle    | string  | —       | Subtitle line displayed below title  |
 | width       | integer | auto    | Chart width in characters            |
 | height      | integer | auto    | Chart height in rows                 |
 | use_color   | boolean | true    | Enable ANSI color output             |

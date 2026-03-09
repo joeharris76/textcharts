@@ -148,6 +148,7 @@ All chart tools accept these top-level options:
 | Option        | Type    | Default | Description                     |
 |---------------|---------|---------|----------------------------------|
 | `title`       | string  | —       | Chart title                      |
+| `subtitle`    | string  | —       | Subtitle line below the title    |
 | `width`       | integer | auto    | Chart width in characters        |
 | `height`      | integer | auto    | Chart height in rows             |
 | `use_color`   | boolean | true    | Enable ANSI color output         |
