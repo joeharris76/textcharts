@@ -1,5 +1,5 @@
-generated_at: '2026-03-09T09:02:11.209354'
-total_items: 15
+generated_at: '2026-03-09T09:03:16.454928'
+total_items: 16
 priorities:
   Critical:
     count: 1
@@ -10,7 +10,7 @@ priorities:
       category: Core Functionality
       status: Completed
   High:
-    count: 9
+    count: 10
     items:
     - id: behavioral-tests-for-minimal-coverage-charts
       file: DONE/main/active/behavioral-tests-for-minimal-coverage-charts.yaml
@@ -50,6 +50,11 @@ priorities:
     - id: make-heatmap-and-matrix-apis-explicit-and-safe
       file: DONE/main/planning/make-heatmap-and-matrix-apis-explicit-and-safe.yaml
       title: Make heatmap and matrix APIs explicit and safe
+      category: Core Functionality
+      status: Completed
+    - id: neutralize-default-labels-and-titles
+      file: DONE/main/active/neutralize-default-labels-and-titles.yaml
+      title: Neutralize domain-specific default labels, titles, and comments
       category: Core Functionality
       status: Completed
     - id: restore-standalone-renderer-regression-coverage

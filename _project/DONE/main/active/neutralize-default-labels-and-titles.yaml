@@ -2,7 +2,8 @@ id: "neutralize-default-labels-and-titles"
 title: "Neutralize domain-specific default labels, titles, and comments"
 worktree: "main"
 priority: "High"
-status: "In Progress"
+status: "Completed"
+completed_date: "2026-03-09"
 description: |
   textcharts constructor parameters, factory functions, and default titles still
   carry BenchBox benchmark-specific defaults like "Execution Time (ms)", "Query

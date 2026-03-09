@@ -1,8 +1,8 @@
-generated_at: '2026-03-09T09:02:11.209363'
-total_items: 15
+generated_at: '2026-03-09T09:03:16.454934'
+total_items: 16
 statuses:
   Completed:
-    count: 15
+    count: 16
     items:
     - id: behavioral-tests-for-minimal-coverage-charts
       file: DONE/main/active/behavioral-tests-for-minimal-coverage-charts.yaml
@@ -73,6 +73,11 @@ statuses:
       file: DONE/main/active/caller-controlled-value-formatting.yaml
       title: Make time formatting caller-controlled via value_formatter callback
       priority: Medium-High
+      category: Core Functionality
+    - id: neutralize-default-labels-and-titles
+      file: DONE/main/active/neutralize-default-labels-and-titles.yaml
+      title: Neutralize domain-specific default labels, titles, and comments
+      priority: High
       category: Core Functionality
     - id: restore-standalone-renderer-regression-coverage
       file: DONE/main/planning/restore-standalone-renderer-regression-coverage.yaml
