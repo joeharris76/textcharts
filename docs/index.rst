@@ -7,28 +7,29 @@ Beautiful text-based charts for your terminal — zero dependencies.
 width detection. Pure Python, no external dependencies, Python 3.10+.
 
 
+.. image:: /_static/screenshots/histogram/greyscale.png
+   :alt: Histogram chart rendered in the terminal
+   :width: 100%
+
 .. code-block:: python
 
-   from textcharts import BarChart, BarData
+   from textcharts import Histogram, HistogramBar
 
    data = [
-       BarData(label="Fiction", value=18.4, is_best=True),
-       BarData(label="Children", value=14.2),
-       BarData(label="Comics", value=9.8, is_worst=True),
+       HistogramBar(query_id="Route 1", latency_ms=12.0, is_best=True),
+       HistogramBar(query_id="Route 2", latency_ms=28.0),
+       HistogramBar(query_id="Route 3", latency_ms=9.0),
+       HistogramBar(query_id="Route 4", latency_ms=45.0, is_worst=True),
+       HistogramBar(query_id="Route 5", latency_ms=19.0),
+       HistogramBar(query_id="Route 6", latency_ms=14.0),
    ]
-   chart = BarChart(data=data, title="April Bookstore Revenue", metric_label="k USD")
+   chart = Histogram(
+       data=data,
+       title="Delivery Delays",
+       y_label="Delay (min)",
+       subtitle="Six routes measured over the past week",
+   )
    print(chart.render())
-
-
-.. code-block:: text
-
-                           April Bookstore Revenue (k USD)
-   ────────────────────────────────────────────────────────────────────────────────
-   Fiction  █████████████████████████████████████████████████████████████     18.4
-   Children ███████████████████████████████████████████████                   14.2
-   Comics   ▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓                                  9.8
-
-     ■ Fiction   ◆ Children   ▲ Comics
 
 
 Install
