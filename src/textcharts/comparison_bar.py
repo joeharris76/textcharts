@@ -284,7 +284,7 @@ class ASCIIComparisonBar(ASCIIChartBase):
 def from_comparison_data(
     data: Sequence,
     title: str | None = None,
-    metric_label: str = "Execution Time (ms)",
+    metric_label: str = "Value",
     options: ASCIIChartOptions | None = None,
 ) -> ASCIIComparisonBar:
     """Create ASCIIComparisonBar from comparison data.

@@ -375,7 +375,7 @@ def from_matrix(
     queries: Sequence[str],
     platforms: Sequence[str],
     title: str | None = None,
-    value_label: str = "ms",
+    value_label: str = "",
     x_label: str = "Platform",
     show_values: bool = True,
     color_scheme: str = "diverging",

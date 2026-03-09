@@ -376,7 +376,7 @@ class ASCIIBoxPlot(ASCIIChartBase):
 def from_distribution_series(
     series: Sequence,
     title: str | None = None,
-    y_label: str = "Execution Time (ms)",
+    y_label: str = "Value",
     show_stats: bool = True,
     show_mean: bool = True,
     options: ASCIIChartOptions | None = None,

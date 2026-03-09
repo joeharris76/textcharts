@@ -219,7 +219,7 @@ class ASCIICDFChart(ASCIIChartBase):
 def from_query_results(
     platform_queries: Sequence[tuple[str, Sequence[float]]],
     title: str | None = None,
-    x_label: str = "Execution Time (ms)",
+    x_label: str = "Value",
     y_label: str = "Cumulative Share",
     options: ASCIIChartOptions | None = None,
 ) -> ASCIICDFChart:

@@ -325,7 +325,7 @@ def from_time_series_points(
     points: Sequence,
     title: str | None = None,
     x_label: str = "Run",
-    y_label: str = "Execution Time (ms)",
+    y_label: str = "Y",
     show_trend: bool = False,
     options: ASCIIChartOptions | None = None,
 ) -> ASCIILineChart:

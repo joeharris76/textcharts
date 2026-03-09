@@ -287,8 +287,8 @@ class ASCIIScatterPlot(ASCIIChartBase):
 def from_cost_performance_points(
     points: Sequence,
     title: str | None = None,
-    cost_label: str = "Cost (USD)",
-    performance_label: str = "Queries per Hour",
+    cost_label: str = "X",
+    performance_label: str = "Y",
     show_pareto: bool = True,
     options: ASCIIChartOptions | None = None,
 ) -> ASCIIScatterPlot:

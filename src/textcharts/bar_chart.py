@@ -201,7 +201,7 @@ class ASCIIBarChart(ASCIIChartBase):
 def from_bar_data(
     data: Sequence,
     title: str | None = None,
-    metric_label: str = "Execution Time (ms)",
+    metric_label: str = "Value",
     sort_by: str = "value",
     options: ASCIIChartOptions | None = None,
 ) -> ASCIIBarChart:
