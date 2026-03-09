@@ -114,6 +114,12 @@ class ASCIISummaryBox(ASCIIChartBase):
         bold_title = colors.bold() + title_text.center(inner) + colors.reset()
         lines.append(f"{box['v']} {bold_title} {box['v']}")
 
+        if self.subtitle:
+            sub_text = self._sanitize_text(self.subtitle)
+            sub_text = self._truncate_label(sub_text, inner)
+            dim_sub = colors.colorize(sub_text.center(inner), fg_color="#666666")
+            lines.append(f"{box['v']} {dim_sub} {box['v']}")
+
         # Metrics section
         if three_col:
             lines.extend(self._render_three_col_metrics(box, colors, inner))

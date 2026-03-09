@@ -185,7 +185,10 @@ def _bar_chart(mode: str) -> str:
         BarData(label="Children", value=12650.0),
         BarData(label="Comics", value=9300.0, is_worst=True),
     ]
-    chart = ASCIIBarChart(data=data, title="April Bookstore Revenue", metric_label="USD", options=_options(mode))
+    chart = ASCIIBarChart(
+        data=data, title="April Bookstore Revenue", metric_label="USD",
+        subtitle="Top three categories by total sales", options=_options(mode),
+    )
     return _render_chart(chart, mode)
 
 
@@ -198,7 +201,10 @@ def _histogram(mode: str) -> str:
         HistogramBar(query_id="Route 5", latency_ms=19.0),
         HistogramBar(query_id="Route 6", latency_ms=14.0),
     ]
-    chart = ASCIIHistogram(data=bars, title="Delivery Delays", y_label="Delay (min)", options=_options(mode))
+    chart = ASCIIHistogram(
+        data=bars, title="Delivery Delays", y_label="Delay (min)",
+        subtitle="Six routes measured over the past week", options=_options(mode),
+    )
     return _render_chart(chart, mode)
 
 
@@ -216,6 +222,7 @@ def _heatmap(mode: str) -> str:
         title="Classroom Scores",
         value_label="points",
         x_label="Subjects",
+        subtitle="End-of-term averages across four classes",
         options=_options(mode),
     )
     return _render_chart(chart, mode)
@@ -227,7 +234,10 @@ def _box_plot(mode: str) -> str:
         BoxPlotSeries(name="Riverside", values=[1450, 1525, 1600, 1680, 1750, 1820, 1950, 2080, 2220]),
         BoxPlotSeries(name="Midtown", values=[1650, 1710, 1780, 1840, 1920, 2010, 2140, 2280, 2450]),
     ]
-    chart = ASCIIBoxPlot(series=series, title="Apartment Rents", options=_options(mode))
+    chart = ASCIIBoxPlot(
+        series=series, title="Apartment Rents",
+        subtitle="Monthly rent distribution by neighborhood", options=_options(mode),
+    )
     return _render_chart(chart, mode)
 
 
@@ -245,6 +255,7 @@ def _line_chart(mode: str) -> str:
         title="Weekly Signups",
         x_label="Week",
         y_label="Signups",
+        subtitle="Organic vs referral channels over three weeks",
         options=_options(mode),
     )
     return _render_chart(chart, mode)
@@ -262,6 +273,7 @@ def _scatter_plot(mode: str) -> str:
         title="Ad Spend vs Conversions",
         x_label="Cost (USD)",
         y_label="Conversions",
+        subtitle="Four campaigns compared by cost efficiency",
         options=_options(mode),
     )
     return _render_chart(chart, mode)
@@ -286,6 +298,7 @@ def _comparison_bar(mode: str) -> str:
         data=data,
         title="Budget vs Actual",
         metric_label="Budget (k USD)",
+        subtitle="Q1 departmental spending review",
         options=_options(mode),
     )
     return _render_chart(chart, mode)
@@ -299,7 +312,10 @@ def _diverging_bar(mode: str) -> str:
         DivergingBarData(label="Product", pct_change=4.0),
         DivergingBarData(label="Finance", pct_change=-5.0),
     ]
-    chart = ASCIIDivergingBar(data=data, title="Sentiment Change by Team", options=_options(mode))
+    chart = ASCIIDivergingBar(
+        data=data, title="Sentiment Change by Team",
+        subtitle="Year-over-year employee survey results", options=_options(mode),
+    )
     return _render_chart(chart, mode)
 
 
@@ -315,7 +331,7 @@ def _summary_box(mode: str) -> str:
         environment={"Venue": "Riverfront Park", "Days": "3", "Volunteers": "48"},
         platform_config={"Ticket Type": "All-access", "Peak Window": "Sat 6-8pm"},
     )
-    chart = ASCIISummaryBox(stats=stats, options=_options(mode))
+    chart = ASCIISummaryBox(stats=stats, subtitle="Three-day event summary", options=_options(mode))
     return _render_chart(chart, mode)
 
 
@@ -329,6 +345,7 @@ def _percentile_ladder(mode: str) -> str:
         data=data,
         title="Exam Score Percentiles",
         metric_label="points",
+        subtitle="Spring semester final exams",
         options=_options(mode),
     )
     return _render_chart(chart, mode)
@@ -341,7 +358,10 @@ def _normalized_speedup(mode: str) -> str:
         SpeedupData(name="Workstation GPU", ratio=3.80),
         SpeedupData(name="Small VM", ratio=0.72),
     ]
-    chart = ASCIINormalizedSpeedup(data=data, title="Inference Speedup vs CPU Baseline", options=_options(mode))
+    chart = ASCIINormalizedSpeedup(
+        data=data, title="Inference Speedup vs CPU Baseline",
+        subtitle="Image classification model on four hardware targets", options=_options(mode),
+    )
     return _render_chart(chart, mode)
 
 
@@ -364,7 +384,10 @@ def _stacked_bar(mode: str) -> str:
             ],
         ),
     ]
-    chart = ASCIIStackedBar(data=data, title="Cooking Time Breakdown", options=_options(mode))
+    chart = ASCIIStackedBar(
+        data=data, title="Cooking Time Breakdown",
+        subtitle="Minutes per phase for two meal types", options=_options(mode),
+    )
     return _render_chart(chart, mode)
 
 
@@ -377,7 +400,10 @@ def _sparkline_table(mode: str) -> str:
             SparklineColumn(name="Returns", values={"North Store": 6.0, "Central Store": 4.0, "South Store": 7.0}),
         ],
     )
-    chart = ASCIISparklineTable(data=data, title="Store KPI Snapshot", options=_options(mode))
+    chart = ASCIISparklineTable(
+        data=data, title="Store KPI Snapshot",
+        subtitle="Revenue, orders, and returns across three locations", options=_options(mode),
+    )
     return _render_chart(chart, mode)
 
 
@@ -391,6 +417,7 @@ def _cdf_chart(mode: str) -> str:
         title="Customer Wait Time Distribution",
         x_label="Wait Time (min)",
         y_label="Cumulative Share",
+        subtitle="Weekday vs weekend service desk queues",
         options=_options(mode),
     )
     return _render_chart(chart, mode)
@@ -415,7 +442,10 @@ def _rank_table(mode: str) -> str:
             ("Vendor C", "Onboarding"): 3.5,
         },
     )
-    chart = ASCIIRankTable(data=data, title="Vendor Evaluation Rankings", options=_options(mode))
+    chart = ASCIIRankTable(
+        data=data, title="Vendor Evaluation Rankings",
+        subtitle="Scored across four service dimensions", options=_options(mode),
+    )
     return _render_chart(chart, mode)
 
 
