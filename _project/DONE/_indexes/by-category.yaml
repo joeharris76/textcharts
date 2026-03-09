@@ -1,9 +1,14 @@
-generated_at: '2026-03-09T09:11:04.146712'
+generated_at: '2026-03-09T09:14:07.390424'
 total_categories: 3
 categories:
   Core Functionality:
-    count: 8
+    count: 9
     items:
+    - id: configurable-improvement-direction
+      file: DONE/main/active/configurable-improvement-direction.yaml
+      title: Add lower_is_better parameter for improvement direction
+      priority: Medium-High
+      status: Completed
     - id: add-subject-parameter-to-chart-titles
       file: DONE/main/active/add-subject-parameter-to-chart-titles.yaml
       title: Add subject parameter to compose domain context into chart titles

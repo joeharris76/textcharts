@@ -1,8 +1,8 @@
-generated_at: '2026-03-09T09:11:04.146732'
-total_items: 17
+generated_at: '2026-03-09T09:14:07.390442'
+total_items: 18
 statuses:
   Completed:
-    count: 17
+    count: 18
     items:
     - id: behavioral-tests-for-minimal-coverage-charts
       file: DONE/main/active/behavioral-tests-for-minimal-coverage-charts.yaml
@@ -14,6 +14,11 @@ statuses:
       title: Add direct tests for all public factory functions
       priority: High
       category: Testing and Quality Assurance
+    - id: configurable-improvement-direction
+      file: DONE/main/active/configurable-improvement-direction.yaml
+      title: Add lower_is_better parameter for improvement direction
+      priority: Medium-High
+      category: Core Functionality
     - id: add-subject-parameter-to-chart-titles
       file: DONE/main/active/add-subject-parameter-to-chart-titles.yaml
       title: Add subject parameter to compose domain context into chart titles

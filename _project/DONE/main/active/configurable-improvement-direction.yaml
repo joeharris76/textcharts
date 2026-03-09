@@ -2,7 +2,8 @@ id: "configurable-improvement-direction"
 title: "Add lower_is_better parameter for improvement direction"
 worktree: "main"
 priority: "Medium-High"
-status: "Not Started"
+status: "Completed"
+completed_date: "2026-03-09"
 description: |
   Three chart types hardcode "negative % = improvement (green), positive % =
   regression (red)": comparison_bar, diverging_bar, and summary_box. This is
@@ -15,21 +16,21 @@ category: "Core Functionality"
 work:
   - id: w1
     summary: "Add lower_is_better to ASCIIComparisonBar and update _format_annotation"
-    status: pending
+    status: done
     notes: |
       Add lower_is_better: bool = True to __init__. In _format_annotation,
       compute is_regression = pct_change > 0 if self.lower_is_better else pct_change < 0.
 
   - id: w2
     summary: "Add lower_is_better to ASCIIDivergingBar and update _colorize_sides and _render_summary_counts"
-    status: pending
+    status: done
     notes: |
       Same pattern. Invert the improved/regressed classification when
       lower_is_better=False.
 
   - id: w3
     summary: "Add lower_is_better to SummaryStats and update _format_pct_colored in ASCIISummaryBox"
-    status: pending
+    status: done
     notes: |
       Add lower_is_better: bool = True to SummaryStats dataclass.
       Use it in _format_pct_colored to determine green/red assignment.
@@ -37,7 +38,7 @@ work:
   - id: w4
     summary: "Add tests for lower_is_better=False verifying color inversion"
     needs: [w1, w2, w3]
-    status: pending
+    status: done
     notes: |
       Test each chart with lower_is_better=False and a positive pct_change —
       verify green coloring (improvement) instead of red (regression).

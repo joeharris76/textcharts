@@ -1,14 +1,6 @@
-generated_at: '2026-03-09T09:11:04.111945'
-total_items: 3
+generated_at: '2026-03-09T09:14:07.355809'
+total_items: 2
 priorities:
-  Medium-High:
-    count: 1
-    items:
-    - id: configurable-improvement-direction
-      file: TODO/main/planning/configurable-improvement-direction.yaml
-      title: Add lower_is_better parameter for improvement direction
-      category: Core Functionality
-      status: Not Started
   Medium:
     count: 1
     items:

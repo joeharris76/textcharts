@@ -1,5 +1,5 @@
-generated_at: '2026-03-09T09:11:04.146695'
-total_items: 17
+generated_at: '2026-03-09T09:14:07.390408'
+total_items: 18
 items:
 - id: shared-command-layer
   file: DONE/main/active/shared-command-layer.yaml
@@ -239,6 +239,26 @@ items:
   work_total: 3
   work_done: 3
   work_ready: 0
+- id: configurable-improvement-direction
+  file: DONE/main/active/configurable-improvement-direction.yaml
+  title: Add lower_is_better parameter for improvement direction
+  worktree: main
+  category: Core Functionality
+  priority: Medium-High
+  status: Completed
+  tags:
+  - api
+  - de-benchbox
+  - color
+  owners:
+  - joe
+  estimated_effort: Small
+  completed_date: '2026-03-09'
+  work_total: 4
+  work_done: 4
+  work_ready: 0
+  needs:
+  - neutralize-default-labels-and-titles
 - id: test-line-chart-trend-and-rendering-paths
   file: DONE/main/active/test-line-chart-trend-and-rendering-paths.yaml
   title: Add tests for LineChart trend line computation and rendering branches

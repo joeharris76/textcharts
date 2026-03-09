@@ -1,5 +1,5 @@
-generated_at: '2026-03-09T09:11:04.111916'
-total_items: 3
+generated_at: '2026-03-09T09:14:07.355787'
+total_items: 2
 items:
 - id: configurable-outlier-cap
   file: TODO/main/planning/configurable-outlier-cap.yaml
@@ -38,24 +38,5 @@ items:
   work_total: 5
   work_done: 0
   work_ready: 1
-  needs:
-  - neutralize-default-labels-and-titles
-- id: configurable-improvement-direction
-  file: TODO/main/planning/configurable-improvement-direction.yaml
-  title: Add lower_is_better parameter for improvement direction
-  worktree: main
-  category: Core Functionality
-  priority: Medium-High
-  status: Not Started
-  tags:
-  - api
-  - de-benchbox
-  - color
-  owners:
-  - joe
-  estimated_effort: Small
-  work_total: 4
-  work_done: 0
-  work_ready: 3
   needs:
   - neutralize-default-labels-and-titles
