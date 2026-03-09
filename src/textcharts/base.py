@@ -362,6 +362,7 @@ class ASCIIChartOptions:
     show_legend: bool = True
     show_values: bool = True
     theme: str = "light"  # "light" or "dark"
+    outlier_cap: float | None = None  # None = auto P95×2, 0 = disabled, float = fixed cap
 
     # Computed at render time
     _capabilities: TerminalCapabilities | None = field(default=None, repr=False)
@@ -473,6 +474,23 @@ class ASCIIChartBase(ABC):
         if self._subject is not None:
             return f"{self._subject} {default}"
         return default
+
+    def _resolve_outlier_cap(self, current_max: float) -> tuple[float, bool] | None:
+        """Apply explicit ``outlier_cap`` if set on options.
+
+        Returns ``(scale_max, truncated)`` when ``outlier_cap`` is explicitly
+        set (positive float = fixed cap, zero = disabled).  Returns ``None``
+        when ``outlier_cap is None``, signaling the caller to use its own
+        auto-detection logic.
+        """
+        cap = self.options.outlier_cap
+        if cap is None:
+            return None
+        if cap <= 0:
+            return current_max, False
+        if current_max > cap:
+            return cap, True
+        return current_max, False
 
     def _detect_capabilities(self) -> TerminalCapabilities:
         """Detect and cache terminal capabilities."""

@@ -134,15 +134,19 @@ class ASCIIPercentileLadder(ASCIIChartBase):
         # Cap scale so one extreme P99 doesn't compress all other bars
         scale_max = max_p99
         truncation_active = False
-        all_p99 = sorted(d.p99 for d in self.data)
-        if len(all_p99) > 5:
-            p95_val = robust_p95(all_p99)
-            median_val = all_p99[len(all_p99) // 2]
-            median_gate = median_val > 0 and max_p99 > median_val * 10
-            zero_heavy_gate = median_val <= 0
-            if p95_val > 0 and max_p99 > p95_val * 3 and (median_gate or zero_heavy_gate):
-                scale_max = p95_val * 2
-                truncation_active = True
+        explicit = self._resolve_outlier_cap(max_p99)
+        if explicit is not None:
+            scale_max, truncation_active = explicit
+        else:
+            all_p99 = sorted(d.p99 for d in self.data)
+            if len(all_p99) > 5:
+                p95_val = robust_p95(all_p99)
+                median_val = all_p99[len(all_p99) // 2]
+                median_gate = median_val > 0 and max_p99 > median_val * 10
+                zero_heavy_gate = median_val <= 0
+                if p95_val > 0 and max_p99 > p95_val * 3 and (median_gate or zero_heavy_gate):
+                    scale_max = p95_val * 2
+                    truncation_active = True
 
         annotation_value_width = self._annotation_value_width()
 

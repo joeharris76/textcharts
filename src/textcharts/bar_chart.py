@@ -77,7 +77,10 @@ class ASCIIBarChart(ASCIIChartBase):
         # Outlier truncation: cap the scale so extreme values don't squash all others
         scale_max = max_value
         truncation_active = False
-        if len(sorted_data) > 5:
+        explicit = self._resolve_outlier_cap(max_value)
+        if explicit is not None:
+            scale_max, truncation_active = explicit
+        elif len(sorted_data) > 5:
             values = sorted(d.value for d in sorted_data)
             p95 = robust_p95(values)
             median_val = values[len(values) // 2]

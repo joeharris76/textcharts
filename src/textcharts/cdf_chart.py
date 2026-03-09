@@ -107,7 +107,10 @@ class ASCIICDFChart(ASCIIChartBase):
             x_max = x_min + 1  # Avoid division by zero
 
         # Cap x_max at P95×2 so one extreme tail doesn't bunch all data left
-        if len(all_values) >= 5:
+        explicit = self._resolve_outlier_cap(x_max)
+        if explicit is not None:
+            x_max, self._x_capped = explicit
+        elif len(all_values) >= 5:
             p95 = robust_p95(all_values)
             if p95 > 0 and x_max > p95 * 3:
                 x_max = p95 * 2

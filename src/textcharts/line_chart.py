@@ -111,7 +111,10 @@ class ASCIILineChart(ASCIIChartBase):
         y_min, y_max = min(all_y), max(all_y)
 
         # Cap y_max at P95×2 so one spike doesn't compress all series
-        if len(all_y) >= 5:
+        explicit = self._resolve_outlier_cap(y_max)
+        if explicit is not None:
+            y_max, self._y_capped = explicit
+        elif len(all_y) >= 5:
             p95_y = robust_p95(all_y)
             if p95_y > 0 and y_max > p95_y * 3:
                 y_max = p95_y * 2

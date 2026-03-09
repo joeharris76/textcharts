@@ -102,13 +102,26 @@ class ASCIIScatterPlot(ASCIIChartBase):
         self._truncation_active = False
         self._x_cap = float("inf")
         self._y_cap = float("inf")
-        if len(self.points) >= 5:
+        explicit_x = self._resolve_outlier_cap(x_max)
+        explicit_y = self._resolve_outlier_cap(y_max)
+        if explicit_x is not None:
+            x_max, x_truncated = explicit_x
+            if x_truncated:
+                self._x_cap = x_max
+                self._truncation_active = True
+        elif len(self.points) >= 5:
             p95_x = robust_p95(x_values)
-            p95_y = robust_p95(y_values)
             if p95_x > 0 and x_max > p95_x * 3:
                 x_max = p95_x * 2
                 self._x_cap = x_max
                 self._truncation_active = True
+        if explicit_y is not None:
+            y_max, y_truncated = explicit_y
+            if y_truncated:
+                self._y_cap = y_max
+                self._truncation_active = True
+        elif len(self.points) >= 5:
+            p95_y = robust_p95(y_values)
             if p95_y > 0 and y_max > p95_y * 3:
                 y_max = p95_y * 2
                 self._y_cap = y_max

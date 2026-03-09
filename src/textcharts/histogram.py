@@ -128,7 +128,10 @@ class ASCIIQueryHistogram(ASCIIChartBase):
         self._outlier_ids: set[str] = set()
         self._outlier_bar_keys: set[tuple[str | None, str]] = set()
         scale_max = global_max
-        if len(all_latencies) >= 4:
+        explicit = self._resolve_outlier_cap(global_max)
+        if explicit is not None:
+            scale_max, _ = explicit
+        elif len(all_latencies) >= 4:
             s = sorted(all_latencies)
             n = len(s)
             q1 = s[n // 4]

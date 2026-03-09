@@ -117,14 +117,18 @@ class ASCIIStackedBar(ASCIIChartBase):
 
         # Outlier truncation: cap scale so extreme bars don't compress others
         scale_max = max_total
-        totals = sorted(d.total or 0 for d in self.data)
-        if len(totals) > 5:
-            p95 = robust_p95(totals)
-            median_val = totals[len(totals) // 2]
-            median_gate = median_val > 0 and max_total > median_val * 10
-            zero_heavy_gate = median_val <= 0
-            if p95 > 0 and max_total > p95 * 3 and (median_gate or zero_heavy_gate):
-                scale_max = p95 * 2
+        explicit = self._resolve_outlier_cap(max_total)
+        if explicit is not None:
+            scale_max, _ = explicit
+        else:
+            totals = sorted(d.total or 0 for d in self.data)
+            if len(totals) > 5:
+                p95 = robust_p95(totals)
+                median_val = totals[len(totals) // 2]
+                median_gate = median_val > 0 and max_total > median_val * 10
+                zero_heavy_gate = median_val <= 0
+                if p95 > 0 and max_total > p95 * 3 and (median_gate or zero_heavy_gate):
+                    scale_max = p95 * 2
 
         lines: list[str] = []
 

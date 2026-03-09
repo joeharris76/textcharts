@@ -155,7 +155,10 @@ class ASCIIHeatmap(ASCIIChartBase):
 
         # Cap scale at P95×2 to prevent extreme outliers from washing out the heatmap
         scale_max = max_val
-        if len(all_values) >= 5:
+        explicit = self._resolve_outlier_cap(max_val)
+        if explicit is not None:
+            scale_max, _ = explicit
+        elif len(all_values) >= 5:
             p95 = robust_p95(all_values)
             if p95 > 0 and max_val > p95 * 2:
                 scale_max = p95 * 2
