@@ -51,9 +51,6 @@ class ASCIIHeatmap(ASCIIChartBase):
         "#b2182b",  # Very slow - red
     ]
 
-    # Default (kept for backward compatibility)
-    COLOR_SCALE = COLOR_SCALE_DIVERGING
-
     def __init__(
         self,
         matrix: Sequence[Sequence[float | None]],

@@ -374,10 +374,6 @@ class ASCIIChartOptions:
             return min(140, max(40, self._capabilities.width - 2))
         return 78
 
-    def get_block_chars(self) -> str:
-        """Get horizontal block characters. Deprecated: use horizontal/vertical methods."""
-        return self.get_horizontal_block_chars()
-
     def get_horizontal_block_chars(self) -> str:
         """Get appropriate horizontal block characters."""
         if self.use_unicode and (self._capabilities is None or self._capabilities.unicode_support):
