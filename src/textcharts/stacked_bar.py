@@ -229,7 +229,7 @@ class ASCIIStackedBar(ASCIIChartBase):
 
     def _format_total(self, value: float) -> str:
         """Format a total value with the appropriate unit label."""
-        if self.metric_label == "ms":
+        if self.metric_label.strip().lower() == "ms":
             return self._format_time(value)
         return f"{self._format_value(value)}{self.metric_label}"
 
