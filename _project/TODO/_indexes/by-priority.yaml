@@ -1,3 +1,40 @@
-generated_at: '2026-03-07T20:42:34.411403'
-total_items: 0
-priorities: {}
+generated_at: '2026-03-08T20:47:56.445888'
+total_items: 5
+priorities:
+  High:
+    count: 1
+    items:
+    - id: neutralize-default-labels-and-titles
+      file: TODO/main/planning/neutralize-default-labels-and-titles.yaml
+      title: Neutralize domain-specific default labels, titles, and comments
+      category: Core Functionality
+      status: Not Started
+  Medium-High:
+    count: 2
+    items:
+    - id: configurable-improvement-direction
+      file: TODO/main/planning/configurable-improvement-direction.yaml
+      title: Add lower_is_better parameter for improvement direction
+      category: Core Functionality
+      status: Not Started
+    - id: caller-controlled-value-formatting
+      file: TODO/main/planning/caller-controlled-value-formatting.yaml
+      title: Make time formatting caller-controlled via value_formatter callback
+      category: Core Functionality
+      status: Not Started
+  Medium:
+    count: 1
+    items:
+    - id: rename-benchmark-specific-identifiers
+      file: TODO/main/planning/rename-benchmark-specific-identifiers.yaml
+      title: Rename benchmark-specific factory functions to generic names
+      category: Core Functionality
+      status: Not Started
+  Low:
+    count: 1
+    items:
+    - id: configurable-outlier-cap
+      file: TODO/main/planning/configurable-outlier-cap.yaml
+      title: Add configurable outlier_cap to ASCIIChartOptions
+      category: Core Functionality
+      status: Not Started

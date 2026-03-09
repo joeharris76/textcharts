@@ -1,3 +1,97 @@
-generated_at: '2026-03-07T20:42:34.411378'
-total_items: 0
-items: []
+generated_at: '2026-03-08T20:47:56.445857'
+total_items: 5
+items:
+- id: neutralize-default-labels-and-titles
+  file: TODO/main/planning/neutralize-default-labels-and-titles.yaml
+  title: Neutralize domain-specific default labels, titles, and comments
+  worktree: main
+  category: Core Functionality
+  priority: High
+  status: Not Started
+  tags:
+  - api
+  - de-benchbox
+  - backward-compatible
+  owners:
+  - joe
+  estimated_effort: Small
+  work_total: 5
+  work_done: 0
+  work_ready: 1
+- id: configurable-outlier-cap
+  file: TODO/main/planning/configurable-outlier-cap.yaml
+  title: Add configurable outlier_cap to ASCIIChartOptions
+  worktree: main
+  category: Core Functionality
+  priority: Low
+  status: Not Started
+  tags:
+  - api
+  - de-benchbox
+  - rendering
+  owners:
+  - joe
+  estimated_effort: Small
+  work_total: 3
+  work_done: 0
+  work_ready: 1
+  deferred_count: 1
+  needs:
+  - neutralize-default-labels-and-titles
+- id: rename-benchmark-specific-identifiers
+  file: TODO/main/planning/rename-benchmark-specific-identifiers.yaml
+  title: Rename benchmark-specific factory functions to generic names
+  worktree: main
+  category: Core Functionality
+  priority: Medium
+  status: Not Started
+  tags:
+  - api
+  - de-benchbox
+  - deprecation
+  owners:
+  - joe
+  estimated_effort: Medium
+  work_total: 5
+  work_done: 0
+  work_ready: 1
+  needs:
+  - neutralize-default-labels-and-titles
+- id: configurable-improvement-direction
+  file: TODO/main/planning/configurable-improvement-direction.yaml
+  title: Add lower_is_better parameter for improvement direction
+  worktree: main
+  category: Core Functionality
+  priority: Medium-High
+  status: Not Started
+  tags:
+  - api
+  - de-benchbox
+  - color
+  owners:
+  - joe
+  estimated_effort: Small
+  work_total: 4
+  work_done: 0
+  work_ready: 3
+  needs:
+  - neutralize-default-labels-and-titles
+- id: caller-controlled-value-formatting
+  file: TODO/main/planning/caller-controlled-value-formatting.yaml
+  title: Make time formatting caller-controlled via value_formatter callback
+  worktree: main
+  category: Core Functionality
+  priority: Medium-High
+  status: Not Started
+  tags:
+  - api
+  - de-benchbox
+  - formatting
+  owners:
+  - joe
+  estimated_effort: Small
+  work_total: 3
+  work_done: 0
+  work_ready: 2
+  needs:
+  - neutralize-default-labels-and-titles

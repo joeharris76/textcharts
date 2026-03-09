@@ -1,0 +1,92 @@
+id: "caller-controlled-value-formatting"
+title: "Make time formatting caller-controlled via value_formatter callback"
+worktree: "main"
+priority: "Medium-High"
+status: "Not Started"
+description: |
+  stacked_bar.py and summary_box.py each contain a _format_time() method that
+  hardcodes ms→s→min conversion. This assumes the input is milliseconds. When
+  metric_label is anything other than "ms" (e.g., "ops/s", "bytes", "requests"),
+  this formatting produces wrong output like "1.2s" for 1200 requests.
+
+  Add a value_formatter parameter (optional callback) to both chart classes.
+  When provided, use it instead of _format_time(). When not provided AND
+  metric_label is empty or "ms", fall back to existing _format_time() for
+  backward compatibility.
+category: "Core Functionality"
+work:
+  - id: w1
+    summary: "Add value_formatter parameter to ASCIIStackedBar and use it in rendering"
+    status: pending
+    notes: |
+      Add value_formatter: Callable[[float], str] | None = None to __init__.
+      Create _format_value_display() that checks value_formatter first, then
+      falls back to _format_time() when metric_label in ("ms", ""), otherwise
+      uses _format_value() + metric_label.
+
+  - id: w2
+    summary: "Add value_formatter to SummaryStats dataclass and use it in ASCIISummaryBox"
+    status: pending
+    notes: |
+      Add value_formatter: Callable[[float], str] | None = None to SummaryStats.
+      In ASCIISummaryBox, check self.stats.value_formatter first when formatting
+      geo_mean, median, and total_time fields. Fall back to _format_time() when
+      metric_label is "ms", otherwise use _format_value() + metric_label.
+
+  - id: w3
+    summary: "Add tests for custom value_formatter and non-ms metric_label"
+    needs: [w1, w2]
+    status: pending
+    notes: |
+      Test with metric_label="reqs" — verify no "ms"/"s"/"min" in output.
+      Test with custom value_formatter lambda — verify callback output appears.
+      Test default behavior unchanged (metric_label="" still uses _format_time).
+metadata:
+  owners:
+    - "joe"
+  tags:
+    - "api"
+    - "de-benchbox"
+    - "formatting"
+  estimated_effort: "Small"
+  created_date: "2026-03-08"
+  last_updated: "2026-03-08T00:00:00"
+deps:
+  needs:
+    - "neutralize-default-labels-and-titles"
+impact:
+  business_value: |
+    Enables textcharts to display non-time values correctly, which is required
+    for any caller working with throughput, counts, bytes, or other units.
+  user_impact: |
+    Callers with non-millisecond data no longer see incorrect "ms"/"s"/"min"
+    suffixes on their values.
+files_affected:
+  modified:
+    - "src/textcharts/stacked_bar.py"
+    - "src/textcharts/summary_box.py"
+    - "tests/test_stacked_bar.py"
+    - "tests/test_summary_box.py"
+must_preserve:
+  - "Default formatting behavior unchanged when metric_label is empty or 'ms'"
+  - "Existing stacked_bar and summary_box tests pass without modification"
+approach: |
+  Add the callback parameter with None default. Create a _format_value_display()
+  method that dispatches to callback → _format_time() → generic formatting.
+  Replace all _format_time() call sites with _format_value_display().
+anti_patterns:
+  - "DO NOT remove _format_time() — because it's the correct default for ms data — add a dispatch layer above it"
+  - "DO NOT make value_formatter required — because that breaks every existing caller — keep it optional with None default"
+verification:
+  - description: "Existing tests pass without modification"
+    command: "uv run python -m pytest tests/test_stacked_bar.py tests/test_summary_box.py -v"
+    expected_output: "all tests pass"
+  - description: "Custom formatter test verifies callback output"
+    command: "uv run python -m pytest tests/ -k 'value_formatter' -v"
+    expected_output: "tests pass"
+scope_limit:
+  only_modify:
+    - "src/textcharts/stacked_bar.py"
+    - "src/textcharts/summary_box.py"
+    - "tests/test_stacked_bar.py"
+    - "tests/test_summary_box.py"
