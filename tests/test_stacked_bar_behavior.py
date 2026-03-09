@@ -79,3 +79,36 @@ def test_from_phase_data_factory():
     result = chart.render()
     assert isinstance(chart, ASCIIStackedBar)
     assert "Factory Test" in result
+
+
+def test_value_formatter_callback():
+    data = [StackedBarData("P1", [StackedBarSegment("Load", 1500)])]
+    chart = ASCIIStackedBar(
+        data=data,
+        options=_opts(),
+        value_formatter=lambda v: f"{v / 1000:.1f} KB",
+    )
+    result = chart.render()
+    assert "1.5 KB" in result
+    assert "ms" not in result
+    assert "s" not in result.split("\n")[3]  # no time suffix on the data line
+
+
+def test_value_formatter_overrides_metric_label():
+    data = [StackedBarData("P1", [StackedBarSegment("Load", 2000)])]
+    chart = ASCIIStackedBar(
+        data=data,
+        options=_opts(),
+        metric_label="ms",
+        value_formatter=lambda v: f"{int(v)} reqs",
+    )
+    result = chart.render()
+    assert "2000 reqs" in result
+    assert "2.0s" not in result
+
+
+def test_default_ms_formatting_unchanged():
+    data = [StackedBarData("P1", [StackedBarSegment("Load", 1500)])]
+    chart = ASCIIStackedBar(data=data, options=_opts(), metric_label="ms")
+    result = chart.render()
+    assert "1.5s" in result

@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import logging
 from dataclasses import dataclass, field
+from collections.abc import Callable
 from typing import TYPE_CHECKING
 
 from textcharts.base import (
@@ -73,11 +74,13 @@ class ASCIIStackedBar(ASCIIChartBase):
         options: ASCIIChartOptions | None = None,
         subtitle: str | None = None,
         metric_label: str = "ms",
+        value_formatter: Callable[[float], str] | None = None,
     ):
         super().__init__(options, subtitle=subtitle)
         self.data = list(data)
         self.title = title or "Phase Breakdown by Platform"
         self.metric_label = metric_label
+        self.value_formatter = value_formatter
 
     def render(self) -> str:
         """Render the stacked bar chart as a string."""
@@ -229,6 +232,8 @@ class ASCIIStackedBar(ASCIIChartBase):
 
     def _format_total(self, value: float) -> str:
         """Format a total value with the appropriate unit label."""
+        if self.value_formatter is not None:
+            return self.value_formatter(value)
         if self.metric_label.strip().lower() == "ms":
             return self._format_time(value)
         return f"{self._format_value(value)}{self.metric_label}"
