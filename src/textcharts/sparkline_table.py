@@ -263,7 +263,7 @@ class ASCIISparklineTable(ASCIIChartBase):
         return f"{val:.3f}"
 
 
-def from_metrics(
+def from_data(
     platforms: list[str],
     metrics: list[tuple[str, dict[str, float], bool]],
     title: str | None = None,
@@ -284,3 +284,11 @@ def from_metrics(
     columns = [SparklineColumn(name=name, values=values, higher_is_better=hib) for name, values, hib in metrics]
     data = SparklineTableData(platforms=platforms, columns=columns)
     return ASCIISparklineTable(data=data, title=title, options=options, subject=subject)
+
+
+def from_metrics(*args, **kwargs):
+    """Deprecated: use from_data() instead."""
+    import warnings
+
+    warnings.warn("from_metrics() is deprecated, use from_data() instead", DeprecationWarning, stacklevel=2)
+    return from_data(*args, **kwargs)

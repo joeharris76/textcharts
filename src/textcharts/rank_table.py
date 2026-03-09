@@ -193,7 +193,7 @@ class ASCIIRankTable(ASCIIChartBase):
         return [int(c) if c.isdigit() else c.lower() for c in re.split(r"(\d+)", s)]
 
 
-def from_heatmap_data(
+def from_matrix(
     matrix: Sequence[Sequence[float]],
     queries: Sequence[str],
     platforms: Sequence[str],
@@ -234,3 +234,11 @@ def from_heatmap_data(
         times=times,
     )
     return ASCIIRankTable(data=data, title=title, options=options, subject=subject)
+
+
+def from_heatmap_data(*args, **kwargs):
+    """Deprecated: use from_matrix() instead."""
+    import warnings
+
+    warnings.warn("from_heatmap_data() is deprecated, use from_matrix() instead", DeprecationWarning, stacklevel=2)
+    return from_matrix(*args, **kwargs)

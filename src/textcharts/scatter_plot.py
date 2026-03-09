@@ -285,16 +285,16 @@ class ASCIIScatterPlot(ASCIIChartBase):
         return frontier
 
 
-def from_cost_performance_points(
+def from_points(
     points: Sequence,
     title: str | None = None,
-    cost_label: str = "X",
-    performance_label: str = "Y",
+    x_label: str = "X",
+    y_label: str = "Y",
     show_pareto: bool = True,
     options: ASCIIChartOptions | None = None,
     subject: str | None = None,
 ) -> ASCIIScatterPlot:
-    """Create ASCIIScatterPlot from objects with name/cost/performance attributes."""
+    """Create ASCIIScatterPlot from objects with name/x/y attributes."""
     converted: list[ScatterPoint] = []
     for item in points:
         if isinstance(item, ScatterPoint):
@@ -303,17 +303,25 @@ def from_cost_performance_points(
             converted.append(
                 ScatterPoint(
                     name=getattr(item, "name", str(item)),
-                    x=getattr(item, "cost", getattr(item, "x", 0)),
-                    y=getattr(item, "performance", getattr(item, "y", 0)),
+                    x=getattr(item, "x", getattr(item, "cost", 0)),
+                    y=getattr(item, "y", getattr(item, "performance", 0)),
                 )
             )
 
     return ASCIIScatterPlot(
         points=converted,
         title=title,
-        x_label=cost_label,
-        y_label=performance_label,
+        x_label=x_label,
+        y_label=y_label,
         show_pareto=show_pareto,
         options=options,
         subject=subject,
     )
+
+
+def from_cost_performance_points(*args, **kwargs):
+    """Deprecated: use from_points() instead."""
+    import warnings
+
+    warnings.warn("from_cost_performance_points() is deprecated, use from_points() instead", DeprecationWarning, stacklevel=2)
+    return from_points(*args, **kwargs)

@@ -217,7 +217,7 @@ class ASCIICDFChart(ASCIIChartBase):
         return "\n".join(lines)
 
 
-def from_query_results(
+def from_series(
     platform_queries: Sequence[tuple[str, Sequence[float]]],
     title: str | None = None,
     x_label: str = "Value",
@@ -237,3 +237,11 @@ def from_query_results(
     """
     data = [CDFSeriesData(name=name, values=list(values)) for name, values in platform_queries]
     return ASCIICDFChart(data=data, title=title, x_label=x_label, y_label=y_label, options=options, subject=subject)
+
+
+def from_query_results(*args, **kwargs):
+    """Deprecated: use from_series() instead."""
+    import warnings
+
+    warnings.warn("from_query_results() is deprecated, use from_series() instead", DeprecationWarning, stacklevel=2)
+    return from_series(*args, **kwargs)

@@ -185,7 +185,7 @@ class ASCIINormalizedSpeedup(ASCIIChartBase):
         return f"{ratio:.2f}x"
 
 
-def from_normalized_results(
+def from_ratios(
     platform_times: Sequence[tuple[str, float]],
     baseline: str | None = None,
     title: str | None = None,
@@ -234,3 +234,11 @@ def from_normalized_results(
         options=options,
         subject=subject,
     )
+
+
+def from_normalized_results(*args, **kwargs):
+    """Deprecated: use from_ratios() instead."""
+    import warnings
+
+    warnings.warn("from_normalized_results() is deprecated, use from_ratios() instead", DeprecationWarning, stacklevel=2)
+    return from_ratios(*args, **kwargs)

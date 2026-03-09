@@ -2,7 +2,8 @@ id: "rename-benchmark-specific-identifiers"
 title: "Rename benchmark-specific factory functions to generic names"
 worktree: "main"
 priority: "Medium"
-status: "In Progress"
+status: "Completed"
+completed_date: "2026-03-09"
 description: |
   Factory function names like from_query_latency_data(), from_regression_data(),
   and from_cost_performance_points() use benchmark-domain terminology. Rename to
@@ -16,7 +17,7 @@ category: "Core Functionality"
 work:
   - id: w1
     summary: "Create generic factory function names and deprecate old names across all 12 chart files"
-    status: pending
+    status: done
     notes: |
       For each file, create the new generic function, then make the old name a
       thin wrapper that calls warnings.warn() + delegates. Update __init__.py
@@ -31,7 +32,7 @@ work:
   - id: w2
     summary: "Rename DEFAULT_MAX_QUERIES → DEFAULT_MAX_BARS and update parameter names in new factory functions"
     needs: [w1]
-    status: pending
+    status: done
     notes: |
       histogram.py: DEFAULT_MAX_QUERIES → DEFAULT_MAX_BARS.
       scatter_plot from_points: cost_label → x_label, performance_label → y_label.
@@ -39,7 +40,7 @@ work:
   - id: w3
     summary: "Update internal textcharts usage to use new names"
     needs: [w1]
-    status: pending
+    status: done
     notes: |
       Search for internal calls to old factory names within textcharts (CLI,
       MCP server, commands layer). Update to use new names.
@@ -47,7 +48,7 @@ work:
   - id: w4
     summary: "Update docs and examples to use new generic names"
     needs: [w1]
-    status: pending
+    status: done
     notes: |
       Update docs/reference/factories.rst, tutorials, and any code examples
       to prefer the new generic names. Document deprecated aliases.
@@ -55,7 +56,7 @@ work:
   - id: w5
     summary: "Add tests verifying deprecated aliases emit warnings and still work"
     needs: [w1]
-    status: pending
+    status: done
     notes: |
       Test that calling from_query_latency_data() emits DeprecationWarning
       and returns the same result as from_data().

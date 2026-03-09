@@ -249,7 +249,7 @@ class ASCIIStackedBar(ASCIIChartBase):
         return f"{ms:.0f}ms"
 
 
-def from_phase_data(
+def from_data(
     data: Sequence[StackedBarData],
     title: str | None = None,
     options: ASCIIChartOptions | None = None,
@@ -267,3 +267,11 @@ def from_phase_data(
         Configured ASCIIStackedBar instance.
     """
     return ASCIIStackedBar(data=data, title=title, options=options, subject=subject)
+
+
+def from_phase_data(*args, **kwargs):
+    """Deprecated: use from_data() instead."""
+    import warnings
+
+    warnings.warn("from_phase_data() is deprecated, use from_data() instead", DeprecationWarning, stacklevel=2)
+    return from_data(*args, **kwargs)

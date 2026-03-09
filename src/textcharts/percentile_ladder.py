@@ -294,7 +294,7 @@ class ASCIIPercentileLadder(ASCIIChartBase):
         return f"{value:.{_ANNOTATION_DECIMALS}f}"
 
 
-def from_query_results(
+def from_series(
     platform_queries: Sequence[tuple[str, Sequence[float]]],
     title: str | None = None,
     metric_label: str = "ms",
@@ -335,3 +335,11 @@ def from_query_results(
         options=options,
         subject=subject,
     )
+
+
+def from_query_results(*args, **kwargs):
+    """Deprecated: use from_series() instead."""
+    import warnings
+
+    warnings.warn("from_query_results() is deprecated, use from_series() instead", DeprecationWarning, stacklevel=2)
+    return from_series(*args, **kwargs)

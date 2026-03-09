@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import logging
 from dataclasses import dataclass
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Any
 
 logger = logging.getLogger(__name__)
 
@@ -199,7 +199,7 @@ class ASCIIBarChart(ASCIIChartBase):
         return list(self.data)
 
 
-def from_bar_data(
+def from_data(
     data: Sequence,
     title: str | None = None,
     metric_label: str = "Value",
@@ -232,3 +232,11 @@ def from_bar_data(
         options=options,
         subject=subject,
     )
+
+
+def from_bar_data(*args: Any, **kwargs: Any) -> ASCIIBarChart:
+    """Deprecated: use from_data() instead."""
+    import warnings
+
+    warnings.warn("from_bar_data() is deprecated, use from_data() instead", DeprecationWarning, stacklevel=2)
+    return from_data(*args, **kwargs)

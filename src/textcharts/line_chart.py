@@ -322,7 +322,7 @@ class ASCIILineChart(ASCIIChartBase):
         return [intercept + slope * x for x in x_vals]
 
 
-def from_time_series_points(
+def from_points(
     points: Sequence,
     title: str | None = None,
     x_label: str = "Run",
@@ -355,3 +355,11 @@ def from_time_series_points(
         options=options,
         subject=subject,
     )
+
+
+def from_time_series_points(*args, **kwargs):
+    """Deprecated: use from_points() instead."""
+    import warnings
+
+    warnings.warn("from_time_series_points() is deprecated, use from_points() instead", DeprecationWarning, stacklevel=2)
+    return from_points(*args, **kwargs)

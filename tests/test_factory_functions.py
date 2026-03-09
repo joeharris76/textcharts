@@ -221,3 +221,49 @@ def test_from_cost_performance_points_single():
     chart = from_cost_performance_points(points, options=_opts())
     result = chart.render()
     assert "Solo" in result
+
+
+# ── Deprecation warning tests ────────────────────────────────
+
+import warnings
+
+import pytest
+
+
+@pytest.mark.parametrize(
+    "module_path,old_name,new_name",
+    [
+        ("textcharts.bar_chart", "from_bar_data", "from_data"),
+        ("textcharts.histogram", "from_query_latency_data", "from_data"),
+        ("textcharts.comparison_bar", "from_comparison_data", "from_data"),
+        ("textcharts.diverging_bar", "from_regression_data", "from_data"),
+        ("textcharts.stacked_bar", "from_phase_data", "from_data"),
+        ("textcharts.scatter_plot", "from_cost_performance_points", "from_points"),
+        ("textcharts.line_chart", "from_time_series_points", "from_points"),
+        ("textcharts.box_plot", "from_distribution_series", "from_series"),
+        ("textcharts.cdf_chart", "from_query_results", "from_series"),
+        ("textcharts.percentile_ladder", "from_query_results", "from_series"),
+        ("textcharts.normalized_speedup", "from_normalized_results", "from_ratios"),
+        ("textcharts.rank_table", "from_heatmap_data", "from_matrix"),
+        ("textcharts.sparkline_table", "from_metrics", "from_data"),
+    ],
+)
+def test_deprecated_factory_emits_warning(module_path, old_name, new_name):
+    """Deprecated factory aliases emit DeprecationWarning."""
+    import importlib
+
+    mod = importlib.import_module(module_path)
+    old_fn = getattr(mod, old_name)
+    new_fn = getattr(mod, new_name)
+    assert callable(old_fn)
+    assert callable(new_fn)
+
+    with warnings.catch_warnings(record=True) as w:
+        warnings.simplefilter("always")
+        try:
+            old_fn([])
+        except (TypeError, ValueError):
+            pass  # Some factories require specific data; we only check the warning
+    dep_warnings = [x for x in w if issubclass(x.category, DeprecationWarning)]
+    assert dep_warnings, f"{old_name} did not emit DeprecationWarning"
+    assert new_name in str(dep_warnings[0].message)

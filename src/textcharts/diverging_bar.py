@@ -243,7 +243,7 @@ class ASCIIDivergingBar(ASCIIChartBase):
         return 2.0
 
 
-def from_regression_data(
+def from_data(
     data: Sequence,
     title: str | None = None,
     options: ASCIIChartOptions | None = None,
@@ -259,7 +259,7 @@ def from_regression_data(
             converted.append(item)
         else:
             logger.warning(
-                "from_regression_data: unexpected type %s, using getattr fallback",
+                "from_data: unexpected type %s, using getattr fallback",
                 type(item).__name__,
             )
             converted.append(
@@ -275,3 +275,11 @@ def from_regression_data(
         options=options,
         subject=subject,
     )
+
+
+def from_regression_data(*args, **kwargs):
+    """Deprecated: use from_data() instead."""
+    import warnings
+
+    warnings.warn("from_regression_data() is deprecated, use from_data() instead", DeprecationWarning, stacklevel=2)
+    return from_data(*args, **kwargs)

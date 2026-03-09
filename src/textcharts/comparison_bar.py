@@ -285,7 +285,7 @@ class ASCIIComparisonBar(ASCIIChartBase):
         return "~"
 
 
-def from_comparison_data(
+def from_data(
     data: Sequence,
     title: str | None = None,
     metric_label: str = "Value",
@@ -302,7 +302,7 @@ def from_comparison_data(
             converted.append(item)
         else:
             logger.warning(
-                "from_comparison_data: unexpected type %s, using getattr fallback",
+                "from_data: unexpected type %s, using getattr fallback",
                 type(item).__name__,
             )
             converted.append(
@@ -322,3 +322,11 @@ def from_comparison_data(
         options=options,
         subject=subject,
     )
+
+
+def from_comparison_data(*args, **kwargs):
+    """Deprecated: use from_data() instead."""
+    import warnings
+
+    warnings.warn("from_comparison_data() is deprecated, use from_data() instead", DeprecationWarning, stacklevel=2)
+    return from_data(*args, **kwargs)

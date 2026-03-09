@@ -374,7 +374,7 @@ class ASCIIBoxPlot(ASCIIChartBase):
         return "\n".join(lines)
 
 
-def from_distribution_series(
+def from_series(
     series: Sequence,
     title: str | None = None,
     y_label: str = "Value",
@@ -405,3 +405,11 @@ def from_distribution_series(
         options=options,
         subject=subject,
     )
+
+
+def from_distribution_series(*args, **kwargs):
+    """Deprecated: use from_series() instead."""
+    import warnings
+
+    warnings.warn("from_distribution_series() is deprecated, use from_series() instead", DeprecationWarning, stacklevel=2)
+    return from_series(*args, **kwargs)

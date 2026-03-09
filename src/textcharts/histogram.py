@@ -56,7 +56,7 @@ class ASCIIQueryHistogram(ASCIIChartBase):
     ```
     """
 
-    DEFAULT_MAX_QUERIES = 33
+    DEFAULT_MAX_BARS = 33
 
     def __init__(
         self,
@@ -64,7 +64,7 @@ class ASCIIQueryHistogram(ASCIIChartBase):
         title: str | None = None,
         y_label: str = "Value",
         sort_by: str = "query_id",
-        max_per_chart: int = DEFAULT_MAX_QUERIES,
+        max_per_chart: int = DEFAULT_MAX_BARS,
         show_mean_line: bool = True,
         options: ASCIIChartOptions | None = None,
         subtitle: str | None = None,
@@ -733,12 +733,12 @@ class ASCIIQueryHistogram(ASCIIChartBase):
         return "\n".join(lines)
 
 
-def from_query_latency_data(
+def from_data(
     data: Sequence,
     title: str | None = None,
     y_label: str = "Value",
     sort_by: str = "query_id",
-    max_per_chart: int = ASCIIQueryHistogram.DEFAULT_MAX_QUERIES,
+    max_per_chart: int = ASCIIQueryHistogram.DEFAULT_MAX_BARS,
     show_mean_line: bool = True,
     options: ASCIIChartOptions | None = None,
     subject: str | None = None,
@@ -770,6 +770,14 @@ def from_query_latency_data(
         options=options,
         subject=subject,
     )
+
+
+def from_query_latency_data(*args, **kwargs):
+    """Deprecated: use from_data() instead."""
+    import warnings
+
+    warnings.warn("from_query_latency_data() is deprecated, use from_data() instead", DeprecationWarning, stacklevel=2)
+    return from_data(*args, **kwargs)
 
 
 # Standalone alias — consistent with other chart types (ASCIIBarChart, ASCIIBoxPlot, etc.)
