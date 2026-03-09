@@ -2,7 +2,7 @@ id: "rename-benchmark-specific-identifiers"
 title: "Rename benchmark-specific factory functions to generic names"
 worktree: "main"
 priority: "Medium"
-status: "Not Started"
+status: "In Progress"
 description: |
   Factory function names like from_query_latency_data(), from_regression_data(),
   and from_cost_performance_points() use benchmark-domain terminology. Rename to
