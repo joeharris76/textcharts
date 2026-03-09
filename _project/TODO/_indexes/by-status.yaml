@@ -1,5 +1,5 @@
-generated_at: '2026-03-09T09:03:16.424777'
-total_items: 4
+generated_at: '2026-03-09T09:03:32.093639'
+total_items: 5
 statuses:
   Not Started:
     count: 4
@@ -23,4 +23,12 @@ statuses:
       file: TODO/main/planning/rename-benchmark-specific-identifiers.yaml
       title: Rename benchmark-specific factory functions to generic names
       priority: Medium
+      category: Core Functionality
+  Completed:
+    count: 1
+    items:
+    - id: neutralize-default-labels-and-titles
+      file: TODO/main/active/neutralize-default-labels-and-titles.yaml
+      title: Neutralize domain-specific default labels, titles, and comments
+      priority: High
       category: Core Functionality

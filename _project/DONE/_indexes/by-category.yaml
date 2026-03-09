@@ -1,8 +1,8 @@
-generated_at: '2026-03-09T09:03:16.454921'
+generated_at: '2026-03-09T09:03:32.122439'
 total_categories: 3
 categories:
   Core Functionality:
-    count: 7
+    count: 6
     items:
     - id: shared-command-layer
       file: DONE/main/active/shared-command-layer.yaml
@@ -33,11 +33,6 @@ categories:
       file: DONE/main/active/caller-controlled-value-formatting.yaml
       title: Make time formatting caller-controlled via value_formatter callback
       priority: Medium-High
-      status: Completed
-    - id: neutralize-default-labels-and-titles
-      file: DONE/main/active/neutralize-default-labels-and-titles.yaml
-      title: Neutralize domain-specific default labels, titles, and comments
-      priority: High
       status: Completed
   Documentation:
     count: 4

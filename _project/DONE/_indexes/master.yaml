@@ -1,5 +1,5 @@
-generated_at: '2026-03-09T09:03:16.454907'
-total_items: 16
+generated_at: '2026-03-09T09:03:32.122428'
+total_items: 15
 items:
 - id: shared-command-layer
   file: DONE/main/active/shared-command-layer.yaml
@@ -163,24 +163,6 @@ items:
   completed_date: '2026-03-06'
   work_total: 4
   work_done: 4
-  work_ready: 0
-- id: neutralize-default-labels-and-titles
-  file: DONE/main/active/neutralize-default-labels-and-titles.yaml
-  title: Neutralize domain-specific default labels, titles, and comments
-  worktree: main
-  category: Core Functionality
-  priority: High
-  status: Completed
-  tags:
-  - api
-  - de-benchbox
-  - backward-compatible
-  owners:
-  - joe
-  estimated_effort: Small
-  completed_date: '2026-03-09'
-  work_total: 5
-  work_done: 5
   work_ready: 0
 - id: restore-standalone-renderer-regression-coverage
   file: DONE/main/planning/restore-standalone-renderer-regression-coverage.yaml
