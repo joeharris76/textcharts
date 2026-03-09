@@ -139,6 +139,53 @@ def test_summary_box_long_lines_do_not_exceed_configured_width():
     assert all(len(line) == 80 for line in result.splitlines())
 
 
+def test_summary_box_value_formatter_callback():
+    stats = SummaryStats(
+        title="Test",
+        total_time_ms=1500.0,
+        best_queries=[("Q1", 800.0)],
+        value_formatter=lambda v: f"{v / 1000:.1f} KB",
+    )
+    result = ASCIISummaryBox(stats=stats, options=ASCIIChartOptions(use_color=False)).render()
+    assert "1.5 KB" in result  # total_time formatted by callback
+    assert "0.8 KB" in result  # best_query formatted by callback
+    # No time suffixes should appear
+    for suffix in ("ms", "min"):
+        assert suffix not in result
+
+
+def test_summary_box_value_formatter_overrides_metric_label():
+    stats = SummaryStats(
+        title="Test",
+        geo_mean_ms=500.0,
+        total_time_ms=3000.0,
+        metric_label="ms",
+        value_formatter=lambda v: f"{int(v)} reqs",
+    )
+    result = ASCIISummaryBox(stats=stats, options=ASCIIChartOptions(use_color=False)).render()
+    assert "3000 reqs" in result
+
+
+def test_summary_box_non_ms_metric_label_uses_generic_formatting():
+    stats = SummaryStats(
+        title="Test",
+        total_time_ms=1200.0,
+        best_queries=[("Q1", 800.0)],
+        metric_label=" reqs",
+    )
+    result = ASCIISummaryBox(stats=stats, options=ASCIIChartOptions(use_color=False)).render()
+    # total_time should NOT use _format_time (would show "1.2s")
+    assert "1.2s" not in result
+    # Should use _format_value + metric_label instead
+    assert "1.2K reqs" in result
+
+
+def test_summary_box_default_ms_formatting_unchanged():
+    stats = SummaryStats(title="Test", total_time_ms=5500.0)
+    result = ASCIISummaryBox(stats=stats, options=ASCIIChartOptions(use_color=False)).render()
+    assert "5.5s" in result
+
+
 def test_summary_box_subtitle_renders_inside_box():
     stats = SummaryStats(title="DuckDB Summary", geo_mean_ms=142.3, total_time_ms=3200, num_queries=22)
     chart = ASCIISummaryBox(stats=stats, subtitle="TPC-H SF=1", options=ASCIIChartOptions(use_color=False))

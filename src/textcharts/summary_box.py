@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import math
+from collections.abc import Callable
 from dataclasses import dataclass, field
 
 from textcharts.base import ASCIIChartBase, ASCIIChartOptions, TerminalColors
@@ -43,6 +44,9 @@ class SummaryStats:
 
     # Unit label for metric values (e.g. "ms", "ops", "requests")
     metric_label: str = "ms"
+
+    # Optional callback for custom value formatting; overrides built-in formatting
+    value_formatter: Callable[[float], str] | None = None
 
     # System environment info (displayed in middle column)
     # Expected keys: "OS", "Python", "CPUs", "Memory"
@@ -327,7 +331,7 @@ class ASCIISummaryBox(ASCIIChartBase):
     ) -> str:
         """Render a single best/worst query line."""
         items = ", ".join(
-            f"{q} ({v:+.1f}%)" if self.stats.is_comparison else f"{q} ({self._format_time(v)})" for q, v in queries[:3]
+            f"{q} ({v:+.1f}%)" if self.stats.is_comparison else f"{q} ({self._format_metric(v)})" for q, v in queries[:3]
         )
         arrow = (
             ("\u2193" if self.options.use_unicode else "v")
@@ -367,8 +371,8 @@ class ASCIISummaryBox(ASCIIChartBase):
             c_val = self.stats.total_time_comparison_ms
             pct = ((c_val - b_val) / b_val * 100) if b_val != 0 else 0.0
             arrow = "\u2192" if self.options.use_unicode else "->"
-            b_str = self._format_time(b_val)
-            c_str = self._format_time(c_val)
+            b_str = self._format_metric(b_val)
+            c_str = self._format_metric(c_val)
             metric_text = f"Total:     {b_str} {arrow} {c_str}"
             pct_text = self._format_pct_colored(pct, colors)
             visible_len = len(metric_text) + len(self._format_pct_visible(pct))
@@ -403,7 +407,7 @@ class ASCIISummaryBox(ASCIIChartBase):
             lines.append(f"{box['v']} {text}{' ' * padding} {box['v']}")
 
         if self.stats.total_time_ms is not None:
-            text = f"Total:     {self._format_time(self.stats.total_time_ms)}"
+            text = f"Total:     {self._format_metric(self.stats.total_time_ms)}"
             padding = max(0, inner - len(text))
             lines.append(f"{box['v']} {text}{' ' * padding} {box['v']}")
 
@@ -422,7 +426,7 @@ class ASCIISummaryBox(ASCIIChartBase):
         if self.stats.median_ms is not None:
             texts.append(f"Median:    {self._format_value(self.stats.median_ms)}{self.stats.metric_label}")
         if self.stats.total_time_ms is not None:
-            texts.append(f"Total:     {self._format_time(self.stats.total_time_ms)}")
+            texts.append(f"Total:     {self._format_metric(self.stats.total_time_ms)}")
         if self.stats.num_queries > 0:
             texts.append(f"Queries:   {self.stats.num_queries}")
         return texts
@@ -438,7 +442,7 @@ class ASCIISummaryBox(ASCIIChartBase):
             texts.append(f"Geo Mean:  {self._format_value(b)}{self.stats.metric_label} {arrow} {self._format_value(c)}{self.stats.metric_label} {pct_text}")
         if self.stats.total_time_baseline_ms is not None and self.stats.total_time_comparison_ms is not None:
             b, c = self.stats.total_time_baseline_ms, self.stats.total_time_comparison_ms
-            b_str, c_str = self._format_time(b), self._format_time(c)
+            b_str, c_str = self._format_metric(b), self._format_metric(c)
             pct = ((c - b) / b * 100) if b != 0 else 0.0
             pct_text = self._format_pct_colored(pct, colors)
             texts.append(f"Total:     {b_str} {arrow} {c_str} {pct_text}")
@@ -514,6 +518,18 @@ class ASCIISummaryBox(ASCIIChartBase):
                 return text
             return colors.colorize(text, fg_color="#d95f02")
         return text
+
+    def _format_metric(self, value: float) -> str:
+        """Format a metric value using the configured formatter or built-in dispatch.
+
+        Dispatch order: value_formatter callback → _format_time() (when
+        metric_label is "ms") → _format_value() + metric_label.
+        """
+        if self.stats.value_formatter is not None:
+            return self.stats.value_formatter(value)
+        if self.stats.metric_label.strip().lower() == "ms":
+            return self._format_time(value)
+        return f"{self._format_value(value)}{self.stats.metric_label}"
 
     def _format_time(self, ms: float) -> str:
         """Format milliseconds into a human-readable time string."""
