@@ -7,7 +7,7 @@ Beautiful text-based charts for your terminal — zero dependencies.
 width detection. Pure Python, no external dependencies, Python 3.10+.
 
 
-.. image:: /_static/screenshots/histogram/greyscale.png
+.. image:: /_static/screenshots/histogram/color.png
    :alt: Histogram chart rendered in the terminal
    :width: 100%
 
