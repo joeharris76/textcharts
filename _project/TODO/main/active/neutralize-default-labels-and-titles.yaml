@@ -70,7 +70,7 @@ work:
   - id: w5
     summary: "Regenerate golden snapshots and run full test suite"
     needs: [w1, w2, w3, w4]
-    status: pending
+    status: done
     notes: |
       Run tests with --update-golden for intentional changes. Visually inspect
       updated snapshots. Regenerate gallery screenshots.
