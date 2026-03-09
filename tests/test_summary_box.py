@@ -137,3 +137,32 @@ def test_summary_box_long_lines_do_not_exceed_configured_width():
     )
     result = ASCIISummaryBox(stats=stats, options=ASCIIChartOptions(width=80, use_color=False)).render()
     assert all(len(line) == 80 for line in result.splitlines())
+
+
+def test_summary_box_subtitle_renders_inside_box():
+    stats = SummaryStats(title="DuckDB Summary", geo_mean_ms=142.3, total_time_ms=3200, num_queries=22)
+    chart = ASCIISummaryBox(stats=stats, subtitle="TPC-H SF=1", options=ASCIIChartOptions(use_color=False))
+    result = chart.render()
+    assert "TPC-H SF=1" in result
+    # Subtitle should appear between title and metrics separator
+    lines = result.splitlines()
+    title_idx = next(i for i, l in enumerate(lines) if "DuckDB Summary" in l)
+    subtitle_idx = next(i for i, l in enumerate(lines) if "TPC-H SF=1" in l)
+    assert subtitle_idx == title_idx + 1
+
+
+def test_summary_box_no_subtitle_by_default():
+    stats = SummaryStats(title="Test", geo_mean_ms=100)
+    chart = ASCIISummaryBox(stats=stats, options=ASCIIChartOptions(use_color=False))
+    result = chart.render()
+    lines = result.splitlines()
+    title_idx = next(i for i, l in enumerate(lines) if "Test" in l)
+    # Next line after title should be the metrics separator, not a subtitle
+    assert lines[title_idx + 1].strip().startswith("+") or lines[title_idx + 1].strip().startswith("├")
+
+
+def test_summary_box_subtitle_stays_within_box_width():
+    stats = SummaryStats(title="Test", geo_mean_ms=100)
+    chart = ASCIISummaryBox(stats=stats, subtitle="S" * 200, options=ASCIIChartOptions(width=80, use_color=False))
+    result = chart.render()
+    assert all(len(line) == 80 for line in result.splitlines())
