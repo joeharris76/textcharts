@@ -1,24 +1,125 @@
-textcharts documentation
-========================
+textcharts
+==========
 
-``textcharts`` is a zero-dependency Python library for rendering terminal-native
-charts. It exposes 15 chart types, shared rendering options, compatibility
-aliases for BenchBox migrations, and utility helpers for terminal capability
-detection.
+Beautiful text-based charts for your terminal — zero dependencies.
 
-.. note::
+15 chart types with Unicode box-drawing, ANSI colors, and automatic terminal
+width detection. Pure Python, no external dependencies, Python 3.10+.
 
-   ``textcharts`` was extracted from the `BenchBox <https://github.com/joeharris76/benchbox>`_
-   project to make its terminal charting layer available as a standalone
-   library.
 
-   For canonical end-to-end usage examples, especially benchmark and
-   performance-analysis workflows, see the `BenchBox documentation
-   <https://benchbox.dev/docs/index.html>`_.
+.. code-block:: python
+
+   from textcharts import BarChart, BarData
+
+   data = [
+       BarData(label="Fiction", value=18.4, is_best=True),
+       BarData(label="Children", value=14.2),
+       BarData(label="Comics", value=9.8, is_worst=True),
+   ]
+   chart = BarChart(data=data, title="April Bookstore Revenue", metric_label="k USD")
+   print(chart.render())
+
+
+.. code-block:: text
+
+   April Bookstore Revenue (k USD)
+   ────────────────────────────────────────────────────────────────────────────────
+   Fiction    ████████████████████████████████████████████████████████████████ 18.4
+   Children   ██████████████████████████████████████████████████               14.2
+   Comics     ██████████████████████████████                                    9.8
+
+
+Install
+-------
+
+.. code-block:: bash
+
+   pip install textcharts
+
+
+Features
+--------
+
+**Domain-neutral defaults** — generic labels and titles out of the box. Add
+context with the ``subject`` parameter (e.g., ``subject="Query Latency"``
+turns "Histogram" into "Query Latency Histogram").
+
+**Adaptive rendering** — auto-detects terminal width, color support, and
+Unicode capabilities. Falls back to ASCII-safe, plain-text output in
+non-interactive contexts.
+
+**Configurable at every level** — ``ChartOptions`` controls color, width,
+theme, Unicode, and outlier capping. Per-chart parameters cover metric labels,
+improvement direction (``lower_is_better``), and value formatting.
+
+**Three interfaces** — Python API, CLI (``textcharts bar --title "Revenue"``),
+and MCP server for AI tool use (``pip install textcharts[mcp]``).
+
+
+Chart types
+-----------
+
+.. list-table::
+   :header-rows: 1
+   :widths: 25 25 25
+
+   * - Chart
+     - Class
+     - Data model
+   * - Bar chart
+     - ``BarChart``
+     - ``BarData``
+   * - Histogram
+     - ``Histogram``
+     - ``HistogramBar``
+   * - Heatmap
+     - ``Heatmap``
+     - matrix + labels
+   * - Box plot
+     - ``BoxPlot``
+     - ``BoxPlotSeries``
+   * - Line chart
+     - ``LineChart``
+     - ``LinePoint``
+   * - Scatter plot
+     - ``ScatterPlot``
+     - ``ScatterPoint``
+   * - Comparison bar
+     - ``ComparisonBar``
+     - ``ComparisonBarData``
+   * - Diverging bar
+     - ``DivergingBar``
+     - ``DivergingBarData``
+   * - Summary box
+     - ``SummaryBox``
+     - ``SummaryStats``
+   * - Percentile ladder
+     - ``PercentileLadder``
+     - ``PercentileData``
+   * - Normalized speedup
+     - ``NormalizedSpeedup``
+     - ``SpeedupData``
+   * - Stacked bar
+     - ``StackedBar``
+     - ``StackedBarData``
+   * - Sparkline table
+     - ``SparklineTable``
+     - ``SparklineTableData``
+   * - CDF chart
+     - ``CDFChart``
+     - ``CDFSeriesData``
+   * - Rank table
+     - ``RankTable``
+     - ``RankTableData``
+
+See the :doc:`guides/chart-gallery` for rendered screenshots of every chart
+type in color, greyscale, and monochrome modes.
+
 
 .. toctree::
    :maxdepth: 2
    :caption: Start here
+   :hidden:
 
    tutorials/first-chart
    guides/chart-selection
@@ -30,6 +131,7 @@ detection.
 .. toctree::
    :maxdepth: 2
    :caption: Reference
+   :hidden:
 
    reference/index
    reference/api
@@ -39,5 +141,6 @@ detection.
 .. toctree::
    :maxdepth: 2
    :caption: Project
+   :hidden:
 
    project/development
