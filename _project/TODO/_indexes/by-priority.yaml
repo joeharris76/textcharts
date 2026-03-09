@@ -1,14 +1,6 @@
-generated_at: '2026-03-09T09:03:59.016496'
-total_items: 4
+generated_at: '2026-03-09T09:10:46.609380'
+total_items: 3
 priorities:
-  High:
-    count: 1
-    items:
-    - id: add-subject-parameter-to-chart-titles
-      file: TODO/main/planning/add-subject-parameter-to-chart-titles.yaml
-      title: Add subject parameter to compose domain context into chart titles
-      category: Core Functionality
-      status: Not Started
   Medium-High:
     count: 1
     items:

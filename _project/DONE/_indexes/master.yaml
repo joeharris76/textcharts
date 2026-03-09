@@ -1,5 +1,5 @@
-generated_at: '2026-03-09T09:03:59.050451'
-total_items: 16
+generated_at: '2026-03-09T09:10:46.651057'
+total_items: 17
 items:
 - id: shared-command-layer
   file: DONE/main/active/shared-command-layer.yaml
@@ -51,6 +51,26 @@ items:
   work_total: 2
   work_done: 2
   work_ready: 0
+- id: add-subject-parameter-to-chart-titles
+  file: DONE/main/active/add-subject-parameter-to-chart-titles.yaml
+  title: Add subject parameter to compose domain context into chart titles
+  worktree: main
+  category: Core Functionality
+  priority: High
+  status: Completed
+  tags:
+  - api
+  - de-benchbox
+  - backward-compatible
+  owners:
+  - joe
+  estimated_effort: Small
+  completed_date: '2026-03-09'
+  work_total: 5
+  work_done: 5
+  work_ready: 0
+  needs:
+  - neutralize-default-labels-and-titles
 - id: de-benchbox-example-datasets-and-position-chart-specific-apis
   file: DONE/main/planning/de-benchbox-example-datasets-and-position-chart-specific-apis.yaml
   title: De-BenchBox example datasets and position chart-specific APIs clearly

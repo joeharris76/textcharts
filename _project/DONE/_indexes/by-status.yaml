@@ -1,8 +1,8 @@
-generated_at: '2026-03-09T09:03:59.050485'
-total_items: 16
+generated_at: '2026-03-09T09:10:46.651091'
+total_items: 17
 statuses:
   Completed:
-    count: 16
+    count: 17
     items:
     - id: behavioral-tests-for-minimal-coverage-charts
       file: DONE/main/active/behavioral-tests-for-minimal-coverage-charts.yaml
@@ -14,6 +14,11 @@ statuses:
       title: Add direct tests for all public factory functions
       priority: High
       category: Testing and Quality Assurance
+    - id: add-subject-parameter-to-chart-titles
+      file: DONE/main/active/add-subject-parameter-to-chart-titles.yaml
+      title: Add subject parameter to compose domain context into chart titles
+      priority: High
+      category: Core Functionality
     - id: test-line-chart-trend-and-rendering-paths
       file: DONE/main/active/test-line-chart-trend-and-rendering-paths.yaml
       title: Add tests for LineChart trend line computation and rendering branches

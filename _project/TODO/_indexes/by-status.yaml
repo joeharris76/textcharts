@@ -1,8 +1,8 @@
-generated_at: '2026-03-09T09:03:59.016501'
-total_items: 4
+generated_at: '2026-03-09T09:10:46.609385'
+total_items: 3
 statuses:
   Not Started:
-    count: 4
+    count: 3
     items:
     - id: configurable-outlier-cap
       file: TODO/main/planning/configurable-outlier-cap.yaml
@@ -13,11 +13,6 @@ statuses:
       file: TODO/main/planning/configurable-improvement-direction.yaml
       title: Add lower_is_better parameter for improvement direction
       priority: Medium-High
-      category: Core Functionality
-    - id: add-subject-parameter-to-chart-titles
-      file: TODO/main/planning/add-subject-parameter-to-chart-titles.yaml
-      title: Add subject parameter to compose domain context into chart titles
-      priority: High
       category: Core Functionality
     - id: rename-benchmark-specific-identifiers
       file: TODO/main/planning/rename-benchmark-specific-identifiers.yaml

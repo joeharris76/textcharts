@@ -1,5 +1,5 @@
-generated_at: '2026-03-09T09:03:59.050473'
-total_items: 16
+generated_at: '2026-03-09T09:10:46.651082'
+total_items: 17
 priorities:
   Critical:
     count: 1
@@ -10,7 +10,7 @@ priorities:
       category: Core Functionality
       status: Completed
   High:
-    count: 10
+    count: 11
     items:
     - id: behavioral-tests-for-minimal-coverage-charts
       file: DONE/main/active/behavioral-tests-for-minimal-coverage-charts.yaml
@@ -21,6 +21,11 @@ priorities:
       file: DONE/main/active/test-factory-functions.yaml
       title: Add direct tests for all public factory functions
       category: Testing and Quality Assurance
+      status: Completed
+    - id: add-subject-parameter-to-chart-titles
+      file: DONE/main/active/add-subject-parameter-to-chart-titles.yaml
+      title: Add subject parameter to compose domain context into chart titles
+      category: Core Functionality
       status: Completed
     - id: de-benchbox-example-datasets-and-position-chart-specific-apis
       file: DONE/main/planning/de-benchbox-example-datasets-and-position-chart-specific-apis.yaml

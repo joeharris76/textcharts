@@ -2,7 +2,8 @@ id: "add-subject-parameter-to-chart-titles"
 title: "Add subject parameter to compose domain context into chart titles"
 worktree: "main"
 priority: "High"
-status: "In Progress"
+status: "Completed"
+completed_date: "2026-03-09"
 description: |
   After neutralize-default-labels-and-titles completes, chart default titles
   will be generic (e.g., "Histogram", "Cumulative Distribution"). Callers who
@@ -95,7 +96,7 @@ work:
   - id: w5
     summary: "Run full test suite and regenerate golden snapshots"
     needs: [w4]
-    status: pending
+    status: done
     notes: |
       Run tests with --update-golden for intentional changes.
       Verify no regressions in existing callers.

@@ -1,9 +1,14 @@
-generated_at: '2026-03-09T09:03:59.050466'
+generated_at: '2026-03-09T09:10:46.651074'
 total_categories: 3
 categories:
   Core Functionality:
-    count: 7
+    count: 8
     items:
+    - id: add-subject-parameter-to-chart-titles
+      file: DONE/main/active/add-subject-parameter-to-chart-titles.yaml
+      title: Add subject parameter to compose domain context into chart titles
+      priority: High
+      status: Completed
     - id: shared-command-layer
       file: DONE/main/active/shared-command-layer.yaml
       title: Design and implement shared command layer for CLI and MCP
