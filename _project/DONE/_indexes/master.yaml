@@ -1,5 +1,5 @@
-generated_at: '2026-03-09T09:15:02.648832'
-total_items: 18
+generated_at: '2026-03-09T09:19:28.892710'
+total_items: 19
 items:
 - id: shared-command-layer
   file: DONE/main/active/shared-command-layer.yaml
@@ -239,6 +239,26 @@ items:
   work_total: 3
   work_done: 3
   work_ready: 0
+- id: rename-benchmark-specific-identifiers
+  file: DONE/main/active/rename-benchmark-specific-identifiers.yaml
+  title: Rename benchmark-specific factory functions to generic names
+  worktree: main
+  category: Core Functionality
+  priority: Medium
+  status: Completed
+  tags:
+  - api
+  - de-benchbox
+  - deprecation
+  owners:
+  - joe
+  estimated_effort: Medium
+  completed_date: '2026-03-09'
+  work_total: 5
+  work_done: 5
+  work_ready: 0
+  needs:
+  - neutralize-default-labels-and-titles
 - id: configurable-improvement-direction
   file: DONE/main/active/configurable-improvement-direction.yaml
   title: Add lower_is_better parameter for improvement direction

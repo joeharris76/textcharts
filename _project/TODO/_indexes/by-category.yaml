@@ -1,16 +1,11 @@
-generated_at: '2026-03-09T09:15:02.612230'
+generated_at: '2026-03-09T09:19:28.852788'
 total_categories: 1
 categories:
   Core Functionality:
-    count: 2
+    count: 1
     items:
     - id: configurable-outlier-cap
       file: TODO/main/planning/configurable-outlier-cap.yaml
       title: Add configurable outlier_cap to ASCIIChartOptions
       priority: Low
       status: Not Started
-    - id: rename-benchmark-specific-identifiers
-      file: TODO/main/active/rename-benchmark-specific-identifiers.yaml
-      title: Rename benchmark-specific factory functions to generic names
-      priority: Medium
-      status: In Progress

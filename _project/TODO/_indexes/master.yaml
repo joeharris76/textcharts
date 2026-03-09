@@ -1,5 +1,5 @@
-generated_at: '2026-03-09T09:15:02.612213'
-total_items: 2
+generated_at: '2026-03-09T09:19:28.852771'
+total_items: 1
 items:
 - id: configurable-outlier-cap
   file: TODO/main/planning/configurable-outlier-cap.yaml
@@ -19,24 +19,5 @@ items:
   work_done: 0
   work_ready: 1
   deferred_count: 1
-  needs:
-  - neutralize-default-labels-and-titles
-- id: rename-benchmark-specific-identifiers
-  file: TODO/main/active/rename-benchmark-specific-identifiers.yaml
-  title: Rename benchmark-specific factory functions to generic names
-  worktree: main
-  category: Core Functionality
-  priority: Medium
-  status: In Progress
-  tags:
-  - api
-  - de-benchbox
-  - deprecation
-  owners:
-  - joe
-  estimated_effort: Medium
-  work_total: 5
-  work_done: 0
-  work_ready: 1
   needs:
   - neutralize-default-labels-and-titles

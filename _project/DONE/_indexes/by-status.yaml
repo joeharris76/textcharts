@@ -1,8 +1,8 @@
-generated_at: '2026-03-09T09:15:02.648867'
-total_items: 18
+generated_at: '2026-03-09T09:19:28.892746'
+total_items: 19
 statuses:
   Completed:
-    count: 18
+    count: 19
     items:
     - id: behavioral-tests-for-minimal-coverage-charts
       file: DONE/main/active/behavioral-tests-for-minimal-coverage-charts.yaml
@@ -88,6 +88,11 @@ statuses:
       file: DONE/main/active/neutralize-default-labels-and-titles.yaml
       title: Neutralize domain-specific default labels, titles, and comments
       priority: High
+      category: Core Functionality
+    - id: rename-benchmark-specific-identifiers
+      file: DONE/main/active/rename-benchmark-specific-identifiers.yaml
+      title: Rename benchmark-specific factory functions to generic names
+      priority: Medium
       category: Core Functionality
     - id: restore-standalone-renderer-regression-coverage
       file: DONE/main/planning/restore-standalone-renderer-regression-coverage.yaml

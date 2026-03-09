@@ -1,8 +1,8 @@
-generated_at: '2026-03-09T09:15:02.648850'
+generated_at: '2026-03-09T09:19:28.892729'
 total_categories: 3
 categories:
   Core Functionality:
-    count: 9
+    count: 10
     items:
     - id: configurable-improvement-direction
       file: DONE/main/active/configurable-improvement-direction.yaml
@@ -48,6 +48,11 @@ categories:
       file: DONE/main/active/neutralize-default-labels-and-titles.yaml
       title: Neutralize domain-specific default labels, titles, and comments
       priority: High
+      status: Completed
+    - id: rename-benchmark-specific-identifiers
+      file: DONE/main/active/rename-benchmark-specific-identifiers.yaml
+      title: Rename benchmark-specific factory functions to generic names
+      priority: Medium
       status: Completed
   Documentation:
     count: 4
