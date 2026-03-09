@@ -40,6 +40,7 @@ def _build_parser() -> argparse.ArgumentParser:
         # Common options
         sub.add_argument("-f", "--file", metavar="PATH", help="Read JSON data from file (default: stdin)")
         sub.add_argument("--title", help="Chart title")
+        sub.add_argument("--subtitle", help="Subtitle line displayed below the title")
         sub.add_argument("--width", type=int, help="Chart width in characters")
         sub.add_argument("--height", type=int, help="Chart height in rows")
         sub.add_argument("--color", dest="use_color", action="store_true", default=None, help="Enable color (default)")
@@ -192,6 +193,7 @@ def main(argv: list[str] | None = None) -> None:
             args.command,
             data,
             title=getattr(args, "title", None),
+            subtitle=getattr(args, "subtitle", None),
             options=options if options else None,
             **chart_kwargs,
         )

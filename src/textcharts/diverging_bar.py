@@ -54,9 +54,9 @@ class ASCIIDivergingBar(ASCIIChartBase):
         title: str | None = None,
         clip_pct: float = DEFAULT_CLIP_PCT,
         options: ASCIIChartOptions | None = None,
-        metadata: dict | None = None,
+        subtitle: str | None = None,
     ):
-        super().__init__(options, metadata=metadata)
+        super().__init__(options, subtitle=subtitle)
         self.data = list(data)
         self.title = title or "Regression / Improvement Distribution"
         self.clip_pct = clip_pct

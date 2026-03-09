@@ -648,35 +648,27 @@ class TestLabelTruncation:
         assert name in result
 
 
-class TestMetadataSubtitle:
-    """Tests for Phase 3: chart metadata subtitle."""
+class TestSubtitle:
+    """Tests for chart subtitle rendering."""
 
-    def test_subtitle_renders_platform_version(self):
-        """Subtitle renders platform version from metadata."""
+    def test_subtitle_renders_string(self):
+        """Subtitle renders the provided string."""
         data = [BarData(label="Q1", value=100)]
         opts = ASCIIChartOptions(use_color=False)
-        chart = ASCIIBarChart(data=data, options=opts, metadata={"platform_version": "DuckDB 1.2.0"})
+        chart = ASCIIBarChart(data=data, options=opts, subtitle="DuckDB 1.2.0")
         result = chart.render()
         assert "DuckDB 1.2.0" in result
 
-    def test_subtitle_renders_tuning(self):
-        """Subtitle renders tuning config from metadata."""
+    def test_subtitle_renders_complex_string(self):
+        """Subtitle renders a multi-part string."""
         data = [BarData(label="Q1", value=100)]
         opts = ASCIIChartOptions(use_color=False)
-        chart = ASCIIBarChart(data=data, options=opts, metadata={"tuning": "tuned"})
+        chart = ASCIIBarChart(data=data, options=opts, subtitle="TPC-H | SF=1 | DuckDB 1.2.0")
         result = chart.render()
-        assert "tuned" in result
+        assert "TPC-H | SF=1 | DuckDB 1.2.0" in result
 
-    def test_subtitle_pipe_separated(self):
-        """Subtitle uses pipe separator for multiple values."""
-        data = [BarData(label="Q1", value=100)]
-        opts = ASCIIChartOptions(use_color=False)
-        chart = ASCIIBarChart(data=data, options=opts, metadata={"scale_factor": 1, "platform_version": "DuckDB 1.2.0"})
-        result = chart.render()
-        assert "|" in result
-
-    def test_no_subtitle_without_metadata(self):
-        """No subtitle line when metadata is empty."""
+    def test_no_subtitle_without_value(self):
+        """No subtitle line when subtitle is not set."""
         data = [BarData(label="Q1", value=100)]
         opts = ASCIIChartOptions(use_color=False)
         chart = ASCIIBarChart(data=data, options=opts)
@@ -1007,12 +999,11 @@ class TestEdgeCases:
         assert long_name not in result
         assert ".." in result
 
-    def test_metadata_subtitle_truncated_to_width(self):
+    def test_subtitle_truncated_to_width(self):
         """Subtitle is truncated if it exceeds chart width."""
         data = [BarData(label="Q1", value=100)]
-        metadata = {"platform_version": "V" * 100}
         opts = ASCIIChartOptions(width=40, use_color=False)
-        chart = ASCIIBarChart(data=data, options=opts, metadata=metadata)
+        chart = ASCIIBarChart(data=data, options=opts, subtitle="V" * 100)
         result = chart.render()
         # Should render without error and within width bounds
         for line in result.split("\n"):

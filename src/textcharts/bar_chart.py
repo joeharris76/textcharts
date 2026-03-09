@@ -46,9 +46,9 @@ class ASCIIBarChart(ASCIIChartBase):
         metric_label: str = "Value",
         sort_by: str = "value",
         options: ASCIIChartOptions | None = None,
-        metadata: dict | None = None,
+        subtitle: str | None = None,
     ):
-        super().__init__(options, metadata=metadata)
+        super().__init__(options, subtitle=subtitle)
         self.data = list(data)
         self.title = title or "Bar Chart"
         self.metric_label = metric_label

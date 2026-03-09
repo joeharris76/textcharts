@@ -54,9 +54,9 @@ class ASCIISparklineTable(ASCIIChartBase):
         data: SparklineTableData,
         title: str | None = None,
         options: ASCIIChartOptions | None = None,
-        metadata: dict | None = None,
+        subtitle: str | None = None,
     ):
-        super().__init__(options, metadata=metadata)
+        super().__init__(options, subtitle=subtitle)
         self.data = data
         self.title = title or "Platform Comparison Overview"
 

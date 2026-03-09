@@ -10,10 +10,10 @@ import sys
 from abc import ABC, abstractmethod
 from dataclasses import dataclass, field
 from enum import Enum
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
-    from collections.abc import Callable, Sequence
+    from collections.abc import Sequence
 
 # Colorblind-friendly categorical palette (Okabe-Ito inspired)
 LIGHT_PALETTE: tuple[str, ...] = (
@@ -363,10 +363,6 @@ class ASCIIChartOptions:
     show_values: bool = True
     theme: str = "light"  # "light" or "dark"
 
-    # Optional formatter for scale factor display in subtitles.
-    # When None, uses a generic fallback. BenchBox injects its own formatter.
-    scale_factor_formatter: Callable[[float], str] | None = field(default=None, repr=False)
-
     # Computed at render time
     _capabilities: TerminalCapabilities | None = field(default=None, repr=False)
 
@@ -455,10 +451,10 @@ class ASCIIChartOptions:
 class ASCIIChartBase(ABC):
     """Abstract base class for ASCII chart renderers."""
 
-    def __init__(self, options: ASCIIChartOptions | None = None, metadata: dict[str, Any] | None = None):
+    def __init__(self, options: ASCIIChartOptions | None = None, subtitle: str | None = None):
         self.options = options or ASCIIChartOptions()
         self._capabilities: TerminalCapabilities | None = None
-        self.metadata: dict[str, Any] = metadata or {}
+        self.subtitle: str | None = subtitle
 
     def _detect_capabilities(self) -> TerminalCapabilities:
         """Detect and cache terminal capabilities."""
@@ -488,43 +484,17 @@ class ASCIIChartBase(ABC):
         return colors.bold() + padded + colors.reset()
 
     def _render_subtitle(self, width: int) -> str | None:
-        """Render a metadata subtitle line from chart metadata.
+        """Render a centered, dimmed subtitle line.
 
-        Displays scale factor, platform version, and tuning config
-        as a compact pipe-separated string centered below the title.
-        Returns None if no metadata is available.
+        Returns None if no subtitle is set.
         """
-        if not self.metadata:
-            return None
-
-        parts: list[str] = []
-
-        benchmark = self.metadata.get("benchmark")
-        if benchmark:
-            parts.append(str(benchmark).upper())
-
-        sf = self.metadata.get("scale_factor")
-        if sf is not None:
-            if self.options.scale_factor_formatter is not None:
-                parts.append(f"SF={self.options.scale_factor_formatter(sf)}")
-            else:
-                parts.append(f"SF={sf}")
-
-        version = self.metadata.get("platform_version")
-        if version:
-            parts.append(str(version))
-
-        tuning = self.metadata.get("tuning")
-        if tuning:
-            parts.append(str(tuning))
-
-        if not parts:
+        if not self.subtitle:
             return None
 
         colors = self.options.get_colors()
-        subtitle = " | ".join(parts)
-        subtitle = subtitle[:width] if len(subtitle) > width else subtitle
-        padded = subtitle.center(width)
+        text = self._sanitize_text(self.subtitle)
+        text = text[:width] if len(text) > width else text
+        padded = text.center(width)
         return colors.colorize(padded, fg_color="#666666")
 
     def _render_horizontal_line(self, width: int, char: str = "─") -> str:

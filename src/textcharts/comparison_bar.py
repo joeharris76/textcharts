@@ -61,9 +61,9 @@ class ASCIIComparisonBar(ASCIIChartBase):
         title: str | None = None,
         metric_label: str = "Execution Time (ms)",
         options: ASCIIChartOptions | None = None,
-        metadata: dict | None = None,
+        subtitle: str | None = None,
     ):
-        super().__init__(options, metadata=metadata)
+        super().__init__(options, subtitle=subtitle)
         self.data = list(data)
         self.title = title or "Comparison"
         self.metric_label = metric_label

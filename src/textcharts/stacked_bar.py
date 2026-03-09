@@ -71,10 +71,10 @@ class ASCIIStackedBar(ASCIIChartBase):
         data: Sequence[StackedBarData],
         title: str | None = None,
         options: ASCIIChartOptions | None = None,
-        metadata: dict | None = None,
+        subtitle: str | None = None,
         metric_label: str = "ms",
     ):
-        super().__init__(options, metadata=metadata)
+        super().__init__(options, subtitle=subtitle)
         self.data = list(data)
         self.title = title or "Phase Breakdown by Platform"
         self.metric_label = metric_label

@@ -84,9 +84,9 @@ class ASCIISummaryBox(ASCIIChartBase):
         self,
         stats: SummaryStats,
         options: ASCIIChartOptions | None = None,
-        metadata: dict | None = None,
+        subtitle: str | None = None,
     ):
-        super().__init__(options, metadata=metadata)
+        super().__init__(options, subtitle=subtitle)
         self.stats = stats
 
     # Minimum inner width required for two-column layout

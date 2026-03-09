@@ -59,9 +59,9 @@ class ASCIIScatterPlot(ASCIIChartBase):
         y_label: str = "Performance",
         show_pareto: bool = True,
         options: ASCIIChartOptions | None = None,
-        metadata: dict | None = None,
+        subtitle: str | None = None,
     ):
-        super().__init__(options, metadata=metadata)
+        super().__init__(options, subtitle=subtitle)
         self.points = list(points)
         self.title = title or "Scatter Plot"
         self.x_label = x_label

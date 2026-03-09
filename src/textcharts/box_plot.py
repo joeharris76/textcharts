@@ -131,9 +131,9 @@ class ASCIIBoxPlot(ASCIIChartBase):
         show_stats: bool = True,
         show_mean: bool = True,
         options: ASCIIChartOptions | None = None,
-        metadata: dict | None = None,
+        subtitle: str | None = None,
     ):
-        super().__init__(options, metadata=metadata)
+        super().__init__(options, subtitle=subtitle)
         self.series = list(series)
         self.title = title or "Box Plot"
         self.y_label = y_label

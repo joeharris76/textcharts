@@ -60,6 +60,7 @@ def _create_chart_handler(chart_name: str):
     async def handler(
         data: list[dict[str, Any]] | dict[str, Any],
         title: str | None = None,
+        subtitle: str | None = None,
         width: int | None = None,
         height: int | None = None,
         use_color: bool = True,
@@ -74,6 +75,7 @@ def _create_chart_handler(chart_name: str):
         Args:
             data: Chart data (list of objects or single object depending on chart type).
             title: Optional chart title.
+            subtitle: Optional subtitle line displayed below the title.
             width: Chart width in characters.
             height: Chart height in rows.
             use_color: Enable ANSI color output.
@@ -102,7 +104,7 @@ def _create_chart_handler(chart_name: str):
             chart_kwargs = {k: v for k, v in chart_params.items() if k in valid_names}
 
         try:
-            return execute_command(chart_name, data, title=title, options=options, **chart_kwargs)
+            return execute_command(chart_name, data, title=title, subtitle=subtitle, options=options, **chart_kwargs)
         except (ParseError, KeyError, ValueError, TypeError) as e:
             return f"Error: {e}"
 

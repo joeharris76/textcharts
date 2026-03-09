@@ -112,16 +112,16 @@ def test_percentile_and_outlier_helpers_cover_edge_cases():
 def test_base_render_helpers_and_subtitle_formatting():
     chart = _DummyChart(
         options=ASCIIChartOptions(use_color=False, use_unicode=True),
-        metadata={"benchmark": "tpch", "scale_factor": 1, "platform_version": "v1", "tuning": "tuned"},
+        subtitle="TPC-H | SF=1 | v1 | tuned",
     )
 
-    subtitle = chart._render_subtitle(80)
+    rendered = chart._render_subtitle(80)
 
-    assert subtitle is not None
-    assert "TPCH" in subtitle
-    assert "SF=1" in subtitle
-    assert "v1" in subtitle
-    assert "tuned" in subtitle
+    assert rendered is not None
+    assert "TPC-H" in rendered
+    assert "SF=1" in rendered
+    assert "v1" in rendered
+    assert "tuned" in rendered
     assert "Injected" == chart._truncate_label("\033[31mInjected\033[0m", 20)
     assert chart._format_value(1500) == "1.5K"
     assert chart._format_value(0.001) == "1.00e-03"

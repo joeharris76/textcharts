@@ -48,9 +48,9 @@ class ASCIINormalizedSpeedup(ASCIIChartBase):
         title: str | None = None,
         baseline_name: str | None = None,
         options: ASCIIChartOptions | None = None,
-        metadata: dict | None = None,
+        subtitle: str | None = None,
     ):
-        super().__init__(options, metadata=metadata)
+        super().__init__(options, subtitle=subtitle)
         self.data = list(data)
         self.baseline_name = baseline_name
         self.title = title

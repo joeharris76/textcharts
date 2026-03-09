@@ -103,9 +103,9 @@ class ASCIIPercentileLadder(ASCIIChartBase):
         title: str | None = None,
         metric_label: str = "ms",
         options: ASCIIChartOptions | None = None,
-        metadata: dict | None = None,
+        subtitle: str | None = None,
     ):
-        super().__init__(options, metadata=metadata)
+        super().__init__(options, subtitle=subtitle)
         self.data = list(data)
         self.title = title or "Percentile Latency by Platform"
         self.metric_label = metric_label

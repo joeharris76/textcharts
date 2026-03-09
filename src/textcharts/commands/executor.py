@@ -16,6 +16,7 @@ def execute_command(
     command: str,
     data: Any,
     title: str | None = None,
+    subtitle: str | None = None,
     options: dict[str, Any] | None = None,
     **kwargs: Any,
 ) -> str:
@@ -25,6 +26,7 @@ def execute_command(
         command: Chart command name (e.g., "bar", "heatmap").
         data: Raw input data (list of dicts or single dict, depending on chart type).
         title: Optional chart title.
+        subtitle: Optional subtitle line displayed below the title.
         options: Common chart options dict (width, height, use_color, use_unicode, theme, etc.).
         **kwargs: Chart-specific parameters (e.g., sort_by, metric_label).
 
@@ -61,6 +63,9 @@ def execute_command(
             parsed_data.title = title
         else:
             ctor_kwargs["title"] = title
+
+    if subtitle is not None:
+        ctor_kwargs["subtitle"] = subtitle
 
     if chart_options is not None:
         ctor_kwargs["options"] = chart_options

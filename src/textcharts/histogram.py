@@ -67,7 +67,7 @@ class ASCIIQueryHistogram(ASCIIChartBase):
         max_per_chart: int = DEFAULT_MAX_QUERIES,
         show_mean_line: bool = True,
         options: ASCIIChartOptions | None = None,
-        metadata: dict | None = None,
+        subtitle: str | None = None,
     ):
         """Initialize the histogram.
 
@@ -79,9 +79,9 @@ class ASCIIQueryHistogram(ASCIIChartBase):
             max_per_chart: Maximum queries per chart before splitting.
             show_mean_line: Whether to show a horizontal mean line.
             options: Chart rendering options.
-            metadata: Optional chart metadata (scale_factor, platform_version, tuning).
+            subtitle: Optional subtitle line displayed below the title.
         """
-        super().__init__(options, metadata=metadata)
+        super().__init__(options, subtitle=subtitle)
         self.data = list(data)
         self.title = title or "Query Latency Histogram"
         self.y_label = y_label

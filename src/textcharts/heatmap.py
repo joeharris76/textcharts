@@ -65,9 +65,9 @@ class ASCIIHeatmap(ASCIIChartBase):
         show_values: bool = True,
         color_scheme: str = "diverging",
         options: ASCIIChartOptions | None = None,
-        metadata: dict | None = None,
+        subtitle: str | None = None,
     ):
-        super().__init__(options, metadata=metadata)
+        super().__init__(options, subtitle=subtitle)
         self.matrix = [list(row) for row in matrix]
         self.row_labels = list(row_labels)
         self.col_labels = list(col_labels)

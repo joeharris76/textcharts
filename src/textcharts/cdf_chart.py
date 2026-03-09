@@ -66,9 +66,9 @@ class ASCIICDFChart(ASCIIChartBase):
         y_label: str = "Cumulative Share",
         height: int = PLOT_HEIGHT,
         options: ASCIIChartOptions | None = None,
-        metadata: dict | None = None,
+        subtitle: str | None = None,
     ):
-        super().__init__(options, metadata=metadata)
+        super().__init__(options, subtitle=subtitle)
         self.data = list(data)
         self.title = title or "Cumulative Distribution of Query Latency"
         self.x_label = x_label
