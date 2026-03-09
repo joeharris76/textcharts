@@ -17,7 +17,7 @@ class SummaryStats:
     For comparison summaries, both baseline and comparison fields are used.
     """
 
-    title: str = "Benchmark Summary"
+    title: str = "Summary"
 
     # Aggregate metrics
     geo_mean_ms: float | None = None

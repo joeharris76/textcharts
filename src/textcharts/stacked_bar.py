@@ -78,7 +78,7 @@ class ASCIIStackedBar(ASCIIChartBase):
     ):
         super().__init__(options, subtitle=subtitle)
         self.data = list(data)
-        self.title = title or "Phase Breakdown by Platform"
+        self.title = title or "Stacked Breakdown"
         self.metric_label = metric_label
         self.value_formatter = value_formatter
 

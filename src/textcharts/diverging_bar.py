@@ -58,7 +58,7 @@ class ASCIIDivergingBar(ASCIIChartBase):
     ):
         super().__init__(options, subtitle=subtitle)
         self.data = list(data)
-        self.title = title or "Regression / Improvement Distribution"
+        self.title = title or "Change Distribution"
         self.clip_pct = clip_pct
 
     def render(self) -> str:

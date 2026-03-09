@@ -52,7 +52,7 @@ class ASCIIRankTable(ASCIIChartBase):
     ):
         super().__init__(options, subtitle=subtitle)
         self.data = data
-        self.title = title or "Query Rankings (1st = fastest)"
+        self.title = title or "Rankings (1st = best)"
 
     def render(self) -> str:
         """Render the rank table as a string."""

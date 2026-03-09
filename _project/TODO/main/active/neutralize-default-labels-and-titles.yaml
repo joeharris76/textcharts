@@ -47,7 +47,7 @@ work:
   - id: w3
     summary: "Change default titles from benchmark-specific to generic"
     needs: [w1]
-    status: pending
+    status: done
     notes: |
       histogram.py: "Query Latency Histogram" → "Histogram"
       diverging_bar.py: "Regression / Improvement Distribution" → "Change Distribution"

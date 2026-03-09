@@ -83,7 +83,7 @@ class ASCIIQueryHistogram(ASCIIChartBase):
         """
         super().__init__(options, subtitle=subtitle)
         self.data = list(data)
-        self.title = title or "Query Latency Histogram"
+        self.title = title or "Histogram"
         self.y_label = y_label
         self.sort_by = sort_by
         self.max_per_chart = max(5, max_per_chart)

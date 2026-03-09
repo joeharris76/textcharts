@@ -107,7 +107,7 @@ class ASCIIPercentileLadder(ASCIIChartBase):
     ):
         super().__init__(options, subtitle=subtitle)
         self.data = list(data)
-        self.title = title or "Percentile Latency by Platform"
+        self.title = title or "Percentile Distribution"
         self.metric_label = metric_label
 
     def render(self) -> str:

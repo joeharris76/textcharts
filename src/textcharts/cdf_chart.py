@@ -70,7 +70,7 @@ class ASCIICDFChart(ASCIIChartBase):
     ):
         super().__init__(options, subtitle=subtitle)
         self.data = list(data)
-        self.title = title or "Cumulative Distribution of Query Latency"
+        self.title = title or "Cumulative Distribution"
         self.x_label = x_label
         self.y_label = y_label
         self.height = max(5, height)

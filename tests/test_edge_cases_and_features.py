@@ -512,7 +512,7 @@ class TestHistogramWidthAware:
         hist = ASCIIQueryHistogram(data=bars, options=opts)
         result = hist.render()
         # Only one chart header line rendered (no split into multiple charts).
-        assert result.count("Query Latency Histogram") == 1
+        assert result.count("Histogram") == 1
 
     # ------------------------------------------------------------------ footer wrapping
 
