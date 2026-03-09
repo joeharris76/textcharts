@@ -16,4 +16,4 @@
             Q1         Q2         Q3         Q4         Q5         Q6
                                    Query ID →
 
-        █ Execution Time (ms)  ····· Mean: 246.3  ■ Best  ◆ Worst
+        █ Value  ····· Mean: 246.3  ■ Best  ◆ Worst

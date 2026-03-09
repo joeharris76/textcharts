@@ -1,4 +1,4 @@
-                               Query Heatmap (ms)
+                                Query Heatmap ()
 ────────────────────────────────────────────────────────────────────────────────
 
      DuckDB │ SQLite │ Polars
@@ -9,5 +9,5 @@ Q3 │      89│      95│     110
 Q4 │████ 560│▓▓▓▓ 480│▓▓▓▓ 520
                                    Columns →
 
-Scale: ░ ▒ ▓ █ (fast → slow, ms)
-Range: 89 - 560 ms
+Scale: ░ ▒ ▓ █ (fast → slow, )
+Range: 89 - 560

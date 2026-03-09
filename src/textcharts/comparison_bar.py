@@ -59,7 +59,7 @@ class ASCIIComparisonBar(ASCIIChartBase):
         self,
         data: Sequence[ComparisonBarData],
         title: str | None = None,
-        metric_label: str = "Execution Time (ms)",
+        metric_label: str = "Value",
         options: ASCIIChartOptions | None = None,
         subtitle: str | None = None,
     ):

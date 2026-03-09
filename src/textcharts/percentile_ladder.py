@@ -101,7 +101,7 @@ class ASCIIPercentileLadder(ASCIIChartBase):
         self,
         data: Sequence[PercentileData],
         title: str | None = None,
-        metric_label: str = "ms",
+        metric_label: str = "",
         options: ASCIIChartOptions | None = None,
         subtitle: str | None = None,
     ):

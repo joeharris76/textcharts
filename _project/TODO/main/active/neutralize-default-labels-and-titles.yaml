@@ -2,7 +2,7 @@ id: "neutralize-default-labels-and-titles"
 title: "Neutralize domain-specific default labels, titles, and comments"
 worktree: "main"
 priority: "High"
-status: "Not Started"
+status: "In Progress"
 description: |
   textcharts constructor parameters, factory functions, and default titles still
   carry BenchBox benchmark-specific defaults like "Execution Time (ms)", "Query
@@ -21,7 +21,7 @@ category: "Core Functionality"
 work:
   - id: w1
     summary: "Change constructor parameter defaults from benchmark-specific to generic values"
-    status: pending
+    status: done
     notes: |
       histogram.py y_label: "Execution Time (ms)" → "Value"
       comparison_bar.py metric_label: "Execution Time (ms)" → "Value"

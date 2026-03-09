@@ -504,7 +504,7 @@ class TestStackedBarOutlierTruncation:
             )
         )
         opts = ASCIIChartOptions(use_color=False, use_unicode=True)
-        chart = ASCIIStackedBar(data=data, options=opts)
+        chart = ASCIIStackedBar(data=data, options=opts, metric_label="ms")
         result = chart.render()
 
         # The total annotation should still show the real value (1.0min or 60.0s)
@@ -526,7 +526,7 @@ class TestStackedBarOutlierTruncation:
             )
         )
         opts = ASCIIChartOptions(use_color=False, use_unicode=True, width=70)
-        chart = ASCIIStackedBar(data=data, options=opts)
+        chart = ASCIIStackedBar(data=data, options=opts, metric_label="ms")
         result = chart.render()
 
         dup_lines = [line for line in result.split("\n") if line.startswith("dup ")]

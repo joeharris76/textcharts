@@ -306,7 +306,7 @@ class TestASCIIStackedBar:
             StackedBarData("Slow", [StackedBarSegment("Run", 120000)], total=120000),
         ]
         opts = ASCIIChartOptions(use_color=False)
-        chart = ASCIIStackedBar(data=data, options=opts)
+        chart = ASCIIStackedBar(data=data, options=opts, metric_label="ms")
         result = chart.render()
         assert "500ms" in result
         assert "5.0s" in result

@@ -57,7 +57,7 @@ class ASCIIHeatmap(ASCIIChartBase):
         row_labels: Sequence[str],
         col_labels: Sequence[str],
         title: str | None = None,
-        value_label: str = "ms",
+        value_label: str = "",
         x_label: str = "Columns",
         show_values: bool = True,
         color_scheme: str = "diverging",

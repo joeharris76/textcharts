@@ -73,7 +73,7 @@ class ASCIIStackedBar(ASCIIChartBase):
         title: str | None = None,
         options: ASCIIChartOptions | None = None,
         subtitle: str | None = None,
-        metric_label: str = "ms",
+        metric_label: str = "",
         value_formatter: Callable[[float], str] | None = None,
     ):
         super().__init__(options, subtitle=subtitle)

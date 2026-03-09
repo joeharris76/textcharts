@@ -62,7 +62,7 @@ class ASCIIQueryHistogram(ASCIIChartBase):
         self,
         data: Sequence[HistogramBar],
         title: str | None = None,
-        y_label: str = "Execution Time (ms)",
+        y_label: str = "Value",
         sort_by: str = "query_id",
         max_per_chart: int = DEFAULT_MAX_QUERIES,
         show_mean_line: bool = True,
