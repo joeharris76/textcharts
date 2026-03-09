@@ -528,7 +528,14 @@ def _crop_png(path: Path) -> None:
         if not all(is_bg(x, y) for x in range(0, width, 4)):
             last_row = min(y + 36, height)
             break
-    image.crop((0, 0, width, last_row)).save(path)
+
+    last_col = width - 1
+    for x in range(width - 1, 0, -1):
+        if not all(is_bg(x, y) for y in range(0, last_row, 4)):
+            last_col = min(x + 36, width)
+            break
+
+    image.crop((0, 0, last_col, last_row)).save(path)
 
 
 def _render_mode(chart_name: str, mode: str) -> Path:
