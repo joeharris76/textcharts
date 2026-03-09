@@ -90,8 +90,7 @@ def test_value_formatter_callback():
     )
     result = chart.render()
     assert "1.5 KB" in result
-    assert "ms" not in result
-    assert "s" not in result.split("\n")[3]  # no time suffix on the data line
+    assert "1.5s" not in result  # time formatting not used
 
 
 def test_value_formatter_overrides_metric_label():

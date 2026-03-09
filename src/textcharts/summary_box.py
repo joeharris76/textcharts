@@ -331,7 +331,8 @@ class ASCIISummaryBox(ASCIIChartBase):
     ) -> str:
         """Render a single best/worst query line."""
         items = ", ".join(
-            f"{q} ({v:+.1f}%)" if self.stats.is_comparison else f"{q} ({self._format_metric(v)})" for q, v in queries[:3]
+            f"{q} ({v:+.1f}%)" if self.stats.is_comparison else f"{q} ({self._format_metric(v)})"
+            for q, v in queries[:3]
         )
         arrow = (
             ("\u2193" if self.options.use_unicode else "v")
