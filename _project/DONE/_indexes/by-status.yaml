@@ -1,14 +1,19 @@
-generated_at: '2026-03-09T09:19:28.892746'
-total_items: 19
+generated_at: '2026-03-09T09:24:36.756628'
+total_items: 20
 statuses:
   Completed:
-    count: 19
+    count: 20
     items:
     - id: behavioral-tests-for-minimal-coverage-charts
       file: DONE/main/active/behavioral-tests-for-minimal-coverage-charts.yaml
       title: Add behavioral tests for 6 chart types with only golden-output coverage
       priority: High
       category: Testing and Quality Assurance
+    - id: configurable-outlier-cap
+      file: DONE/main/active/configurable-outlier-cap.yaml
+      title: Add configurable outlier_cap to ASCIIChartOptions
+      priority: Low
+      category: Core Functionality
     - id: test-factory-functions
       file: DONE/main/active/test-factory-functions.yaml
       title: Add direct tests for all public factory functions

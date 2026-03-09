@@ -2,7 +2,8 @@ id: "configurable-outlier-cap"
 title: "Add configurable outlier_cap to ASCIIChartOptions"
 worktree: "main"
 priority: "Low"
-status: "In Progress"
+status: "Completed"
+completed_date: "2026-03-09"
 description: |
   8 chart types use a hardcoded P95×2 outlier capping strategy. The threshold
   isn't configurable. Add an outlier_cap parameter to ASCIIChartOptions:
@@ -19,7 +20,7 @@ work:
   - id: w2
     summary: "Update all 8 chart types that use P95 capping to respect outlier_cap"
     needs: [w1]
-    status: pending
+    status: done
     notes: |
       Find all usages of the P95×2 pattern and route them through a shared
       method that checks options.outlier_cap.
@@ -27,7 +28,7 @@ work:
   - id: w3
     summary: "Add tests for outlier_cap=0 (disabled), outlier_cap=float (fixed), and outlier_cap=None (auto)"
     needs: [w2]
-    status: pending
+    status: done
 
 deferred:
   - summary: "Per-chart outlier_cap overrides"

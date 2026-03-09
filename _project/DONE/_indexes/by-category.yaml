@@ -1,9 +1,14 @@
-generated_at: '2026-03-09T09:19:28.892729'
+generated_at: '2026-03-09T09:24:36.756603'
 total_categories: 3
 categories:
   Core Functionality:
-    count: 10
+    count: 11
     items:
+    - id: configurable-outlier-cap
+      file: DONE/main/active/configurable-outlier-cap.yaml
+      title: Add configurable outlier_cap to ASCIIChartOptions
+      priority: Low
+      status: Completed
     - id: configurable-improvement-direction
       file: DONE/main/active/configurable-improvement-direction.yaml
       title: Add lower_is_better parameter for improvement direction
