@@ -62,10 +62,11 @@ class ASCIIComparisonBar(ASCIIChartBase):
         metric_label: str = "Value",
         options: ASCIIChartOptions | None = None,
         subtitle: str | None = None,
+        subject: str | None = None,
     ):
-        super().__init__(options, subtitle=subtitle)
+        super().__init__(options, subtitle=subtitle, title=title, subject=subject)
         self.data = list(data)
-        self.title = title or "Comparison"
+        self.title = self._compose_title("Comparison")
         self.metric_label = metric_label
 
     def render(self) -> str:
@@ -286,6 +287,7 @@ def from_comparison_data(
     title: str | None = None,
     metric_label: str = "Value",
     options: ASCIIChartOptions | None = None,
+    subject: str | None = None,
 ) -> ASCIIComparisonBar:
     """Create ASCIIComparisonBar from comparison data.
 
@@ -315,4 +317,5 @@ def from_comparison_data(
         title=title,
         metric_label=metric_label,
         options=options,
+        subject=subject,
     )

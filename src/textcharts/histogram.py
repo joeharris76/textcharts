@@ -68,6 +68,7 @@ class ASCIIQueryHistogram(ASCIIChartBase):
         show_mean_line: bool = True,
         options: ASCIIChartOptions | None = None,
         subtitle: str | None = None,
+        subject: str | None = None,
     ):
         """Initialize the histogram.
 
@@ -80,10 +81,11 @@ class ASCIIQueryHistogram(ASCIIChartBase):
             show_mean_line: Whether to show a horizontal mean line.
             options: Chart rendering options.
             subtitle: Optional subtitle line displayed below the title.
+            subject: Domain noun phrase prepended to default title (e.g. "Query Latency").
         """
-        super().__init__(options, subtitle=subtitle)
+        super().__init__(options, subtitle=subtitle, title=title, subject=subject)
         self.data = list(data)
-        self.title = title or "Histogram"
+        self.title = self._compose_title("Histogram")
         self.y_label = y_label
         self.sort_by = sort_by
         self.max_per_chart = max(5, max_per_chart)
@@ -739,6 +741,7 @@ def from_query_latency_data(
     max_per_chart: int = ASCIIQueryHistogram.DEFAULT_MAX_QUERIES,
     show_mean_line: bool = True,
     options: ASCIIChartOptions | None = None,
+    subject: str | None = None,
 ) -> ASCIIQueryHistogram:
     """Create ASCIIQueryHistogram from objects with query_id/latency_ms attributes."""
     converted: list[HistogramBar] = []
@@ -765,6 +768,7 @@ def from_query_latency_data(
         max_per_chart=max_per_chart,
         show_mean_line=show_mean_line,
         options=options,
+        subject=subject,
     )
 
 

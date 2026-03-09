@@ -104,10 +104,11 @@ class ASCIIPercentileLadder(ASCIIChartBase):
         metric_label: str = "",
         options: ASCIIChartOptions | None = None,
         subtitle: str | None = None,
+        subject: str | None = None,
     ):
-        super().__init__(options, subtitle=subtitle)
+        super().__init__(options, subtitle=subtitle, title=title, subject=subject)
         self.data = list(data)
-        self.title = title or "Percentile Distribution"
+        self.title = self._compose_title("Percentile Distribution")
         self.metric_label = metric_label
 
     def render(self) -> str:
@@ -298,6 +299,7 @@ def from_query_results(
     title: str | None = None,
     metric_label: str = "ms",
     options: ASCIIChartOptions | None = None,
+    subject: str | None = None,
 ) -> ASCIIPercentileLadder:
     """Create ASCIIPercentileLadder from raw query timing data.
 
@@ -331,4 +333,5 @@ def from_query_results(
         title=title,
         metric_label=metric_label,
         options=options,
+        subject=subject,
     )

@@ -49,10 +49,11 @@ class ASCIIRankTable(ASCIIChartBase):
         title: str | None = None,
         options: ASCIIChartOptions | None = None,
         subtitle: str | None = None,
+        subject: str | None = None,
     ):
-        super().__init__(options, subtitle=subtitle)
+        super().__init__(options, subtitle=subtitle, title=title, subject=subject)
         self.data = data
-        self.title = title or "Rankings (1st = best)"
+        self.title = self._compose_title("Rankings (1st = best)")
 
     def render(self) -> str:
         """Render the rank table as a string."""
@@ -198,6 +199,7 @@ def from_heatmap_data(
     platforms: Sequence[str],
     title: str | None = None,
     options: ASCIIChartOptions | None = None,
+    subject: str | None = None,
 ) -> ASCIIRankTable:
     """Create ASCIIRankTable from the same matrix format as ASCIIHeatmap.
 
@@ -231,4 +233,4 @@ def from_heatmap_data(
         platforms=list(platforms),
         times=times,
     )
-    return ASCIIRankTable(data=data, title=title, options=options)
+    return ASCIIRankTable(data=data, title=title, options=options, subject=subject)

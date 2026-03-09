@@ -75,10 +75,11 @@ class ASCIIStackedBar(ASCIIChartBase):
         subtitle: str | None = None,
         metric_label: str = "",
         value_formatter: Callable[[float], str] | None = None,
+        subject: str | None = None,
     ):
-        super().__init__(options, subtitle=subtitle)
+        super().__init__(options, subtitle=subtitle, title=title, subject=subject)
         self.data = list(data)
-        self.title = title or "Stacked Breakdown"
+        self.title = self._compose_title("Stacked Breakdown")
         self.metric_label = metric_label
         self.value_formatter = value_formatter
 
@@ -252,6 +253,7 @@ def from_phase_data(
     data: Sequence[StackedBarData],
     title: str | None = None,
     options: ASCIIChartOptions | None = None,
+    subject: str | None = None,
 ) -> ASCIIStackedBar:
     """Create ASCIIStackedBar from phase breakdown data.
 
@@ -259,8 +261,9 @@ def from_phase_data(
         data: Sequence of StackedBarData instances.
         title: Optional chart title.
         options: Chart rendering options.
+        subject: Domain noun phrase prepended to default title.
 
     Returns:
         Configured ASCIIStackedBar instance.
     """
-    return ASCIIStackedBar(data=data, title=title, options=options)
+    return ASCIIStackedBar(data=data, title=title, options=options, subject=subject)

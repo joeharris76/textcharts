@@ -55,10 +55,11 @@ class ASCIIDivergingBar(ASCIIChartBase):
         clip_pct: float = DEFAULT_CLIP_PCT,
         options: ASCIIChartOptions | None = None,
         subtitle: str | None = None,
+        subject: str | None = None,
     ):
-        super().__init__(options, subtitle=subtitle)
+        super().__init__(options, subtitle=subtitle, title=title, subject=subject)
         self.data = list(data)
-        self.title = title or "Change Distribution"
+        self.title = self._compose_title("Change Distribution")
         self.clip_pct = clip_pct
 
     def render(self) -> str:
@@ -235,6 +236,7 @@ def from_regression_data(
     data: Sequence,
     title: str | None = None,
     options: ASCIIChartOptions | None = None,
+    subject: str | None = None,
 ) -> ASCIIDivergingBar:
     """Create ASCIIDivergingBar from regression data.
 
@@ -260,4 +262,5 @@ def from_regression_data(
         data=converted,
         title=title,
         options=options,
+        subject=subject,
     )

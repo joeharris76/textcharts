@@ -67,10 +67,11 @@ class ASCIICDFChart(ASCIIChartBase):
         height: int = PLOT_HEIGHT,
         options: ASCIIChartOptions | None = None,
         subtitle: str | None = None,
+        subject: str | None = None,
     ):
-        super().__init__(options, subtitle=subtitle)
+        super().__init__(options, subtitle=subtitle, title=title, subject=subject)
         self.data = list(data)
-        self.title = title or "Cumulative Distribution"
+        self.title = self._compose_title("Cumulative Distribution")
         self.x_label = x_label
         self.y_label = y_label
         self.height = max(5, height)
@@ -222,6 +223,7 @@ def from_query_results(
     x_label: str = "Value",
     y_label: str = "Cumulative Share",
     options: ASCIIChartOptions | None = None,
+    subject: str | None = None,
 ) -> ASCIICDFChart:
     """Create ASCIICDFChart from raw query timing data.
 
@@ -234,4 +236,4 @@ def from_query_results(
         Configured ASCIICDFChart instance.
     """
     data = [CDFSeriesData(name=name, values=list(values)) for name, values in platform_queries]
-    return ASCIICDFChart(data=data, title=title, x_label=x_label, y_label=y_label, options=options)
+    return ASCIICDFChart(data=data, title=title, x_label=x_label, y_label=y_label, options=options, subject=subject)

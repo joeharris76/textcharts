@@ -47,10 +47,11 @@ class ASCIIBarChart(ASCIIChartBase):
         sort_by: str = "value",
         options: ASCIIChartOptions | None = None,
         subtitle: str | None = None,
+        subject: str | None = None,
     ):
-        super().__init__(options, subtitle=subtitle)
+        super().__init__(options, subtitle=subtitle, title=title, subject=subject)
         self.data = list(data)
-        self.title = title or "Bar Chart"
+        self.title = self._compose_title("Bar Chart")
         self.metric_label = metric_label
         self.sort_by = sort_by
 
@@ -204,6 +205,7 @@ def from_bar_data(
     metric_label: str = "Value",
     sort_by: str = "value",
     options: ASCIIChartOptions | None = None,
+    subject: str | None = None,
 ) -> ASCIIBarChart:
     """Create ASCIIBarChart from objects with label/value attributes."""
     converted: list[BarData] = []
@@ -228,4 +230,5 @@ def from_bar_data(
         metric_label=metric_label,
         sort_by=sort_by,
         options=options,
+        subject=subject,
     )

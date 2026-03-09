@@ -60,10 +60,11 @@ class ASCIIScatterPlot(ASCIIChartBase):
         show_pareto: bool = True,
         options: ASCIIChartOptions | None = None,
         subtitle: str | None = None,
+        subject: str | None = None,
     ):
-        super().__init__(options, subtitle=subtitle)
+        super().__init__(options, subtitle=subtitle, title=title, subject=subject)
         self.points = list(points)
-        self.title = title or "Scatter Plot"
+        self.title = self._compose_title("Scatter Plot")
         self.x_label = x_label
         self.y_label = y_label
         self.show_pareto = show_pareto
@@ -291,6 +292,7 @@ def from_cost_performance_points(
     performance_label: str = "Y",
     show_pareto: bool = True,
     options: ASCIIChartOptions | None = None,
+    subject: str | None = None,
 ) -> ASCIIScatterPlot:
     """Create ASCIIScatterPlot from objects with name/cost/performance attributes."""
     converted: list[ScatterPoint] = []
@@ -313,4 +315,5 @@ def from_cost_performance_points(
         y_label=performance_label,
         show_pareto=show_pareto,
         options=options,
+        subject=subject,
     )

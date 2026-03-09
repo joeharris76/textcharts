@@ -63,13 +63,14 @@ class ASCIIHeatmap(ASCIIChartBase):
         color_scheme: str = "diverging",
         options: ASCIIChartOptions | None = None,
         subtitle: str | None = None,
+        subject: str | None = None,
     ):
-        super().__init__(options, subtitle=subtitle)
+        super().__init__(options, subtitle=subtitle, title=title, subject=subject)
         self.matrix = [list(row) for row in matrix]
         self.row_labels = list(row_labels)
         self.col_labels = list(col_labels)
         self._validate_dimensions()
-        self.title = title or "Heatmap"
+        self.title = self._compose_title("Heatmap")
         self.value_label = value_label
         self.x_label = x_label
         self._show_values = show_values
@@ -380,6 +381,7 @@ def from_matrix(
     show_values: bool = True,
     color_scheme: str = "diverging",
     options: ASCIIChartOptions | None = None,
+    subject: str | None = None,
 ) -> ASCIIHeatmap:
     """Create ASCIIHeatmap from matrix data (compatible with QueryHeatmap)."""
     return ASCIIHeatmap(
@@ -392,4 +394,5 @@ def from_matrix(
         show_values=show_values,
         color_scheme=color_scheme,
         options=options,
+        subject=subject,
     )

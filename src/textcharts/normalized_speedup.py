@@ -49,11 +49,17 @@ class ASCIINormalizedSpeedup(ASCIIChartBase):
         baseline_name: str | None = None,
         options: ASCIIChartOptions | None = None,
         subtitle: str | None = None,
+        subject: str | None = None,
     ):
-        super().__init__(options, subtitle=subtitle)
+        super().__init__(options, subtitle=subtitle, title=title, subject=subject)
         self.data = list(data)
         self.baseline_name = baseline_name
-        self.title = title
+        # Title is dynamic (depends on baseline); _compose_title only used when
+        # caller provides an explicit title or subject.
+        if self._explicit_title is not None or self._subject is not None:
+            self.title = self._compose_title("Normalized Performance")
+        else:
+            self.title = None
 
     def render(self) -> str:
         """Render the normalized speedup chart as a string."""
@@ -184,6 +190,7 @@ def from_normalized_results(
     baseline: str | None = None,
     title: str | None = None,
     options: ASCIIChartOptions | None = None,
+    subject: str | None = None,
 ) -> ASCIINormalizedSpeedup:
     """Create ASCIINormalizedSpeedup from platform timing data.
 
@@ -197,7 +204,7 @@ def from_normalized_results(
         Configured ASCIINormalizedSpeedup instance.
     """
     if not platform_times:
-        return ASCIINormalizedSpeedup(data=[], title=title, options=options)
+        return ASCIINormalizedSpeedup(data=[], title=title, options=options, subject=subject)
 
     # Select baseline
     if baseline == "slowest":
@@ -225,4 +232,5 @@ def from_normalized_results(
         title=title,
         baseline_name=baseline_name,
         options=options,
+        subject=subject,
     )

@@ -2,7 +2,7 @@ id: "add-subject-parameter-to-chart-titles"
 title: "Add subject parameter to compose domain context into chart titles"
 worktree: "main"
 priority: "High"
-status: "Not Started"
+status: "In Progress"
 description: |
   After neutralize-default-labels-and-titles completes, chart default titles
   will be generic (e.g., "Histogram", "Cumulative Distribution"). Callers who
@@ -26,7 +26,7 @@ category: "Core Functionality"
 work:
   - id: w1
     summary: "Add subject parameter to ASCIIChartBase and implement title composition logic"
-    status: pending
+    status: done
     notes: |
       Add `subject: str | None = None` to ASCIIChartBase.__init__() and store it.
       Add a helper method (e.g., _compose_title(default: str) -> str) that returns:
@@ -40,7 +40,7 @@ work:
   - id: w2
     summary: "Add subject parameter to all chart constructors and factory functions"
     needs: [w1]
-    status: pending
+    status: done
     notes: |
       Charts to update (13 constructors):
         histogram.py, diverging_bar.py, percentile_ladder.py, cdf_chart.py,

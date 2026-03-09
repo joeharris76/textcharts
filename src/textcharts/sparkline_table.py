@@ -55,10 +55,11 @@ class ASCIISparklineTable(ASCIIChartBase):
         title: str | None = None,
         options: ASCIIChartOptions | None = None,
         subtitle: str | None = None,
+        subject: str | None = None,
     ):
-        super().__init__(options, subtitle=subtitle)
+        super().__init__(options, subtitle=subtitle, title=title, subject=subject)
         self.data = data
-        self.title = title or "Platform Comparison Overview"
+        self.title = self._compose_title("Platform Comparison Overview")
 
     def render(self) -> str:
         """Render the sparkline table as a string."""
@@ -267,6 +268,7 @@ def from_metrics(
     metrics: list[tuple[str, dict[str, float], bool]],
     title: str | None = None,
     options: ASCIIChartOptions | None = None,
+    subject: str | None = None,
 ) -> ASCIISparklineTable:
     """Create ASCIISparklineTable from metric data.
 
@@ -281,4 +283,4 @@ def from_metrics(
     """
     columns = [SparklineColumn(name=name, values=values, higher_is_better=hib) for name, values, hib in metrics]
     data = SparklineTableData(platforms=platforms, columns=columns)
-    return ASCIISparklineTable(data=data, title=title, options=options)
+    return ASCIISparklineTable(data=data, title=title, options=options, subject=subject)

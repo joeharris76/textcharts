@@ -68,10 +68,11 @@ class ASCIILineChart(ASCIIChartBase):
         show_trend: bool = False,
         options: ASCIIChartOptions | None = None,
         subtitle: str | None = None,
+        subject: str | None = None,
     ):
-        super().__init__(options, subtitle=subtitle)
+        super().__init__(options, subtitle=subtitle, title=title, subject=subject)
         self.points = list(points)
-        self.title = title or "Line Chart"
+        self.title = self._compose_title("Line Chart")
         self.x_label = x_label
         self.y_label = y_label
         self.show_trend = show_trend
@@ -328,6 +329,7 @@ def from_time_series_points(
     y_label: str = "Y",
     show_trend: bool = False,
     options: ASCIIChartOptions | None = None,
+    subject: str | None = None,
 ) -> ASCIILineChart:
     """Create ASCIILineChart from objects with series/x/y attributes."""
     converted: list[LinePoint] = []
@@ -351,4 +353,5 @@ def from_time_series_points(
         y_label=y_label,
         show_trend=show_trend,
         options=options,
+        subject=subject,
     )

@@ -87,9 +87,12 @@ class ASCIISummaryBox(ASCIIChartBase):
         stats: SummaryStats,
         options: ASCIIChartOptions | None = None,
         subtitle: str | None = None,
+        subject: str | None = None,
     ):
-        super().__init__(options, subtitle=subtitle)
+        super().__init__(options, subtitle=subtitle, subject=subject)
         self.stats = stats
+        if subject and stats.title == "Summary":
+            self.stats.title = f"{subject} Summary"
 
     # Minimum inner width required for two-column layout
     _MIN_TWO_COL_INNER = 56

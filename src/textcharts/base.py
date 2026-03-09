@@ -447,10 +447,32 @@ class ASCIIChartOptions:
 class ASCIIChartBase(ABC):
     """Abstract base class for ASCII chart renderers."""
 
-    def __init__(self, options: ASCIIChartOptions | None = None, subtitle: str | None = None):
+    def __init__(
+        self,
+        options: ASCIIChartOptions | None = None,
+        subtitle: str | None = None,
+        title: str | None = None,
+        subject: str | None = None,
+    ):
         self.options = options or ASCIIChartOptions()
         self._capabilities: TerminalCapabilities | None = None
         self.subtitle: str | None = subtitle
+        self._explicit_title: str | None = title
+        self._subject: str | None = subject
+
+    def _compose_title(self, default: str) -> str:
+        """Compose the chart title from explicit title, subject, or default.
+
+        Resolution order:
+        1. Explicit title (passed by caller) wins unconditionally.
+        2. Subject + default: ``f"{subject} {default}"``.
+        3. Default alone.
+        """
+        if self._explicit_title is not None:
+            return self._explicit_title
+        if self._subject is not None:
+            return f"{self._subject} {default}"
+        return default
 
     def _detect_capabilities(self) -> TerminalCapabilities:
         """Detect and cache terminal capabilities."""

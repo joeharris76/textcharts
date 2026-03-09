@@ -132,10 +132,11 @@ class ASCIIBoxPlot(ASCIIChartBase):
         show_mean: bool = True,
         options: ASCIIChartOptions | None = None,
         subtitle: str | None = None,
+        subject: str | None = None,
     ):
-        super().__init__(options, subtitle=subtitle)
+        super().__init__(options, subtitle=subtitle, title=title, subject=subject)
         self.series = list(series)
-        self.title = title or "Box Plot"
+        self.title = self._compose_title("Box Plot")
         self.y_label = y_label
         self.show_stats = show_stats
         self.show_mean = show_mean
@@ -380,6 +381,7 @@ def from_distribution_series(
     show_stats: bool = True,
     show_mean: bool = True,
     options: ASCIIChartOptions | None = None,
+    subject: str | None = None,
 ) -> ASCIIBoxPlot:
     """Create ASCIIBoxPlot from objects with name/values attributes."""
     converted: list[BoxPlotSeries] = []
@@ -401,4 +403,5 @@ def from_distribution_series(
         show_stats=show_stats,
         show_mean=show_mean,
         options=options,
+        subject=subject,
     )
