@@ -17,6 +17,7 @@ def execute_command(
     data: Any,
     title: str | None = None,
     subtitle: str | None = None,
+    subject: str | None = None,
     options: dict[str, Any] | None = None,
     **kwargs: Any,
 ) -> str:
@@ -27,6 +28,7 @@ def execute_command(
         data: Raw input data (list of dicts or single dict, depending on chart type).
         title: Optional chart title.
         subtitle: Optional subtitle line displayed below the title.
+        subject: Domain noun phrase prepended to default title (e.g. "Query Latency").
         options: Common chart options dict (width, height, use_color, use_unicode, theme, etc.).
         **kwargs: Chart-specific parameters (e.g., sort_by, metric_label).
 
@@ -66,6 +68,9 @@ def execute_command(
 
     if subtitle is not None:
         ctor_kwargs["subtitle"] = subtitle
+
+    if subject is not None:
+        ctor_kwargs["subject"] = subject
 
     if chart_options is not None:
         ctor_kwargs["options"] = chart_options
