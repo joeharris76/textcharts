@@ -726,4 +726,66 @@ class TestFromNormalizedResults:
         result = chart.render()
         assert "No data" in result
 
+# ── Subject Parameter Tests ────────────────────────────────
+
+
+class TestSubjectParameter:
+    """Tests for the subject parameter across chart types."""
+
+    def test_subject_composes_with_default_title(self):
+        """subject='Query Latency' + default 'Histogram' → 'Query Latency Histogram'."""
+        from textcharts.histogram import ASCIIQueryHistogram, HistogramBar
+
+        h = ASCIIQueryHistogram([HistogramBar("q1", 10)], subject="Query Latency")
+        assert h.title == "Query Latency Histogram"
+
+    def test_explicit_title_wins_over_subject(self):
+        """When both title and subject are provided, explicit title wins."""
+        from textcharts.histogram import ASCIIQueryHistogram, HistogramBar
+
+        h = ASCIIQueryHistogram([HistogramBar("q1", 10)], title="Custom", subject="Ignored")
+        assert h.title == "Custom"
+
+    def test_neither_title_nor_subject_uses_default(self):
+        """When neither is provided, generic default is used."""
+        from textcharts.histogram import ASCIIQueryHistogram, HistogramBar
+
+        h = ASCIIQueryHistogram([HistogramBar("q1", 10)])
+        assert h.title == "Histogram"
+
+    def test_subject_on_multiple_chart_types(self):
+        """subject works on different chart types."""
+        from textcharts.bar_chart import ASCIIBarChart, BarData
+        from textcharts.cdf_chart import ASCIICDFChart, CDFSeriesData
+
+        bar = ASCIIBarChart([BarData("a", 1)], subject="Sales")
+        assert bar.title == "Sales Bar Chart"
+
+        cdf = ASCIICDFChart([CDFSeriesData("s1", [1, 2, 3])], subject="Latency")
+        assert cdf.title == "Latency Cumulative Distribution"
+
+    def test_subject_via_factory_function(self):
+        """subject passes through factory functions."""
+        data = [StackedBarData("P1", [StackedBarSegment("Load", 100)])]
+        from textcharts.stacked_bar import from_phase_data
+
+        chart = from_phase_data(data, subject="Phase")
+        assert chart.title == "Phase Stacked Breakdown"
+
+    def test_subject_via_executor(self):
+        """subject passes through execute_command."""
+        from textcharts.commands import execute_command
+
+        result = execute_command("bar", [{"label": "a", "value": 1}], subject="Revenue")
+        assert "Revenue Bar Chart" in result
+
+    def test_subject_renders_in_output(self):
+        """Subject-composed title appears in rendered output."""
+        opts = ASCIIChartOptions(use_color=False, width=60)
+        data = [StackedBarData("P1", [StackedBarSegment("Load", 100)])]
+        chart = ASCIIStackedBar(data=data, options=opts, subject="Phase")
+        result = chart.render()
+        assert "Phase Stacked Breakdown" in result
+
+
 # ── Stacked Bar Chart Tests ────────────────────────────────

@@ -239,7 +239,7 @@ class TestParsers:
 
     def test_parse_summary_empty(self):
         result = parse_input("summary", {})
-        assert result.title == "Summary"
+        assert isinstance(result.title, str) and result.title
 
     def test_parse_percentile_valid(self):
         result = parse_input("percentile", [

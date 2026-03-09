@@ -58,7 +58,7 @@ work:
   - id: w3
     summary: "Thread subject through executor and MCP server layers"
     needs: [w1]
-    status: pending
+    status: done
     notes: |
       executor.py: Add `subject: str | None = None` to execute_command(), pass
       as ctor_kwargs["subject"] when not None (same pattern as title/subtitle).
@@ -71,7 +71,7 @@ work:
   - id: w4
     summary: "Add tests for subject parameter and harden existing title assertions"
     needs: [w2, w3]
-    status: pending
+    status: done
     notes: |
       New test cases for subject parameter:
         - subject alone → "Subject Default Title"

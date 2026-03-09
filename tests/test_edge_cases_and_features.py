@@ -509,10 +509,10 @@ class TestHistogramWidthAware:
         platforms = ["A", "B"]
         bars = self._make_bars(5, platforms)
         opts = ASCIIChartOptions(width=120, use_color=False)
-        hist = ASCIIQueryHistogram(data=bars, options=opts)
+        hist = ASCIIQueryHistogram(data=bars, options=opts, title="TestTitle")
         result = hist.render()
         # Only one chart header line rendered (no split into multiple charts).
-        assert result.count("Histogram") == 1
+        assert result.count("TestTitle") == 1
 
     # ------------------------------------------------------------------ footer wrapping
 
@@ -681,6 +681,57 @@ class TestSubtitle:
                 assert lines[i + 1].strip().startswith("─") or lines[i + 1].strip().startswith("-")
                 break
 
+
+
+class TestSubject:
+    """Tests for subject parameter that composes domain context into chart titles."""
+
+    def test_subject_composes_with_default_title(self):
+        """Subject is prepended to the chart's default title."""
+        data = [BarData(label="Q1", value=100)]
+        opts = ASCIIChartOptions(use_color=False)
+        chart = ASCIIBarChart(data=data, options=opts, subject="Revenue")
+        assert chart.title == "Revenue Bar Chart"
+        assert "Revenue Bar Chart" in chart.render()
+
+    def test_explicit_title_wins_over_subject(self):
+        """When both title and subject are provided, explicit title wins."""
+        data = [BarData(label="Q1", value=100)]
+        opts = ASCIIChartOptions(use_color=False)
+        chart = ASCIIBarChart(data=data, options=opts, title="Custom", subject="Ignored")
+        assert chart.title == "Custom"
+
+    def test_default_title_without_subject(self):
+        """Without subject, the generic default title is used."""
+        data = [BarData(label="Q1", value=100)]
+        chart = ASCIIBarChart(data=data)
+        assert chart.title == "Bar Chart"
+
+    def test_subject_on_histogram(self):
+        """Subject works on histogram chart type."""
+        data = [HistogramBar(query_id="Q1", latency_ms=10)]
+        chart = ASCIIQueryHistogram(data=data, subject="Query Latency")
+        assert chart.title == "Query Latency Histogram"
+
+    def test_subject_on_summary_box(self):
+        """Subject composes with SummaryStats default title."""
+        from textcharts.summary_box import SummaryStats, ASCIISummaryBox
+        stats = SummaryStats(num_queries=1)
+        chart = ASCIISummaryBox(stats=stats, subject="Benchmark")
+        assert chart.stats.title == "Benchmark Summary"
+
+    def test_subject_does_not_affect_explicit_summary_title(self):
+        """SummaryBox with explicit stats title ignores subject."""
+        from textcharts.summary_box import SummaryStats, ASCIISummaryBox
+        stats = SummaryStats(title="My Report", num_queries=1)
+        chart = ASCIISummaryBox(stats=stats, subject="Ignored")
+        assert chart.stats.title == "My Report"
+
+    def test_subject_via_factory_function(self):
+        """Subject passes through factory functions."""
+        from textcharts.bar_chart import from_bar_data, BarData as BD
+        chart = from_bar_data([BD(label="A", value=1)], subject="Sales")
+        assert chart.title == "Sales Bar Chart"
 
 
 class TestColoredLabels:
