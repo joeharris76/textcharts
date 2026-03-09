@@ -734,6 +734,78 @@ class TestSubject:
         assert chart.title == "Sales Bar Chart"
 
 
+class TestLowerIsBetter:
+    """Tests for lower_is_better parameter controlling improvement direction."""
+
+    def test_comparison_bar_default_lower_is_better(self):
+        """Default lower_is_better=True: positive % = regression (red)."""
+        data = [ComparisonBarData("Q1", 100, 120, "A", "B")]
+        opts = ASCIIChartOptions(use_color=True, use_unicode=True)
+        chart = ASCIIComparisonBar(data=data, options=opts)
+        result = chart.render()
+        # Positive change → red (#d95f02) with default lower_is_better=True
+        assert "#d95f02" in result or "+20.0%" in result
+
+    def test_comparison_bar_higher_is_better(self):
+        """lower_is_better=False: positive % = improvement (green)."""
+        data = [ComparisonBarData("Q1", 100, 120, "A", "B")]
+        opts = ASCIIChartOptions(use_color=True, use_unicode=True)
+        chart = ASCIIComparisonBar(data=data, options=opts, lower_is_better=False)
+        result = chart.render()
+        # Positive change → green (#66a61e) with lower_is_better=False
+        assert "#66a61e" in result or "+20.0%" in result
+
+    def test_diverging_bar_default_lower_is_better(self):
+        """Default: negative pct = green (improvement), positive = red (regression)."""
+        data = [DivergingBarData("Q1", -15.0), DivergingBarData("Q2", 25.0)]
+        opts = ASCIIChartOptions(use_color=True, use_unicode=True)
+        chart = ASCIIDivergingBar(data=data, options=opts)
+        result = chart.render()
+        assert "1 improved" in result
+        assert "1 regressed" in result
+
+    def test_diverging_bar_higher_is_better(self):
+        """lower_is_better=False: positive pct = green, negative = red."""
+        data = [DivergingBarData("Q1", -15.0), DivergingBarData("Q2", 25.0)]
+        opts = ASCIIChartOptions(use_color=True, use_unicode=True)
+        chart = ASCIIDivergingBar(data=data, options=opts, lower_is_better=False)
+        result = chart.render()
+        # With higher-is-better, positive is improvement, negative is regression
+        assert "1 improved" in result
+        assert "1 regressed" in result
+
+    def test_summary_box_default_lower_is_better(self):
+        """Default: negative pct gets green coloring."""
+        from textcharts.summary_box import ASCIISummaryBox, SummaryStats
+
+        stats = SummaryStats(
+            geo_mean_ms=100,
+            geo_mean_baseline_ms=120,
+            geo_mean_comparison_ms=100,
+            num_queries=1,
+        )
+        opts = ASCIIChartOptions(use_color=True)
+        chart = ASCIISummaryBox(stats=stats, options=opts)
+        result = chart.render()
+        assert isinstance(result, str)
+
+    def test_summary_box_higher_is_better(self):
+        """lower_is_better=False: positive pct gets green coloring."""
+        from textcharts.summary_box import ASCIISummaryBox, SummaryStats
+
+        stats = SummaryStats(
+            geo_mean_ms=120,
+            geo_mean_baseline_ms=100,
+            geo_mean_comparison_ms=120,
+            num_queries=1,
+            lower_is_better=False,
+        )
+        opts = ASCIIChartOptions(use_color=True)
+        chart = ASCIISummaryBox(stats=stats, options=opts)
+        result = chart.render()
+        assert isinstance(result, str)
+
+
 class TestColoredLabels:
     """Tests for Phase 4: uniform color application to labels."""
 

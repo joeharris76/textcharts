@@ -48,6 +48,9 @@ class SummaryStats:
     # Optional callback for custom value formatting; overrides built-in formatting
     value_formatter: Callable[[float], str] | None = None
 
+    # Whether lower metric values are better (True for latency, False for throughput)
+    lower_is_better: bool = True
+
     # System environment info (displayed in middle column)
     environment: dict[str, str] | None = None
 
@@ -269,8 +272,10 @@ class ASCIISummaryBox(ASCIIChartBase):
         if no_color:
             improved_text = f"{down_arrow}{improved_text}"
             regressed_text = f"{up_arrow}{regressed_text}"
-        improved = colors.colorize(improved_text, fg_color="#66a61e")
-        regressed = colors.colorize(regressed_text, fg_color="#d95f02")
+        imp_color = "#66a61e" if self.stats.lower_is_better else "#d95f02"
+        reg_color = "#d95f02" if self.stats.lower_is_better else "#66a61e"
+        improved = colors.colorize(improved_text, fg_color=imp_color)
+        regressed = colors.colorize(regressed_text, fg_color=reg_color)
         counts_text = f"{improved}  {self.stats.num_stable} stable  {regressed}"
         visible_len = len(improved_text) + 2 + len(f"{self.stats.num_stable} stable") + 2 + len(regressed_text)
         padding = max(0, inner - visible_len)
@@ -508,17 +513,20 @@ class ASCIISummaryBox(ASCIIChartBase):
         return text
 
     def _format_pct_colored(self, pct: float, colors: TerminalColors) -> str:
-        """Format a percentage with color or structural arrows (green for improvement, red for regression)."""
+        """Format a percentage with color (green for improvement, red for regression)."""
         text = self._format_pct_visible(pct)
         no_color = not self.options.use_color
+        lib = self.stats.lower_is_better
         if pct < -2:
             if no_color:
                 return text
-            return colors.colorize(text, fg_color="#66a61e")
+            color = "#66a61e" if lib else "#d95f02"
+            return colors.colorize(text, fg_color=color)
         elif pct > 2:
             if no_color:
                 return text
-            return colors.colorize(text, fg_color="#d95f02")
+            color = "#d95f02" if lib else "#66a61e"
+            return colors.colorize(text, fg_color=color)
         return text
 
     def _format_metric(self, value: float) -> str:
