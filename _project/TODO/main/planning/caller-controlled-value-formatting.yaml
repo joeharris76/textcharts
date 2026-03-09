@@ -16,31 +16,34 @@ description: |
 category: "Core Functionality"
 work:
   - id: w1
-    summary: "Add value_formatter parameter to ASCIIStackedBar and use it in rendering"
+    summary: "Add value_formatter callback to ASCIIStackedBar._format_total() and add tests"
     status: pending
     notes: |
-      Add value_formatter: Callable[[float], str] | None = None to __init__.
-      Create _format_value_display() that checks value_formatter first, then
-      falls back to _format_time() when metric_label in ("ms", ""), otherwise
-      uses _format_value() + metric_label.
+      _format_total() already dispatches: _format_time() when metric_label is
+      "ms", _format_value() + metric_label otherwise. Add value_formatter:
+      Callable[[float], str] | None = None to __init__. In _format_total(),
+      check value_formatter first before the existing dispatch.
+
+      Add tests: custom formatter lambda produces expected output, default
+      behavior unchanged.
 
   - id: w2
-    summary: "Add value_formatter to SummaryStats dataclass and use it in ASCIISummaryBox"
+    summary: "Add value_formatter to SummaryStats and fix total_time/best_queries to respect metric_label"
     status: pending
     notes: |
-      Add value_formatter: Callable[[float], str] | None = None to SummaryStats.
-      In ASCIISummaryBox, check self.stats.value_formatter first when formatting
-      geo_mean, median, and total_time fields. Fall back to _format_time() when
-      metric_label is "ms", otherwise use _format_value() + metric_label.
+      SummaryStats already has metric_label: str = "ms". Geo mean and median
+      already use _format_value() + metric_label (lines 396, 401, 421, 423,
+      438). But total_time (lines 370-371, 406, 425, 441) and best_queries in
+      non-comparison mode (line 330) always call _format_time() regardless of
+      metric_label — this is the actual bug.
 
-  - id: w3
-    summary: "Add tests for custom value_formatter and non-ms metric_label"
-    needs: [w1, w2]
-    status: pending
-    notes: |
-      Test with metric_label="reqs" — verify no "ms"/"s"/"min" in output.
-      Test with custom value_formatter lambda — verify callback output appears.
-      Test default behavior unchanged (metric_label="" still uses _format_time).
+      Add value_formatter: Callable[[float], str] | None = None to SummaryStats.
+      Create a _format_metric() dispatch method: value_formatter → _format_time()
+      (when metric_label is "ms") → _format_value() + metric_label. Route all
+      _format_time() call sites through _format_metric().
+
+      Add tests: metric_label="reqs" produces no "ms"/"s"/"min" in total_time
+      output; custom formatter lambda works; default "ms" behavior unchanged.
 metadata:
   owners:
     - "joe"
@@ -71,9 +74,14 @@ must_preserve:
   - "Default formatting behavior unchanged when metric_label is empty or 'ms'"
   - "Existing stacked_bar and summary_box tests pass without modification"
 approach: |
-  Add the callback parameter with None default. Create a _format_value_display()
-  method that dispatches to callback → _format_time() → generic formatting.
-  Replace all _format_time() call sites with _format_value_display().
+  stacked_bar already has _format_total() that dispatches between _format_time()
+  and _format_value() + metric_label — just add the callback check at the top.
+
+  summary_box is the harder case: _format_value() + metric_label is already used
+  for geo_mean/median, but total_time and best_queries always call _format_time().
+  Create a single _format_metric() dispatch that unifies all formatting call
+  sites: value_formatter → _format_time() (when metric_label == "ms") →
+  _format_value() + metric_label.
 anti_patterns:
   - "DO NOT remove _format_time() — because it's the correct default for ms data — add a dispatch layer above it"
   - "DO NOT make value_formatter required — because that breaks every existing caller — keep it optional with None default"

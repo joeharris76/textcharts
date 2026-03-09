@@ -1,4 +1,4 @@
-generated_at: '2026-03-08T20:47:56.445857'
+generated_at: '2026-03-08T20:49:59.405615'
 total_items: 5
 items:
 - id: neutralize-default-labels-and-titles
@@ -90,7 +90,7 @@ items:
   owners:
   - joe
   estimated_effort: Small
-  work_total: 3
+  work_total: 2
   work_done: 0
   work_ready: 2
   needs:
