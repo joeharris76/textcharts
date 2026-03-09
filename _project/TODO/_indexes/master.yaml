@@ -1,5 +1,5 @@
-generated_at: '2026-03-08T20:49:59.405615'
-total_items: 5
+generated_at: '2026-03-08T20:54:33.917165'
+total_items: 4
 items:
 - id: neutralize-default-labels-and-titles
   file: TODO/main/planning/neutralize-default-labels-and-titles.yaml
@@ -74,24 +74,5 @@ items:
   work_total: 4
   work_done: 0
   work_ready: 3
-  needs:
-  - neutralize-default-labels-and-titles
-- id: caller-controlled-value-formatting
-  file: TODO/main/planning/caller-controlled-value-formatting.yaml
-  title: Make time formatting caller-controlled via value_formatter callback
-  worktree: main
-  category: Core Functionality
-  priority: Medium-High
-  status: Not Started
-  tags:
-  - api
-  - de-benchbox
-  - formatting
-  owners:
-  - joe
-  estimated_effort: Small
-  work_total: 2
-  work_done: 0
-  work_ready: 2
   needs:
   - neutralize-default-labels-and-titles

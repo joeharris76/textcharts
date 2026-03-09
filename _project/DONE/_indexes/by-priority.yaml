@@ -1,5 +1,5 @@
-generated_at: '2026-03-08T20:47:56.478554'
-total_items: 14
+generated_at: '2026-03-08T20:54:33.949162'
+total_items: 15
 priorities:
   Critical:
     count: 1
@@ -58,7 +58,7 @@ priorities:
       category: Testing and Quality Assurance
       status: Completed
   Medium-High:
-    count: 3
+    count: 4
     items:
     - id: test-line-chart-trend-and-rendering-paths
       file: DONE/main/active/test-line-chart-trend-and-rendering-paths.yaml
@@ -74,6 +74,11 @@ priorities:
       file: DONE/main/planning/finalize-public-api-docs-and-release-tooling.yaml
       title: Finalize public API, docs, and release tooling
       category: Documentation
+      status: Completed
+    - id: caller-controlled-value-formatting
+      file: DONE/main/active/caller-controlled-value-formatting.yaml
+      title: Make time formatting caller-controlled via value_formatter callback
+      category: Core Functionality
       status: Completed
   Medium:
     count: 1

@@ -1,5 +1,5 @@
-generated_at: '2026-03-08T20:47:56.478527'
-total_items: 14
+generated_at: '2026-03-08T20:54:33.949139'
+total_items: 15
 items:
 - id: shared-command-layer
   file: DONE/main/active/shared-command-layer.yaml
@@ -258,3 +258,23 @@ items:
   work_ready: 0
   needs:
   - restore-standalone-renderer-regression-coverage
+- id: caller-controlled-value-formatting
+  file: DONE/main/active/caller-controlled-value-formatting.yaml
+  title: Make time formatting caller-controlled via value_formatter callback
+  worktree: main
+  category: Core Functionality
+  priority: Medium-High
+  status: Completed
+  tags:
+  - api
+  - de-benchbox
+  - formatting
+  owners:
+  - joe
+  estimated_effort: Small
+  completed_date: '2026-03-08'
+  work_total: 2
+  work_done: 2
+  work_ready: 0
+  needs:
+  - neutralize-default-labels-and-titles

@@ -1,5 +1,5 @@
-generated_at: '2026-03-08T20:49:59.405644'
-total_items: 5
+generated_at: '2026-03-08T20:54:33.917195'
+total_items: 4
 priorities:
   High:
     count: 1
@@ -10,16 +10,11 @@ priorities:
       category: Core Functionality
       status: Not Started
   Medium-High:
-    count: 2
+    count: 1
     items:
     - id: configurable-improvement-direction
       file: TODO/main/planning/configurable-improvement-direction.yaml
       title: Add lower_is_better parameter for improvement direction
-      category: Core Functionality
-      status: Not Started
-    - id: caller-controlled-value-formatting
-      file: TODO/main/planning/caller-controlled-value-formatting.yaml
-      title: Make time formatting caller-controlled via value_formatter callback
       category: Core Functionality
       status: Not Started
   Medium:

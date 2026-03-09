@@ -1,8 +1,8 @@
-generated_at: '2026-03-08T20:49:59.405649'
-total_items: 5
+generated_at: '2026-03-08T20:54:33.917199'
+total_items: 4
 statuses:
   Not Started:
-    count: 5
+    count: 4
     items:
     - id: configurable-outlier-cap
       file: TODO/main/planning/configurable-outlier-cap.yaml
@@ -12,11 +12,6 @@ statuses:
     - id: configurable-improvement-direction
       file: TODO/main/planning/configurable-improvement-direction.yaml
       title: Add lower_is_better parameter for improvement direction
-      priority: Medium-High
-      category: Core Functionality
-    - id: caller-controlled-value-formatting
-      file: TODO/main/planning/caller-controlled-value-formatting.yaml
-      title: Make time formatting caller-controlled via value_formatter callback
       priority: Medium-High
       category: Core Functionality
     - id: neutralize-default-labels-and-titles

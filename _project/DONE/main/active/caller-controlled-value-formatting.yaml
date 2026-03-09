@@ -2,7 +2,8 @@ id: "caller-controlled-value-formatting"
 title: "Make time formatting caller-controlled via value_formatter callback"
 worktree: "main"
 priority: "Medium-High"
-status: "Not Started"
+status: "Completed"
+completed_date: "2026-03-08"
 description: |
   stacked_bar.py and summary_box.py each contain a _format_time() method that
   hardcodes ms→s→min conversion. This assumes the input is milliseconds. When
@@ -17,7 +18,7 @@ category: "Core Functionality"
 work:
   - id: w1
     summary: "Add value_formatter callback to ASCIIStackedBar._format_total() and add tests"
-    status: pending
+    status: done
     notes: |
       _format_total() already dispatches: _format_time() when metric_label is
       "ms", _format_value() + metric_label otherwise. Add value_formatter:
@@ -29,7 +30,7 @@ work:
 
   - id: w2
     summary: "Add value_formatter to SummaryStats and fix total_time/best_queries to respect metric_label"
-    status: pending
+    status: done
     notes: |
       SummaryStats already has metric_label: str = "ms". Geo mean and median
       already use _format_value() + metric_label (lines 396, 401, 421, 423,

@@ -1,8 +1,8 @@
-generated_at: '2026-03-08T20:47:56.478545'
+generated_at: '2026-03-08T20:54:33.949155'
 total_categories: 3
 categories:
   Core Functionality:
-    count: 5
+    count: 6
     items:
     - id: shared-command-layer
       file: DONE/main/active/shared-command-layer.yaml
@@ -28,6 +28,11 @@ categories:
       file: DONE/main/planning/make-heatmap-and-matrix-apis-explicit-and-safe.yaml
       title: Make heatmap and matrix APIs explicit and safe
       priority: High
+      status: Completed
+    - id: caller-controlled-value-formatting
+      file: DONE/main/active/caller-controlled-value-formatting.yaml
+      title: Make time formatting caller-controlled via value_formatter callback
+      priority: Medium-High
       status: Completed
   Documentation:
     count: 4
