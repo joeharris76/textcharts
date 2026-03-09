@@ -1,14 +1,19 @@
-generated_at: '2026-03-08T20:54:33.917195'
-total_items: 4
+generated_at: '2026-03-09T09:02:11.178472'
+total_items: 5
 priorities:
   High:
-    count: 1
+    count: 2
     items:
-    - id: neutralize-default-labels-and-titles
-      file: TODO/main/planning/neutralize-default-labels-and-titles.yaml
-      title: Neutralize domain-specific default labels, titles, and comments
+    - id: add-subject-parameter-to-chart-titles
+      file: TODO/main/planning/add-subject-parameter-to-chart-titles.yaml
+      title: Add subject parameter to compose domain context into chart titles
       category: Core Functionality
       status: Not Started
+    - id: neutralize-default-labels-and-titles
+      file: TODO/main/active/neutralize-default-labels-and-titles.yaml
+      title: Neutralize domain-specific default labels, titles, and comments
+      category: Core Functionality
+      status: In Progress
   Medium-High:
     count: 1
     items:

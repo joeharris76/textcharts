@@ -1,8 +1,8 @@
-generated_at: '2026-03-08T20:54:33.917188'
+generated_at: '2026-03-09T09:02:11.178465'
 total_categories: 1
 categories:
   Core Functionality:
-    count: 4
+    count: 5
     items:
     - id: configurable-outlier-cap
       file: TODO/main/planning/configurable-outlier-cap.yaml
@@ -14,11 +14,16 @@ categories:
       title: Add lower_is_better parameter for improvement direction
       priority: Medium-High
       status: Not Started
-    - id: neutralize-default-labels-and-titles
-      file: TODO/main/planning/neutralize-default-labels-and-titles.yaml
-      title: Neutralize domain-specific default labels, titles, and comments
+    - id: add-subject-parameter-to-chart-titles
+      file: TODO/main/planning/add-subject-parameter-to-chart-titles.yaml
+      title: Add subject parameter to compose domain context into chart titles
       priority: High
       status: Not Started
+    - id: neutralize-default-labels-and-titles
+      file: TODO/main/active/neutralize-default-labels-and-titles.yaml
+      title: Neutralize domain-specific default labels, titles, and comments
+      priority: High
+      status: In Progress
     - id: rename-benchmark-specific-identifiers
       file: TODO/main/planning/rename-benchmark-specific-identifiers.yaml
       title: Rename benchmark-specific factory functions to generic names
