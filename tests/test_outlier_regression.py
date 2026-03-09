@@ -899,3 +899,159 @@ class TestRobustP95Fallback:
 
         vals = [0.0] * 18 + [10.0, 50000.0]
         assert robust_p95(vals) == 10.0
+
+
+# ---------------------------------------------------------------------------
+# Configurable outlier_cap tests
+# ---------------------------------------------------------------------------
+
+
+class TestOutlierCapDisabled:
+    """outlier_cap=0 disables all auto-capping."""
+
+    def test_bar_chart_no_truncation_when_disabled(self):
+        """Bar chart with outlier_cap=0 should not truncate extreme values."""
+        data = [BarData(label=f"Q{i}", value=10) for i in range(10)]
+        data.append(BarData(label="Outlier", value=10000))
+        opts = ASCIIChartOptions(use_color=False, use_unicode=True, outlier_cap=0)
+        chart = ASCIIBarChart(data=data, options=opts)
+        result = chart.render()
+
+        assert TRUNCATION_MARKER not in result
+
+    def test_scatter_plot_no_truncation_when_disabled(self):
+        """Scatter plot with outlier_cap=0 should not cap axes."""
+        points = [ScatterPoint(name=f"P{i}", x=10 + i, y=100 + i) for i in range(10)]
+        points.append(ScatterPoint(name="Extreme", x=50000, y=150))
+        opts = ASCIIChartOptions(use_color=False, use_unicode=True, outlier_cap=0)
+        chart = ASCIIScatterPlot(points=points, options=opts)
+        result = chart.render()
+
+        assert TRUNCATION_MARKER not in result
+
+    def test_line_chart_no_truncation_when_disabled(self):
+        """Line chart with outlier_cap=0 should not cap y-axis."""
+        points = [LinePoint(series="A", x=i, y=10 + i) for i in range(10)]
+        points.append(LinePoint(series="A", x=10, y=50000))
+        opts = ASCIIChartOptions(use_color=False, use_unicode=True, outlier_cap=0)
+        chart = ASCIILineChart(points=points, options=opts)
+        result = chart.render()
+
+        assert "capped" not in result.lower()
+
+    def test_cdf_chart_no_truncation_when_disabled(self):
+        """CDF chart with outlier_cap=0 should not cap x-axis."""
+        values = list(range(10, 30)) + [50000]
+        data = [CDFSeriesData(name="Platform", values=values)]
+        opts = ASCIIChartOptions(use_color=False, use_unicode=True, outlier_cap=0)
+        chart = ASCIICDFChart(data=data, options=opts)
+        result = chart.render()
+
+        assert TRUNCATION_MARKER not in result
+
+    def test_heatmap_no_truncation_when_disabled(self):
+        """Heatmap with outlier_cap=0 should not cap scale."""
+        row_labels = [f"Q{i}" for i in range(10)]
+        col_labels = ["Platform"]
+        matrix = [[10 + i] for i in range(9)]
+        matrix.append([50000])
+        opts = ASCIIChartOptions(use_color=False, use_unicode=True, outlier_cap=0)
+        chart = ASCIIHeatmap(matrix=matrix, row_labels=row_labels, col_labels=col_labels, options=opts)
+        result = chart.render()
+
+        assert TRUNCATION_MARKER not in result
+        assert "capped" not in result.lower()
+
+    def test_histogram_no_truncation_when_disabled(self):
+        """Histogram with outlier_cap=0 should not cap scale."""
+        data = [HistogramBar(query_id=f"Q{i}", latency_ms=10 + i) for i in range(10)]
+        data.append(HistogramBar(query_id="Q99", latency_ms=50000))
+        opts = ASCIIChartOptions(use_color=False, use_unicode=True, outlier_cap=0)
+        chart = ASCIIQueryHistogram(data=data, options=opts)
+        result = chart.render()
+
+        assert "Truncated" not in result
+
+    def test_stacked_bar_no_truncation_when_disabled(self):
+        """Stacked bar with outlier_cap=0 should not truncate."""
+        data = [
+            StackedBarData(label=f"P{i}", segments=[StackedBarSegment(phase_name="Load", value=10 + i)])
+            for i in range(10)
+        ]
+        data.append(StackedBarData(label="Outlier", segments=[StackedBarSegment(phase_name="Load", value=50000)]))
+        opts = ASCIIChartOptions(use_color=False, use_unicode=True, outlier_cap=0)
+        chart = ASCIIStackedBar(data=data, options=opts)
+        result = chart.render()
+
+        assert TRUNCATION_MARKER not in result
+
+    def test_percentile_ladder_no_truncation_when_disabled(self):
+        """Percentile ladder with outlier_cap=0 should not truncate."""
+        data = [PercentileData(name=f"P{i}", p50=10 + i, p90=20 + i, p95=30 + i, p99=40 + i) for i in range(10)]
+        data.append(PercentileData(name="Outlier", p50=15, p90=25, p95=35, p99=50000))
+        opts = ASCIIChartOptions(use_color=False, use_unicode=True, outlier_cap=0)
+        chart = ASCIIPercentileLadder(data=data, options=opts)
+        result = chart.render()
+
+        assert TRUNCATION_MARKER not in result
+
+
+class TestOutlierCapFixed:
+    """outlier_cap=<float> caps at a fixed threshold."""
+
+    def test_bar_chart_caps_at_fixed_value(self):
+        """Bar chart with outlier_cap=500 should truncate values above 500."""
+        data = [BarData(label=f"Q{i}", value=100 + i * 50) for i in range(6)]
+        data.append(BarData(label="Big", value=1000))
+        opts = ASCIIChartOptions(use_color=False, use_unicode=True, outlier_cap=500)
+        chart = ASCIIBarChart(data=data, options=opts)
+        result = chart.render()
+
+        assert TRUNCATION_MARKER in result
+
+    def test_bar_chart_no_truncation_when_below_cap(self):
+        """Bar chart should not truncate when all values are below outlier_cap."""
+        data = [BarData(label=f"Q{i}", value=10 + i) for i in range(6)]
+        opts = ASCIIChartOptions(use_color=False, use_unicode=True, outlier_cap=500)
+        chart = ASCIIBarChart(data=data, options=opts)
+        result = chart.render()
+
+        assert TRUNCATION_MARKER not in result
+
+    def test_line_chart_caps_at_fixed_value(self):
+        """Line chart with outlier_cap=500 should cap y-axis above 500."""
+        points = [LinePoint(series="A", x=i, y=100 + i * 50) for i in range(6)]
+        points.append(LinePoint(series="A", x=6, y=2000))
+        opts = ASCIIChartOptions(use_color=False, use_unicode=True, outlier_cap=500)
+        chart = ASCIILineChart(points=points, options=opts)
+        result = chart.render()
+
+        assert "capped" in result.lower()
+
+    def test_heatmap_caps_at_fixed_value(self):
+        """Heatmap with outlier_cap=100 should cap cells above 100."""
+        row_labels = [f"Q{i}" for i in range(5)]
+        col_labels = ["Platform"]
+        matrix = [[10], [20], [30], [40], [500]]
+        opts = ASCIIChartOptions(use_color=False, use_unicode=True, outlier_cap=100)
+        chart = ASCIIHeatmap(matrix=matrix, row_labels=row_labels, col_labels=col_labels, options=opts)
+        result = chart.render()
+
+        assert TRUNCATION_MARKER in result
+
+
+class TestOutlierCapAutoDefault:
+    """outlier_cap=None (default) preserves existing P95×2 auto-detection."""
+
+    def test_bar_chart_auto_matches_default(self):
+        """Bar chart with outlier_cap=None should behave identically to no option."""
+        data = [BarData(label=f"Q{i}", value=10) for i in range(10)]
+        data.append(BarData(label="Outlier", value=10000))
+
+        opts_default = ASCIIChartOptions(use_color=False, use_unicode=True)
+        opts_auto = ASCIIChartOptions(use_color=False, use_unicode=True, outlier_cap=None)
+
+        result_default = ASCIIBarChart(data=data, options=opts_default).render()
+        result_auto = ASCIIBarChart(data=list(data), options=opts_auto).render()
+
+        assert result_default == result_auto
