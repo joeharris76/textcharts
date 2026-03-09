@@ -71,7 +71,6 @@ HTML_TEMPLATE = """\
     background: #15181c;
     padding: 28px 30px;
     display: inline-block;
-    min-width: 980px;
   }}
   pre {{
     margin: 0;
@@ -483,7 +482,7 @@ def _estimate_height(text: str, pad: int = 72) -> int:
     return min(max(lines * 24 + pad * 2, 200), 2600)
 
 
-def _save_png(html_content: str, out_path: Path, text: str, *, width: int = 1100) -> None:
+def _save_png(html_content: str, out_path: Path, text: str, *, width: int = 850) -> None:
     chrome = _chrome_binary()
     height = _estimate_height(text)
     with tempfile.NamedTemporaryFile("w", suffix=".html", delete=False) as handle:
@@ -496,6 +495,7 @@ def _save_png(html_content: str, out_path: Path, text: str, *, width: int = 1100
             "--disable-gpu",
             "--no-sandbox",
             "--hide-scrollbars",
+            "--force-device-scale-factor=2",
             f"--window-size={width},{height}",
             "--screenshot=" + str(out_path),
             "file://" + tmp_html,
@@ -528,14 +528,7 @@ def _crop_png(path: Path) -> None:
         if not all(is_bg(x, y) for x in range(0, width, 4)):
             last_row = min(y + 36, height)
             break
-
-    last_col = width - 1
-    for x in range(width - 1, 0, -1):
-        if not all(is_bg(x, y) for y in range(0, last_row, 4)):
-            last_col = min(x + 36, width)
-            break
-
-    image.crop((0, 0, last_col, last_row)).save(path)
+    image.crop((0, 0, width, last_row)).save(path)
 
 
 def _render_mode(chart_name: str, mode: str) -> Path:
