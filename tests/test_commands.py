@@ -452,6 +452,26 @@ class TestExecutor:
         )
         assert "Custom Title" in result
 
+    def test_execute_with_subject(self):
+        result = execute_command(
+            "bar",
+            SAMPLE_DATA["bar"],
+            subject="Revenue",
+            options={"use_color": False},
+        )
+        assert "Revenue Bar Chart" in result
+
+    def test_execute_title_wins_over_subject(self):
+        result = execute_command(
+            "bar",
+            SAMPLE_DATA["bar"],
+            title="Explicit",
+            subject="Ignored",
+            options={"use_color": False},
+        )
+        assert "Explicit" in result
+        assert "Ignored" not in result
+
     def test_execute_heatmap_matrix_input(self):
         result = execute_command("heatmap", SAMPLE_DATA["heatmap"], options={"use_color": False})
         assert isinstance(result, str)

@@ -162,6 +162,14 @@ class TestChartToolExecution:
         })
         assert "My Title" in text
 
+    def test_render_with_subject(self, server):
+        text = _call_tool(server, "textcharts_bar", {
+            "data": SAMPLE_DATA["bar"],
+            "subject": "Revenue",
+            "use_color": False,
+        })
+        assert "Revenue Bar Chart" in text
+
     def test_render_with_chart_params(self, server):
         text = _call_tool(server, "textcharts_bar", {
             "data": SAMPLE_DATA["bar"],
