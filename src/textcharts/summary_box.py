@@ -49,11 +49,9 @@ class SummaryStats:
     value_formatter: Callable[[float], str] | None = None
 
     # System environment info (displayed in middle column)
-    # Expected keys: "OS", "Python", "CPUs", "Memory"
     environment: dict[str, str] | None = None
 
     # Platform/run configuration (displayed in right column)
-    # Expected keys: "Driver", "Tables", "Tuning"
     platform_config: dict[str, str] | None = None
 
     @property

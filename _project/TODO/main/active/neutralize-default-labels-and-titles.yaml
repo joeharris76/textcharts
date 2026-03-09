@@ -60,7 +60,7 @@ work:
   - id: w4
     summary: "Remove BenchBox-specific comments from SummaryStats and verify key-agnostic rendering"
     needs: [w1]
-    status: pending
+    status: done
     notes: |
       Remove "Expected keys: OS, Python, CPUs, Memory" and "Expected keys: Driver,
       Tables, Tuning" comments. Verify that _render_two_col_metrics and
