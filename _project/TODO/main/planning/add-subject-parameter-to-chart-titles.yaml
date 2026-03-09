@@ -69,17 +69,27 @@ work:
       execute_command().
 
   - id: w4
-    summary: "Add tests for subject parameter and title composition"
+    summary: "Add tests for subject parameter and harden existing title assertions"
     needs: [w2, w3]
     status: pending
     notes: |
-      Test cases:
+      New test cases for subject parameter:
         - subject alone → "Subject Default Title"
         - title alone → explicit title (subject ignored)
         - both title and subject → explicit title wins
         - neither → generic default
         - subject via MCP handler
         - subject via factory function
+
+      Harden existing brittle title tests that assert on hardcoded default strings.
+      These break on every default title change (just happened in neutralize TODO):
+        - tests/test_commands.py:test_parse_summary_empty asserts result.title == "Summary"
+          → assert title is a non-empty string, or use explicit title input
+        - tests/test_edge_cases_and_features.py:test_grouped_render_single_chart_when_few_queries
+          asserts result.count("Histogram") == 1
+          → pass explicit title="TestTitle" and count that instead
+      Pattern: tests should pass explicit titles when testing non-title behavior,
+      or test title composition via subject rather than hardcoding defaults.
       Update golden snapshots if any existing tests are affected.
 
   - id: w5
