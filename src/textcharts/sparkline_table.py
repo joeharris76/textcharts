@@ -286,13 +286,5 @@ def from_data(
     return SparklineTable(data=data, title=title, options=options, subject=subject)
 
 
-def from_metrics(*args, **kwargs):
-    """Deprecated: use from_data() instead."""
-    import warnings
-
-    warnings.warn("from_metrics() is deprecated, use from_data() instead", DeprecationWarning, stacklevel=2)
-    return from_data(*args, **kwargs)
-
-
 # Backward-compat aliases — remove after all consumers are updated
 ASCIISparklineTable = SparklineTable

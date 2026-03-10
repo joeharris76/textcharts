@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import logging
 from dataclasses import dataclass
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING
 
 logger = logging.getLogger(__name__)
 
@@ -235,14 +235,6 @@ def from_data(
         options=options,
         subject=subject,
     )
-
-
-def from_bar_data(*args: Any, **kwargs: Any) -> BarChart:
-    """Deprecated: use from_data() instead."""
-    import warnings
-
-    warnings.warn("from_bar_data() is deprecated, use from_data() instead", DeprecationWarning, stacklevel=2)
-    return from_data(*args, **kwargs)
 
 
 # Backward-compat aliases — remove after all consumers are updated

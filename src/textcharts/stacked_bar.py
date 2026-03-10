@@ -273,13 +273,5 @@ def from_data(
     return StackedBar(data=data, title=title, options=options, subject=subject)
 
 
-def from_phase_data(*args, **kwargs):
-    """Deprecated: use from_data() instead."""
-    import warnings
-
-    warnings.warn("from_phase_data() is deprecated, use from_data() instead", DeprecationWarning, stacklevel=2)
-    return from_data(*args, **kwargs)
-
-
 # Backward-compat aliases — remove after all consumers are updated
 ASCIIStackedBar = StackedBar

@@ -775,14 +775,6 @@ def from_data(
     )
 
 
-def from_query_latency_data(*args, **kwargs):
-    """Deprecated: use from_data() instead."""
-    import warnings
-
-    warnings.warn("from_query_latency_data() is deprecated, use from_data() instead", DeprecationWarning, stacklevel=2)
-    return from_data(*args, **kwargs)
-
-
 # Backward-compat aliases — remove after all consumers are updated
 ASCIIHistogram = Histogram
 ASCIIQueryHistogram = Histogram

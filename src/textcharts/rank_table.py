@@ -236,13 +236,5 @@ def from_matrix(
     return RankTable(data=data, title=title, options=options, subject=subject)
 
 
-def from_heatmap_data(*args, **kwargs):
-    """Deprecated: use from_matrix() instead."""
-    import warnings
-
-    warnings.warn("from_heatmap_data() is deprecated, use from_matrix() instead", DeprecationWarning, stacklevel=2)
-    return from_matrix(*args, **kwargs)
-
-
 # Backward-compat aliases — remove after all consumers are updated
 ASCIIRankTable = RankTable

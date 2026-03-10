@@ -242,13 +242,5 @@ def from_series(
     return CDFChart(data=data, title=title, x_label=x_label, y_label=y_label, options=options, subject=subject)
 
 
-def from_query_results(*args, **kwargs):
-    """Deprecated: use from_series() instead."""
-    import warnings
-
-    warnings.warn("from_query_results() is deprecated, use from_series() instead", DeprecationWarning, stacklevel=2)
-    return from_series(*args, **kwargs)
-
-
 # Backward-compat aliases — remove after all consumers are updated
 ASCIICDFChart = CDFChart

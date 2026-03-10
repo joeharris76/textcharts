@@ -236,13 +236,5 @@ def from_ratios(
     )
 
 
-def from_normalized_results(*args, **kwargs):
-    """Deprecated: use from_ratios() instead."""
-    import warnings
-
-    warnings.warn("from_normalized_results() is deprecated, use from_ratios() instead", DeprecationWarning, stacklevel=2)
-    return from_ratios(*args, **kwargs)
-
-
 # Backward-compat aliases — remove after all consumers are updated
 ASCIINormalizedSpeedup = NormalizedSpeedup

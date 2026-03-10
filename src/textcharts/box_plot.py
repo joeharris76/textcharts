@@ -407,13 +407,5 @@ def from_series(
     )
 
 
-def from_distribution_series(*args, **kwargs):
-    """Deprecated: use from_series() instead."""
-    import warnings
-
-    warnings.warn("from_distribution_series() is deprecated, use from_series() instead", DeprecationWarning, stacklevel=2)
-    return from_series(*args, **kwargs)
-
-
 # Backward-compat aliases — remove after all consumers are updated
 ASCIIBoxPlot = BoxPlot

@@ -324,13 +324,5 @@ def from_data(
     )
 
 
-def from_comparison_data(*args, **kwargs):
-    """Deprecated: use from_data() instead."""
-    import warnings
-
-    warnings.warn("from_comparison_data() is deprecated, use from_data() instead", DeprecationWarning, stacklevel=2)
-    return from_data(*args, **kwargs)
-
-
 # Backward-compat aliases — remove after all consumers are updated
 ASCIIComparisonBar = ComparisonBar

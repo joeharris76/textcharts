@@ -360,13 +360,5 @@ def from_points(
     )
 
 
-def from_time_series_points(*args, **kwargs):
-    """Deprecated: use from_points() instead."""
-    import warnings
-
-    warnings.warn("from_time_series_points() is deprecated, use from_points() instead", DeprecationWarning, stacklevel=2)
-    return from_points(*args, **kwargs)
-
-
 # Backward-compat aliases — remove after all consumers are updated
 ASCIILineChart = LineChart

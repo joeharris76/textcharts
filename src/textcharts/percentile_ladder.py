@@ -341,13 +341,5 @@ def from_series(
     )
 
 
-def from_query_results(*args, **kwargs):
-    """Deprecated: use from_series() instead."""
-    import warnings
-
-    warnings.warn("from_query_results() is deprecated, use from_series() instead", DeprecationWarning, stacklevel=2)
-    return from_series(*args, **kwargs)
-
-
 # Backward-compat aliases — remove after all consumers are updated
 ASCIIPercentileLadder = PercentileLadder
