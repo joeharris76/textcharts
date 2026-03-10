@@ -44,6 +44,30 @@ chart = BoxPlot(
 print(chart.render())
 ```
 
+```
+Apartment Rents (Value)
+               Monthly rent distribution by neighborhood
+────────────────────────────────────────────────────────────────────────
+
+                         ╷     ┌─────────┬──────────┐                ╷
+Downtown                 ├─────│         │          │────────────────┤
+                         ╵     └─────────┴──────────┘                ╵
+           ╷    ┌─────┬──────┐          ╷
+Riverside  ├────│     │      │──────────┤
+           ╵    └─────┴──────┘          ╵
+                  ╷    ┌────┬────────┐          ╷
+Midtown           ├────│    │        │──────────┤
+                  ╵    └────┴────────┘          ╵
+           ───────────────────────────────────────────────────────────
+           1.4K                       2.2K                        3.0K
+                                Value →
+           median  mean    std
+           ──────  ────  ─────
+Downtown     2.2K  2.3K  392.7
+Riverside    1.8K  1.8K  257.6
+Midtown      1.9K  2.0K  269.8
+```
+
 ## Chart Types
 
 | Chart              | Class               | Data Model           |
