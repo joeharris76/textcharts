@@ -46,24 +46,24 @@ Vertical bar histogram for frequency distribution.
 
 **Format:** list of objects
 
-| Field      | Type    | Required | Description                |
-|------------|---------|----------|----------------------------|
-| query_id   | string  | yes      | Query or item identifier   |
-| latency_ms | number  | yes      | Latency value in ms        |
-| platform   | string  | no       | Optional platform name     |
-| error      | number  | no       | Optional error margin      |
-| is_best    | boolean | no       | Mark as best performer     |
-| is_worst   | boolean | no       | Mark as worst performer    |
+| Field    | Type    | Required | Description                |
+|----------|---------|----------|----------------------------|
+| label    | string  | yes      | Item identifier            |
+| value    | number  | yes      | Numeric value              |
+| platform | string  | no       | Optional platform name     |
+| error    | number  | no       | Optional error margin      |
+| is_best  | boolean | no       | Mark as best performer     |
+| is_worst | boolean | no       | Mark as worst performer    |
 
 ```json
 [
-  {"query_id": "Q1", "latency_ms": 120.5},
-  {"query_id": "Q2", "latency_ms": 85.3, "is_best": true},
-  {"query_id": "Q3", "latency_ms": 210.7, "is_worst": true}
+  {"label": "Q1", "value": 120.5},
+  {"label": "Q2", "value": 85.3, "is_best": true},
+  {"label": "Q3", "value": 210.7, "is_worst": true}
 ]
 ```
 
-**Chart params:** `y_label` (string), `sort_by` (query_id | latency),
+**Chart params:** `y_label` (string), `sort_by` (label | value),
 `max_per_chart` (integer), `show_mean_line` (boolean)
 
 ---
@@ -232,39 +232,43 @@ Bordered summary box with aggregate statistics.
 
 **Format:** single object
 
-| Field                    | Type    | Required | Description                        |
-|--------------------------|---------|----------|------------------------------------|
-| title                    | string  | no       | Summary box title                  |
-| geo_mean_ms              | number  | no       | Geometric mean in ms               |
-| median_ms                | number  | no       | Median in ms                       |
-| total_time_ms            | number  | no       | Total time in ms                   |
-| geo_mean_baseline_ms     | number  | no       | Baseline geometric mean            |
-| geo_mean_comparison_ms   | number  | no       | Comparison geometric mean          |
-| total_time_baseline_ms   | number  | no       | Baseline total time                |
-| total_time_comparison_ms | number  | no       | Comparison total time              |
-| baseline_name            | string  | no       | Baseline label                     |
-| comparison_name          | string  | no       | Comparison label                   |
-| num_queries              | integer | no       | Number of queries                  |
-| num_improved             | integer | no       | Count of improved queries          |
-| num_stable               | integer | no       | Count of stable queries            |
-| num_regressed            | integer | no       | Count of regressed queries         |
-| best_queries             | array   | no       | List of [name, value] pairs for best queries  |
-| worst_queries            | array   | no       | List of [name, value] pairs for worst queries |
-| environment              | object  | no       | Environment info dict              |
-| platform_config          | object  | no       | Platform config dict               |
-| metric_label             | string  | no       | Unit label for values (default: "ms") |
+| Field                | Type    | Required | Description                                  |
+|----------------------|---------|----------|----------------------------------------------|
+| title                | string  | no       | Summary box title                            |
+| primary_value        | number  | no       | Primary aggregate value (e.g. geometric mean)|
+| secondary_value      | number  | no       | Secondary aggregate value (e.g. median)      |
+| total_value          | number  | no       | Total aggregate value                        |
+| primary_baseline     | number  | no       | Baseline primary value                       |
+| primary_comparison   | number  | no       | Comparison primary value                     |
+| total_baseline       | number  | no       | Baseline total value                         |
+| total_comparison     | number  | no       | Comparison total value                       |
+| primary_label        | string  | no       | Label for primary value (default: "Geo Mean")|
+| secondary_label      | string  | no       | Label for secondary value (default: "Median")|
+| total_label          | string  | no       | Label for total value (default: "Total")     |
+| count_label          | string  | no       | Label for item count (default: "Queries")    |
+| baseline_name        | string  | no       | Baseline label                               |
+| comparison_name      | string  | no       | Comparison label                             |
+| num_items            | integer | no       | Number of items                              |
+| num_improved         | integer | no       | Count of improved items                      |
+| num_stable           | integer | no       | Count of stable items                        |
+| num_regressed        | integer | no       | Count of regressed items                     |
+| best_items           | array   | no       | List of [name, value] pairs for best items   |
+| worst_items          | array   | no       | List of [name, value] pairs for worst items  |
+| environment          | object  | no       | Environment info dict                        |
+| platform_config      | object  | no       | Platform config dict                         |
+| metric_label         | string  | no       | Unit label for values (default: "ms")        |
 
 ```json
 {
   "title": "Performance Summary",
-  "geo_mean_ms": 142.5,
-  "median_ms": 128.0,
-  "num_queries": 10,
+  "primary_value": 142.5,
+  "secondary_value": 128.0,
+  "num_items": 10,
   "num_improved": 6,
   "num_stable": 2,
   "num_regressed": 2,
-  "best_queries": [["Q3", 45.2], ["Q7", 52.1]],
-  "worst_queries": [["Q1", 312.5]]
+  "best_items": [["Q3", 45.2], ["Q7", 52.1]],
+  "worst_items": [["Q1", 312.5]]
 }
 ```
 
@@ -411,21 +415,21 @@ Cumulative distribution function chart for comparing distributions.
 
 ## rank
 
-Competitive ranking table with win counts across queries.
+Competitive ranking table with win counts across items.
 
 **Format:** single object
 
-| Field     | Type   | Required | Description                                      |
-|-----------|--------|----------|--------------------------------------------------|
-| queries   | array  | yes      | List of query names                              |
-| platforms | array  | yes      | List of platform names                           |
-| times     | object | yes      | Mapping of `"platform,query"` keys to time values |
+| Field  | Type   | Required | Description                                      |
+|--------|--------|----------|--------------------------------------------------|
+| items  | array  | yes      | List of item names                               |
+| groups | array  | yes      | List of group names                              |
+| values | object | yes      | Mapping of `"group,item"` keys to numeric values |
 
 ```json
 {
-  "queries": ["Q1", "Q2", "Q3"],
-  "platforms": ["Postgres", "MySQL"],
-  "times": {
+  "items": ["Q1", "Q2", "Q3"],
+  "groups": ["Postgres", "MySQL"],
+  "values": {
     "Postgres,Q1": 120,
     "Postgres,Q2": 85,
     "Postgres,Q3": 200,
