@@ -1076,9 +1076,9 @@ class TestSummaryBoxDotLeader:
         opts = ChartOptions(width=100, use_color=False, use_unicode=True)
         chart = SummaryBox(stats=stats, options=opts)
         result = chart.render()
-        # Find the Geo Mean line and check for no wide blank gap
+        # Find the Primary metric line and check for no wide blank gap
         for line in result.split("\n"):
-            if "Geo Mean" in line and "%" in line:
+            if "Primary" in line and "%" in line:
                 # Should not have more than 3 consecutive spaces (since dots fill the gap)
                 assert "     " not in line  # 5+ spaces means gap not filled
 

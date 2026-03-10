@@ -545,9 +545,9 @@ class TestHistogram:
             HistogramBar(label="Q2", value=300),
             HistogramBar(label="Q3", value=200),
         ]
-        chart = Histogram(data=data, sort_by="latency")
+        chart = Histogram(data=data, sort_by="value")
         result = chart.render()
-        # With latency sort (descending), Q2 (300) should come first
+        # With value sort (descending), Q2 (300) should come first
         assert "Q2" in result
 
     def test_best_worst_highlighting(self):

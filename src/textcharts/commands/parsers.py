@@ -393,8 +393,8 @@ def parse_rank(data: Any) -> Any:
     d = _require_dict(data, "rank")
     _require_keys(d, ["items", "groups", "values"], "rank")
 
-    items = [str(q) for q in d["items"]]
-    groups = [str(p) for p in d["groups"]]
+    items = [str(item) for item in d["items"]]
+    groups = [str(g) for g in d["groups"]]
     values_raw = d["values"]
     if not isinstance(values_raw, dict):
         raise ParseError("rank: 'values' must be an object mapping 'group,item' keys to numbers")

@@ -213,3 +213,48 @@ def test_summary_box_subtitle_stays_within_box_width():
     chart = SummaryBox(stats=stats, subtitle="S" * 200, options=ChartOptions(width=80, use_color=False))
     result = chart.render()
     assert all(len(line) == 80 for line in result.splitlines())
+
+
+def test_summary_box_custom_labels_single_run():
+    """Custom label fields appear in single-run rendered output."""
+    stats = SummaryStats(
+        primary_value=42.0,
+        total_value=200.0,
+        num_items=5,
+        primary_label="Geo Mean",
+        total_label="Runtime",
+        count_label="Queries",
+    )
+    result = SummaryBox(stats=stats, options=ChartOptions(use_color=False)).render()
+    assert "Geo Mean" in result
+    assert "Runtime" in result
+    assert "Queries" in result
+
+
+def test_summary_box_custom_labels_comparison():
+    """Custom label fields appear in comparison rendered output."""
+    stats = SummaryStats(
+        primary_baseline=100.0,
+        primary_comparison=80.0,
+        total_baseline=500.0,
+        total_comparison=400.0,
+        baseline_name="v1",
+        comparison_name="v2",
+        num_items=10,
+        primary_label="Median",
+        total_label="Sum",
+        count_label="Tests",
+    )
+    result = SummaryBox(stats=stats, options=ChartOptions(use_color=False)).render()
+    assert "Median" in result
+    assert "Sum" in result
+    assert "Tests" in result
+
+
+def test_summary_box_default_labels():
+    """Default label values are 'Primary', 'Total', 'Items'."""
+    stats = SummaryStats(primary_value=10.0, total_value=50.0, num_items=3)
+    result = SummaryBox(stats=stats, options=ChartOptions(use_color=False)).render()
+    assert "Primary" in result
+    assert "Total" in result
+    assert "Items" in result
