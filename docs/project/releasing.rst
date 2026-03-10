@@ -22,8 +22,21 @@ Version is maintained in two files (must stay in sync):
 
 CI validates that the tag matches both files on release.
 
-Release checklist
------------------
+Release script
+--------------
+
+The release process is automated by ``scripts/release.sh``:
+
+.. code-block:: bash
+
+   ./scripts/release.sh           # auto-increment patch (0.1.0 -> next 0.1.1)
+   ./scripts/release.sh 0.2.0     # specify next version explicitly
+
+The script performs all steps below with confirmation prompts at each stage.
+It requires the ``gh`` CLI to be authenticated.
+
+Release checklist (manual reference)
+-------------------------------------
 
 1. Ensure CI is green on the ``dev-X.Y.Z`` branch.
 
