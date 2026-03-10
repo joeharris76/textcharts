@@ -68,7 +68,7 @@ html_theme_options = {
         "color-brand-content": "#0088ff",
         "color-highlight-on-target": "#ffc600",
     },
-    "source_repository": "https://github.com/benchbox-dev/textcharts/",
+    "source_repository": "https://github.com/joeharris76/textcharts/",
     "source_branch": "main",
     "source_directory": "docs/",
 }

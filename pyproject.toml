@@ -30,10 +30,10 @@ classifiers = [
 keywords = ["ascii", "chart", "terminal", "visualization", "bar chart", "histogram", "heatmap"]
 
 [project.urls]
-Homepage = "https://github.com/benchbox-dev/textcharts"
-Documentation = "https://github.com/benchbox-dev/textcharts#readme"
-Repository = "https://github.com/benchbox-dev/textcharts"
-Issues = "https://github.com/benchbox-dev/textcharts/issues"
+Homepage = "https://github.com/joeharris76/textcharts"
+Documentation = "https://joeharris76.github.io/textcharts/"
+Repository = "https://github.com/joeharris76/textcharts"
+Issues = "https://github.com/joeharris76/textcharts/issues"
 
 [project.optional-dependencies]
 mcp = ["mcp>=1.0"]
