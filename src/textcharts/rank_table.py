@@ -1,4 +1,4 @@
-"""ASCII rank table chart for competitive per-query platform ranking."""
+"""ASCII rank table chart for competitive ranking."""
 
 from __future__ import annotations
 
@@ -19,13 +19,13 @@ logger = logging.getLogger(__name__)
 class RankTableData:
     """Data for a rank table chart."""
 
-    queries: list[str]
-    platforms: list[str]
-    times: dict[tuple[str, str], float]  # (platform, query) -> execution time
+    items: list[str]
+    groups: list[str]
+    values: dict[tuple[str, str], float]  # (group, item) -> numeric value
 
 
 class RankTable(ChartBase):
-    """Rank table showing per-query competitive rankings across platforms.
+    """Rank table showing per-item competitive rankings across groups.
 
     Each cell shows the ordinal rank (1st, 2nd, 3rd...) of each platform
     for each query, with aggregate win/loss tallies and geometric mean rank.
@@ -59,54 +59,54 @@ class RankTable(ChartBase):
         """Render the rank table as a string."""
         self._detect_capabilities()
 
-        if not self.data.queries or not self.data.platforms:
+        if not self.data.items or not self.data.groups:
             return "No data to display"
 
         colors = self.options.get_colors()
         width = self.options.get_effective_width()
 
-        # Sort queries naturally
-        queries = sorted(self.data.queries, key=self._natural_sort_key)
-        platforms = self.data.platforms
+        # Sort items naturally
+        items = sorted(self.data.items, key=self._natural_sort_key)
+        groups = self.data.groups
 
-        # Compute rankings for each query
-        rankings: dict[str, dict[str, int]] = {}  # query -> {platform -> rank}
-        for query in queries:
-            # Get times for this query
-            qtimes: list[tuple[str, float]] = []
-            for platform in platforms:
-                time = self.data.times.get((platform, query))
-                if time is not None:
-                    qtimes.append((platform, time))
+        # Compute rankings for each item
+        rankings: dict[str, dict[str, int]] = {}  # item -> {group -> rank}
+        for item in items:
+            # Get values for this item
+            item_values: list[tuple[str, float]] = []
+            for group in groups:
+                val = self.data.values.get((group, item))
+                if val is not None:
+                    item_values.append((group, val))
 
-            # Sort by time ascending (faster = better rank)
-            qtimes.sort(key=lambda x: x[1])
+            # Sort by value ascending (lower = better rank)
+            item_values.sort(key=lambda x: x[1])
 
             # Assign ranks with tie handling
-            query_ranks: dict[str, int] = {}
+            item_ranks: dict[str, int] = {}
             i = 0
-            while i < len(qtimes):
-                # Find all tied platforms
+            while i < len(item_values):
+                # Find all tied groups
                 j = i
-                while j < len(qtimes) and qtimes[j][1] == qtimes[i][1]:
+                while j < len(item_values) and item_values[j][1] == item_values[i][1]:
                     j += 1
                 rank = i + 1
                 for k in range(i, j):
-                    query_ranks[qtimes[k][0]] = rank
+                    item_ranks[item_values[k][0]] = rank
                 i = j
 
-            rankings[query] = query_ranks
+            rankings[item] = item_ranks
 
         # Calculate column widths
-        query_col_width = max(5, max(len(q) for q in queries) + 1)
-        plat_col_width = max(6, max(len(p) for p in platforms) + 1)
+        item_col_width = max(5, max(len(q) for q in items) + 1)
+        group_col_width = max(6, max(len(p) for p in groups) + 1)
 
-        # Check if table fits; if not, truncate platforms
-        total_width = query_col_width + len(platforms) * plat_col_width
+        # Check if table fits; if not, truncate groups
+        total_width = item_col_width + len(groups) * group_col_width
         if total_width > width:
-            plat_col_width = max(5, (width - query_col_width) // len(platforms))
+            group_col_width = max(5, (width - item_col_width) // len(groups))
 
-        n_platforms = len(platforms)
+        n_groups = len(groups)
 
         lines: list[str] = []
 
@@ -118,25 +118,25 @@ class RankTable(ChartBase):
         lines.append(self._render_horizontal_line(width))
 
         # Header row
-        header = "Query".ljust(query_col_width)
-        for platform in platforms:
-            header += self._truncate_label(platform, plat_col_width - 1).center(plat_col_width)
+        header = "Item".ljust(item_col_width)
+        for group in groups:
+            header += self._truncate_label(group, group_col_width - 1).center(group_col_width)
         lines.append(header)
 
         # Data rows
-        for query in queries:
-            row = query.ljust(query_col_width)
-            query_ranks = rankings.get(query, {})
-            max_rank = max(query_ranks.values()) if query_ranks else n_platforms
-            for platform in platforms:
-                rank = query_ranks.get(platform)
+        for item in items:
+            row = item.ljust(item_col_width)
+            item_ranks = rankings.get(item, {})
+            max_rank = max(item_ranks.values()) if item_ranks else n_groups
+            for group in groups:
+                rank = item_ranks.get(group)
                 if rank is None:
                     cell = "-"
                 else:
                     cell = self._ordinal(rank)
 
                 # Pad BEFORE colorizing to avoid ANSI codes breaking alignment
-                padded_cell = cell.center(plat_col_width)
+                padded_cell = cell.center(group_col_width)
                 # Color: 1st green, worst rank red
                 if rank == 1:
                     padded_cell = colors.colorize(padded_cell, fg_color="#1b9e77")
@@ -149,30 +149,30 @@ class RankTable(ChartBase):
         lines.append(self._render_horizontal_line(width))
 
         # Footer: win tallies
-        wins_row = "Wins".ljust(query_col_width)
-        all_ranks: dict[str, list[int]] = {p: [] for p in platforms}
+        wins_row = "Wins".ljust(item_col_width)
+        all_ranks: dict[str, list[int]] = {g: [] for g in groups}
 
-        for query in queries:
-            for platform in platforms:
-                rank = rankings.get(query, {}).get(platform)
+        for item in items:
+            for group in groups:
+                rank = rankings.get(item, {}).get(group)
                 if rank is not None:
-                    all_ranks[platform].append(rank)
+                    all_ranks[group].append(rank)
 
-        win_counts = {p: sum(1 for r in ranks if r == 1) for p, ranks in all_ranks.items()}
-        for platform in platforms:
-            count_str = str(win_counts.get(platform, 0))
-            wins_row += count_str.center(plat_col_width)
+        win_counts = {g: sum(1 for r in ranks if r == 1) for g, ranks in all_ranks.items()}
+        for group in groups:
+            count_str = str(win_counts.get(group, 0))
+            wins_row += count_str.center(group_col_width)
         lines.append(wins_row)
 
         # Footer: geometric mean rank
-        georank_row = "GeoRank".ljust(query_col_width)
-        for platform in platforms:
-            ranks = all_ranks.get(platform, [])
+        georank_row = "GeoRank".ljust(item_col_width)
+        for group in groups:
+            ranks = all_ranks.get(group, [])
             if ranks:
                 geo_mean = math.exp(sum(math.log(r) for r in ranks) / len(ranks))
-                georank_row += f"{geo_mean:.1f}".center(plat_col_width)
+                georank_row += f"{geo_mean:.1f}".center(group_col_width)
             else:
-                georank_row += "-".center(plat_col_width)
+                georank_row += "-".center(group_col_width)
         lines.append(georank_row)
 
         return "\n".join(lines)
@@ -187,7 +187,7 @@ class RankTable(ChartBase):
 
     @staticmethod
     def _natural_sort_key(s: str):
-        """Natural sort key for query IDs (Q1, Q2, Q10 not Q1, Q10, Q2)."""
+        """Natural sort key for item IDs (Q1, Q2, Q10 not Q1, Q10, Q2)."""
         import re
 
         return [int(c) if c.isdigit() else c.lower() for c in re.split(r"(\d+)", s)]
@@ -195,8 +195,8 @@ class RankTable(ChartBase):
 
 def from_matrix(
     matrix: Sequence[Sequence[float]],
-    queries: Sequence[str],
-    platforms: Sequence[str],
+    items: Sequence[str],
+    groups: Sequence[str],
     title: str | None = None,
     options: ChartOptions | None = None,
     subject: str | None = None,
@@ -204,33 +204,33 @@ def from_matrix(
     """Create RankTable from the same matrix format as Heatmap.
 
     Args:
-        matrix: 2D matrix of execution times [query_idx][platform_idx].
-        queries: Query labels (row labels).
-        platforms: Platform labels (column labels).
+        matrix: 2D matrix of numeric values [item_idx][group_idx].
+        items: Item labels (row labels).
+        groups: Group labels (column labels).
         title: Optional chart title.
         options: Chart rendering options.
 
     Returns:
         Configured RankTable instance.
     """
-    if len(matrix) != len(queries):
-        raise ValueError("queries length must match the number of matrix rows")
+    if len(matrix) != len(items):
+        raise ValueError("items length must match the number of matrix rows")
 
-    expected_cols = len(platforms)
+    expected_cols = len(groups)
     for row_idx, row in enumerate(matrix, start=1):
         if len(row) != expected_cols:
             raise ValueError(
-                f"matrix row {row_idx} has {len(row)} columns but expected {expected_cols} to match platforms"
+                f"matrix row {row_idx} has {len(row)} columns but expected {expected_cols} to match groups"
             )
 
-    times: dict[tuple[str, str], float] = {}
-    for qi, query in enumerate(queries):
-        for pi, platform in enumerate(platforms):
-            times[(platform, query)] = matrix[qi][pi]
+    values: dict[tuple[str, str], float] = {}
+    for qi, item in enumerate(items):
+        for pi, group in enumerate(groups):
+            values[(group, item)] = matrix[qi][pi]
 
     data = RankTableData(
-        queries=list(queries),
-        platforms=list(platforms),
-        times=times,
+        items=list(items),
+        groups=list(groups),
+        values=values,
     )
     return RankTable(data=data, title=title, options=options, subject=subject)
