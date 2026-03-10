@@ -232,6 +232,13 @@ def _build_registry() -> dict[str, CommandInfo]:
                     "Unit label for values (e.g. ms, ops)",
                     required=False, default="ms",
                 ),
+                DataFieldInfo("primary_label", "string", "Label for primary metric", required=False, default="Primary"),
+                DataFieldInfo(
+                    "secondary_label", "string", "Label for secondary metric",
+                    required=False, default="Secondary",
+                ),
+                DataFieldInfo("total_label", "string", "Label for total metric", required=False, default="Total"),
+                DataFieldInfo("count_label", "string", "Label for item count", required=False, default="Items"),
             ],
         ),
         "percentile": CommandInfo(
