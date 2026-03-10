@@ -9,15 +9,15 @@ def _opts(**kw):
 
 
 def test_empty_data():
-    data = SparklineTableData(platforms=[], columns=[])
+    data = SparklineTableData(rows=[], columns=[])
     assert "No data" in SparklineTable(data=data).render()
-    data2 = SparklineTableData(platforms=["A"], columns=[])
+    data2 = SparklineTableData(rows=["A"], columns=[])
     assert "No data" in SparklineTable(data=data2).render()
 
 
 def test_platforms_and_columns_rendered():
     data = SparklineTableData(
-        platforms=["DuckDB", "SQLite"],
+        rows=["DuckDB", "SQLite"],
         columns=[
             SparklineColumn("Latency", {"DuckDB": 50, "SQLite": 200}, higher_is_better=False),
             SparklineColumn("Success", {"DuckDB": 100, "SQLite": 95}, higher_is_better=True),
@@ -32,7 +32,7 @@ def test_platforms_and_columns_rendered():
 
 def test_best_worst_markers_no_color():
     data = SparklineTableData(
-        platforms=["A", "B"],
+        rows=["A", "B"],
         columns=[
             SparklineColumn("Speed", {"A": 10, "B": 100}, higher_is_better=False),
         ],
@@ -49,7 +49,7 @@ def test_best_worst_markers_no_color():
 
 def test_higher_is_better_inverts_best_worst():
     data = SparklineTableData(
-        platforms=["A", "B"],
+        rows=["A", "B"],
         columns=[
             SparklineColumn("Rate", {"A": 10, "B": 100}, higher_is_better=True),
         ],
@@ -76,7 +76,7 @@ def test_compact_value_formatting():
 
 def test_legend_line():
     data = SparklineTableData(
-        platforms=["A"],
+        rows=["A"],
         columns=[SparklineColumn("M", {"A": 10}, higher_is_better=False)],
     )
     result = SparklineTable(data=data, options=_opts()).render()
@@ -86,7 +86,7 @@ def test_legend_line():
 
 def test_sparkline_from_data_factory():
     chart = sparkline_from_data(
-        platforms=["A", "B"],
+        rows=["A", "B"],
         metrics=[("Latency", {"A": 50, "B": 200}, False)],
         title="Factory Test",
         options=_opts(),
@@ -100,7 +100,7 @@ def test_sparkline_from_data_factory():
 def test_column_width_fitting():
     # With narrow width, some columns should be dropped
     data = SparklineTableData(
-        platforms=["Platform1"],
+        rows=["Platform1"],
         columns=[
             SparklineColumn(f"Metric{i}", {"Platform1": float(i)}, higher_is_better=False)
             for i in range(20)

@@ -139,7 +139,7 @@ def test_stacked_from_data():
 
 def test_sparkline_from_data():
     chart = sparkline_from_data(
-        platforms=["A", "B"],
+        rows=["A", "B"],
         metrics=[("Latency", {"A": 50, "B": 100}, False)],
         title="Spark Test",
         options=_opts(),

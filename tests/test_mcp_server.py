@@ -69,7 +69,7 @@ SAMPLE_DATA: dict[str, Any] = {
         {"label": "Q2", "segments": [{"phase_name": "Parse", "value": 20}, {"phase_name": "Execute", "value": 80}]},
     ],
     "sparkline": {
-        "platforms": ["DuckDB", "SQLite"],
+        "rows": ["DuckDB", "SQLite"],
         "columns": [
             {"name": "Latency (ms)", "values": {"DuckDB": 10, "SQLite": 20}},
             {"name": "Throughput", "values": {"DuckDB": 100, "SQLite": 50}, "higher_is_better": True},

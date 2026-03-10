@@ -217,7 +217,7 @@ def _stacked_bar() -> tuple[str, str]:
 
 def _sparkline_table() -> tuple[str, str]:
     data = SparklineTableData(
-        platforms=["DuckDB", "SQLite", "Polars"],
+        rows=["DuckDB", "SQLite", "Polars"],
         columns=[
             SparklineColumn(name="Total (ms)", values={"DuckDB": 1234.5, "SQLite": 3456.7, "Polars": 2100.0}),
             SparklineColumn(name="Geo Mean", values={"DuckDB": 156.3, "SQLite": 420.1, "Polars": 210.5}),

@@ -364,12 +364,12 @@ Compact table with inline sparkline mini-charts.
 
 | Field     | Type  | Required | Description                                             |
 |-----------|-------|----------|---------------------------------------------------------|
-| platforms | array | yes      | List of platform/row names                              |
-| columns   | array | yes      | List of `{name, values: {platform: number}, higher_is_better?}` |
+| rows      | array | yes      | List of row names                                       |
+| columns   | array | yes      | List of `{name, values: {row: number}, higher_is_better?}` |
 
 ```json
 {
-  "platforms": ["PostgreSQL", "MySQL", "SQLite"],
+  "rows": ["PostgreSQL", "MySQL", "SQLite"],
   "columns": [
     {
       "name": "Throughput",

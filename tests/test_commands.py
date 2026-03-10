@@ -268,13 +268,13 @@ class TestParsers:
 
     def test_parse_sparkline_valid(self):
         result = parse_input("sparkline", {
-            "platforms": ["DuckDB", "SQLite"],
+            "rows": ["DuckDB", "SQLite"],
             "columns": [
                 {"name": "Latency", "values": {"DuckDB": 10, "SQLite": 20}},
                 {"name": "Throughput", "values": {"DuckDB": 100, "SQLite": 50}, "higher_is_better": True},
             ],
         })
-        assert len(result.platforms) == 2
+        assert len(result.rows) == 2
         assert len(result.columns) == 2
 
     def test_parse_cdf_valid(self):
@@ -383,7 +383,7 @@ SAMPLE_DATA = {
         },
     ],
     "sparkline": {
-        "platforms": ["DuckDB", "SQLite"],
+        "rows": ["DuckDB", "SQLite"],
         "columns": [
             {"name": "Latency (ms)", "values": {"DuckDB": 10, "SQLite": 20}},
             {"name": "Throughput", "values": {"DuckDB": 100, "SQLite": 50}, "higher_is_better": True},
