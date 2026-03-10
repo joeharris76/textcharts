@@ -310,8 +310,8 @@ class TestHistogramOutlierTruncation:
 
     def test_extreme_outlier_caps_scale(self):
         """With one extreme value, Y-axis max should not show the outlier's value."""
-        data = [HistogramBar(query_id=f"Q{i}", latency_ms=10 + i) for i in range(10)]
-        data.append(HistogramBar(query_id="Q99", latency_ms=50000))
+        data = [HistogramBar(label=f"Q{i}", value=10 + i) for i in range(10)]
+        data.append(HistogramBar(label="Q99", value=50000))
         opts = ChartOptions(use_color=False, use_unicode=True)
         chart = Histogram(data=data, options=opts)
         result = chart.render()
@@ -321,8 +321,8 @@ class TestHistogramOutlierTruncation:
 
     def test_extreme_outlier_shows_severity_markers(self):
         """Truncated histogram bar should show ▸ severity markers."""
-        data = [HistogramBar(query_id=f"Q{i}", latency_ms=10 + i) for i in range(10)]
-        data.append(HistogramBar(query_id="Q99", latency_ms=50000))
+        data = [HistogramBar(label=f"Q{i}", value=10 + i) for i in range(10)]
+        data.append(HistogramBar(label="Q99", value=50000))
         opts = ChartOptions(use_color=False, use_unicode=True)
         chart = Histogram(data=data, options=opts)
         result = chart.render()
@@ -331,7 +331,7 @@ class TestHistogramOutlierTruncation:
 
     def test_no_capping_without_extreme_outliers(self):
         """Uniform data should not trigger scale capping."""
-        data = [HistogramBar(query_id=f"Q{i}", latency_ms=10 + i * 2) for i in range(10)]
+        data = [HistogramBar(label=f"Q{i}", value=10 + i * 2) for i in range(10)]
         opts = ChartOptions(use_color=False, use_unicode=True)
         chart = Histogram(data=data, options=opts)
         result = chart.render()
@@ -343,8 +343,8 @@ class TestHistogramOutlierTruncation:
         data = []
         for plat in ["DuckDB", "Polars"]:
             for i in range(6):
-                data.append(HistogramBar(query_id=f"Q{i}", latency_ms=10 + i, platform=plat))
-        data.append(HistogramBar(query_id="Q99", latency_ms=50000, platform="DuckDB"))
+                data.append(HistogramBar(label=f"Q{i}", value=10 + i, platform=plat))
+        data.append(HistogramBar(label="Q99", value=50000, platform="DuckDB"))
         opts = ChartOptions(use_color=False, use_unicode=True)
         chart = Histogram(data=data, options=opts)
         result = chart.render()
@@ -353,8 +353,8 @@ class TestHistogramOutlierTruncation:
 
     def test_footer_shows_truncated_legend(self):
         """Footer should include a 'Truncated' legend entry when scale is capped."""
-        data = [HistogramBar(query_id=f"Q{i}", latency_ms=10 + i) for i in range(10)]
-        data.append(HistogramBar(query_id="Q99", latency_ms=50000))
+        data = [HistogramBar(label=f"Q{i}", value=10 + i) for i in range(10)]
+        data.append(HistogramBar(label="Q99", value=50000))
         opts = ChartOptions(use_color=False, use_unicode=True)
         chart = Histogram(data=data, options=opts)
         result = chart.render()
@@ -809,9 +809,9 @@ class TestHistogramZeroHeavyTruncation:
 
     def test_zero_heavy_latencies_still_trigger_capping(self):
         """Sparse positive baseline plus one extreme outlier should truncate."""
-        data = [HistogramBar(query_id=f"Q{i}", latency_ms=0) for i in range(18)]
-        data.append(HistogramBar(query_id="Q18", latency_ms=10))
-        data.append(HistogramBar(query_id="Q99", latency_ms=50000))
+        data = [HistogramBar(label=f"Q{i}", value=0) for i in range(18)]
+        data.append(HistogramBar(label="Q18", value=10))
+        data.append(HistogramBar(label="Q99", value=50000))
         opts = ChartOptions(use_color=False, use_unicode=True)
         chart = Histogram(data=data, options=opts)
         result = chart.render()
@@ -820,7 +820,7 @@ class TestHistogramZeroHeavyTruncation:
 
     def test_normal_data_no_false_positive(self):
         """Uniform non-zero latencies should not trigger false truncation."""
-        data = [HistogramBar(query_id=f"Q{i}", latency_ms=10 + i * 2) for i in range(10)]
+        data = [HistogramBar(label=f"Q{i}", value=10 + i * 2) for i in range(10)]
         opts = ChartOptions(use_color=False, use_unicode=True)
         chart = Histogram(data=data, options=opts)
         result = chart.render()
@@ -964,8 +964,8 @@ class TestOutlierCapDisabled:
 
     def test_histogram_no_truncation_when_disabled(self):
         """Histogram with outlier_cap=0 should not cap scale."""
-        data = [HistogramBar(query_id=f"Q{i}", latency_ms=10 + i) for i in range(10)]
-        data.append(HistogramBar(query_id="Q99", latency_ms=50000))
+        data = [HistogramBar(label=f"Q{i}", value=10 + i) for i in range(10)]
+        data.append(HistogramBar(label="Q99", value=50000))
         opts = ChartOptions(use_color=False, use_unicode=True, outlier_cap=0)
         chart = Histogram(data=data, options=opts)
         result = chart.render()

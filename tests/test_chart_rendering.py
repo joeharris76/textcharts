@@ -502,7 +502,7 @@ class TestHistogram:
 
     def test_single_query(self):
         """Single query renders correctly."""
-        data = [HistogramBar(query_id="Q1", latency_ms=100)]
+        data = [HistogramBar(label="Q1", value=100)]
         chart = Histogram(data=data, title="Test Histogram")
         result = chart.render()
         assert "Q1" in result
@@ -511,9 +511,9 @@ class TestHistogram:
     def test_multiple_queries(self):
         """Multiple queries render with bars."""
         data = [
-            HistogramBar(query_id="Q1", latency_ms=100),
-            HistogramBar(query_id="Q2", latency_ms=200),
-            HistogramBar(query_id="Q3", latency_ms=150),
+            HistogramBar(label="Q1", value=100),
+            HistogramBar(label="Q2", value=200),
+            HistogramBar(label="Q3", value=150),
         ]
         chart = Histogram(data=data)
         result = chart.render()
@@ -524,11 +524,11 @@ class TestHistogram:
     def test_natural_sort_order(self):
         """Query IDs are sorted naturally (Q1, Q2, Q10 not Q1, Q10, Q2)."""
         data = [
-            HistogramBar(query_id="Q10", latency_ms=100),
-            HistogramBar(query_id="Q2", latency_ms=200),
-            HistogramBar(query_id="Q1", latency_ms=150),
+            HistogramBar(label="Q10", value=100),
+            HistogramBar(label="Q2", value=200),
+            HistogramBar(label="Q1", value=150),
         ]
-        chart = Histogram(data=data, sort_by="query_id")
+        chart = Histogram(data=data, sort_by="label")
         result = chart.render()
         lines = result.split("\n")
         # Find the label line (has Q1, Q2, Q10)
@@ -541,9 +541,9 @@ class TestHistogram:
     def test_sort_by_latency(self):
         """Queries can be sorted by latency."""
         data = [
-            HistogramBar(query_id="Q1", latency_ms=100),
-            HistogramBar(query_id="Q2", latency_ms=300),
-            HistogramBar(query_id="Q3", latency_ms=200),
+            HistogramBar(label="Q1", value=100),
+            HistogramBar(label="Q2", value=300),
+            HistogramBar(label="Q3", value=200),
         ]
         chart = Histogram(data=data, sort_by="latency")
         result = chart.render()
@@ -553,8 +553,8 @@ class TestHistogram:
     def test_best_worst_highlighting(self):
         """Best/worst queries are marked."""
         data = [
-            HistogramBar(query_id="Q1", latency_ms=100, is_best=True),
-            HistogramBar(query_id="Q2", latency_ms=300, is_worst=True),
+            HistogramBar(label="Q1", value=100, is_best=True),
+            HistogramBar(label="Q2", value=300, is_worst=True),
         ]
         chart = Histogram(data=data)
         result = chart.render()
@@ -565,8 +565,8 @@ class TestHistogram:
     def test_mean_line_shown(self):
         """Mean line annotation is shown."""
         data = [
-            HistogramBar(query_id="Q1", latency_ms=100),
-            HistogramBar(query_id="Q2", latency_ms=200),
+            HistogramBar(label="Q1", value=100),
+            HistogramBar(label="Q2", value=200),
         ]
         chart = Histogram(data=data, show_mean_line=True)
         result = chart.render()
@@ -575,8 +575,8 @@ class TestHistogram:
     def test_mean_line_hidden(self):
         """Mean line can be hidden."""
         data = [
-            HistogramBar(query_id="Q1", latency_ms=100),
-            HistogramBar(query_id="Q2", latency_ms=200),
+            HistogramBar(label="Q1", value=100),
+            HistogramBar(label="Q2", value=200),
         ]
         chart = Histogram(data=data, show_mean_line=False)
         result = chart.render()
@@ -585,7 +585,7 @@ class TestHistogram:
     def test_chart_splitting_for_large_datasets(self):
         """Charts split when queries exceed max_per_chart."""
         # Create 40 queries (more than default 33)
-        data = [HistogramBar(query_id=f"Q{i}", latency_ms=i * 10) for i in range(1, 41)]
+        data = [HistogramBar(label=f"Q{i}", value=i * 10) for i in range(1, 41)]
         chart = Histogram(data=data, max_per_chart=33)
         result = chart.render()
         # Should have two chart sections with query ID range labels
@@ -594,7 +594,7 @@ class TestHistogram:
 
     def test_chart_splitting_large_benchmark(self):
         """TPC-DS-like benchmark (99 queries) splits into 3 charts."""
-        data = [HistogramBar(query_id=f"Q{i}", latency_ms=i * 5) for i in range(1, 100)]
+        data = [HistogramBar(label=f"Q{i}", value=i * 5) for i in range(1, 100)]
         chart = Histogram(data=data, max_per_chart=33)
         result = chart.render()
         # Should have three chart sections
@@ -604,7 +604,7 @@ class TestHistogram:
 
     def test_no_splitting_for_small_datasets(self):
         """No splitting when queries fit in one chart."""
-        data = [HistogramBar(query_id=f"Q{i}", latency_ms=i * 10) for i in range(1, 23)]
+        data = [HistogramBar(label=f"Q{i}", value=i * 10) for i in range(1, 23)]
         chart = Histogram(data=data, max_per_chart=33)
         result = chart.render()
         # Should not have range labels
@@ -612,7 +612,7 @@ class TestHistogram:
 
     def test_histogram_from_data_factory(self):
         """Factory function accepts HistogramBar objects."""
-        data = [HistogramBar(query_id="Q1", latency_ms=150)]
+        data = [HistogramBar(label="Q1", value=150)]
         chart = histogram_from_data(data, title="Factory Test")
         result = chart.render()
         assert "Q1" in result
@@ -621,10 +621,10 @@ class TestHistogram:
     def test_multi_platform_renders_with_legend(self):
         """Multi-platform data renders grouped bars with platform legend."""
         data = [
-            HistogramBar(query_id="Q1", latency_ms=100, platform="DuckDB"),
-            HistogramBar(query_id="Q1", latency_ms=150, platform="Polars"),
-            HistogramBar(query_id="Q2", latency_ms=200, platform="DuckDB"),
-            HistogramBar(query_id="Q2", latency_ms=250, platform="Polars"),
+            HistogramBar(label="Q1", value=100, platform="DuckDB"),
+            HistogramBar(label="Q1", value=150, platform="Polars"),
+            HistogramBar(label="Q2", value=200, platform="DuckDB"),
+            HistogramBar(label="Q2", value=250, platform="Polars"),
         ]
         chart = Histogram(data=data)
         result = chart.render()
@@ -637,10 +637,10 @@ class TestHistogram:
     def test_multi_platform_preserves_platform_colors(self):
         """Multi-platform histogram uses platform colors, not best/worst override."""
         data = [
-            HistogramBar(query_id="Q1", latency_ms=50, platform="DuckDB", is_best=True),
-            HistogramBar(query_id="Q1", latency_ms=60, platform="Polars", is_best=True),
-            HistogramBar(query_id="Q2", latency_ms=300, platform="DuckDB", is_worst=True),
-            HistogramBar(query_id="Q2", latency_ms=350, platform="Polars", is_worst=True),
+            HistogramBar(label="Q1", value=50, platform="DuckDB", is_best=True),
+            HistogramBar(label="Q1", value=60, platform="Polars", is_best=True),
+            HistogramBar(label="Q2", value=300, platform="DuckDB", is_worst=True),
+            HistogramBar(label="Q2", value=350, platform="Polars", is_worst=True),
         ]
         chart = Histogram(data=data)
         result = chart.render()
@@ -655,8 +655,8 @@ class TestHistogram:
         # 10 queries x 2 platforms = 20 bars, but only 10 unique queries
         data = []
         for i in range(1, 11):
-            data.append(HistogramBar(query_id=f"Q{i}", latency_ms=i * 10, platform="A"))
-            data.append(HistogramBar(query_id=f"Q{i}", latency_ms=i * 15, platform="B"))
+            data.append(HistogramBar(label=f"Q{i}", value=i * 10, platform="A"))
+            data.append(HistogramBar(label=f"Q{i}", value=i * 15, platform="B"))
         chart = Histogram(data=data, max_per_chart=5)
         result = chart.render()
         # Should split into 2 charts of 5 queries each, not by 20 bars
@@ -665,7 +665,7 @@ class TestHistogram:
 
     def test_no_color_output(self):
         """Histogram renders without colors."""
-        data = [HistogramBar(query_id="Q1", latency_ms=100)]
+        data = [HistogramBar(label="Q1", value=100)]
         opts = ChartOptions(use_color=False)
         chart = Histogram(data=data, options=opts)
         result = chart.render()
@@ -674,7 +674,7 @@ class TestHistogram:
 
     def test_compact_labels_do_not_collapse_multi_digit_query_ids(self):
         """Narrow bars should keep multi-digit query IDs distinguishable."""
-        data = [HistogramBar(query_id=f"Q{i}", latency_ms=float(i)) for i in range(10, 20)]
+        data = [HistogramBar(label=f"Q{i}", value=float(i)) for i in range(10, 20)]
         opts = ChartOptions(use_color=False)
         opts.width = 46  # Force narrow bar widths and compact labels.
         chart = Histogram(data=data, options=opts)
@@ -1009,9 +1009,9 @@ class TestSummaryBox:
 
         stats = SummaryStats(
             title="DuckDB Summary",
-            geo_mean_ms=142.3,
-            total_time_ms=3200,
-            num_queries=22,
+            primary_value=142.3,
+            total_value=3200,
+            num_items=22,
         )
         opts = ChartOptions(use_color=False)
         chart = SummaryBox(stats=stats, options=opts)
@@ -1028,11 +1028,11 @@ class TestSummaryBox:
 
         stats = SummaryStats(
             title="Unit Test",
-            geo_mean_ms=100.0,
-            total_time_ms=500.0,
-            num_queries=3,
-            best_queries=[("Q6", 8.0), ("Q14", 12.5)],
-            worst_queries=[("Q18", 302.0), ("Q21", 1500.0)],
+            primary_value=100.0,
+            total_value=500.0,
+            num_items=3,
+            best_items=[("Q6", 8.0), ("Q14", 12.5)],
+            worst_items=[("Q18", 302.0), ("Q21", 1500.0)],
         )
         opts = ChartOptions(use_color=False)
         chart = SummaryBox(stats=stats, options=opts)
@@ -1049,18 +1049,18 @@ class TestSummaryBox:
 
         stats = SummaryStats(
             title="SQL vs DF Summary",
-            geo_mean_baseline_ms=142.3,
-            geo_mean_comparison_ms=98.7,
-            total_time_baseline_ms=3200,
-            total_time_comparison_ms=2100,
+            primary_baseline=142.3,
+            primary_comparison=98.7,
+            total_baseline=3200,
+            total_comparison=2100,
             baseline_name="SQL",
             comparison_name="DF",
-            num_queries=22,
+            num_items=22,
             num_improved=5,
             num_stable=12,
             num_regressed=5,
-            best_queries=[("Q6", -57.2), ("Q14", -38.1)],
-            worst_queries=[("Q21", 726.0), ("Q17", 23.4)],
+            best_items=[("Q6", -57.2), ("Q14", -38.1)],
+            worst_items=[("Q21", 726.0), ("Q17", 23.4)],
         )
         opts = ChartOptions(use_color=False)
         chart = SummaryBox(stats=stats, options=opts)
@@ -1078,7 +1078,7 @@ class TestSummaryBox:
     def test_box_borders(self):
         """Summary box has proper Unicode borders."""
 
-        stats = SummaryStats(title="Test", geo_mean_ms=100)
+        stats = SummaryStats(title="Test", primary_value=100)
         opts = ChartOptions(use_color=False)
         chart = SummaryBox(stats=stats, options=opts)
         result = chart.render()
@@ -1092,7 +1092,7 @@ class TestSummaryBox:
     def test_ascii_only_borders(self):
         """Summary box uses ASCII borders when Unicode disabled."""
 
-        stats = SummaryStats(title="Test", geo_mean_ms=100)
+        stats = SummaryStats(title="Test", primary_value=100)
         opts = ChartOptions(use_unicode=False, use_color=False)
         chart = SummaryBox(stats=stats, options=opts)
         result = chart.render()
@@ -1105,8 +1105,8 @@ class TestSummaryBox:
 
         stats = SummaryStats(
             title="Test",
-            geo_mean_baseline_ms=100,
-            geo_mean_comparison_ms=80,
+            primary_baseline=100,
+            primary_comparison=80,
             num_improved=3,
             num_stable=1,
             num_regressed=1,
@@ -1119,7 +1119,7 @@ class TestSummaryBox:
     def test_time_formatting_minutes(self):
         """Large times are formatted as minutes."""
 
-        stats = SummaryStats(title="Test", total_time_ms=120_000)
+        stats = SummaryStats(title="Test", total_value=120_000)
         opts = ChartOptions(use_color=False)
         chart = SummaryBox(stats=stats, options=opts)
         result = chart.render()
@@ -1128,7 +1128,7 @@ class TestSummaryBox:
     def test_time_formatting_seconds(self):
         """Medium times are formatted as seconds."""
 
-        stats = SummaryStats(title="Test", total_time_ms=5500)
+        stats = SummaryStats(title="Test", total_value=5500)
         opts = ChartOptions(use_color=False)
         chart = SummaryBox(stats=stats, options=opts)
         result = chart.render()
@@ -1137,7 +1137,7 @@ class TestSummaryBox:
     def test_time_formatting_milliseconds(self):
         """Small times stay as milliseconds."""
 
-        stats = SummaryStats(title="Test", total_time_ms=42.5)
+        stats = SummaryStats(title="Test", total_value=42.5)
         opts = ChartOptions(use_color=False)
         chart = SummaryBox(stats=stats, options=opts)
         result = chart.render()
@@ -1146,7 +1146,7 @@ class TestSummaryBox:
     def test_empty_best_worst(self):
         """Summary box renders fine without best/worst queries."""
 
-        stats = SummaryStats(title="Test", geo_mean_ms=100, num_queries=5)
+        stats = SummaryStats(title="Test", primary_value=100, num_items=5)
         opts = ChartOptions(use_color=False)
         chart = SummaryBox(stats=stats, options=opts)
         result = chart.render()
@@ -1157,7 +1157,7 @@ class TestSummaryBox:
         """Very long titles are truncated to fit the configured width."""
 
         width = 80
-        stats = SummaryStats(title="X" * 200, geo_mean_ms=100)
+        stats = SummaryStats(title="X" * 200, primary_value=100)
         opts = ChartOptions(width=width, use_color=False)
         chart = SummaryBox(stats=stats, options=opts)
         result = chart.render()
@@ -1170,20 +1170,20 @@ class TestSummaryBox:
         width = 80
         stats = SummaryStats(
             title="Summary",
-            geo_mean_baseline_ms=100,
-            geo_mean_comparison_ms=130,
-            total_time_baseline_ms=4000,
-            total_time_comparison_ms=3000,
-            num_queries=3,
+            primary_baseline=100,
+            primary_comparison=130,
+            total_baseline=4000,
+            total_comparison=3000,
+            num_items=3,
             num_improved=1,
             num_stable=1,
             num_regressed=1,
-            best_queries=[
+            best_items=[
                 ("aggregation_groupby_large", -12.2),
                 ("exchange_merge_join_extremely_verbose_name", -10.0),
                 ("read_parquet_single", -9.2),
             ],
-            worst_queries=[("another_extremely_verbose_query_identifier_name", 55.0)],
+            worst_items=[("another_extremely_verbose_query_identifier_name", 55.0)],
         )
         opts = ChartOptions(width=width, use_color=False, use_unicode=True)
         chart = SummaryBox(stats=stats, options=opts)
@@ -1196,11 +1196,11 @@ class TestSummaryBox:
 
         stats = SummaryStats(
             title="Summary",
-            geo_mean_baseline_ms=100,
-            geo_mean_comparison_ms=130,
-            total_time_baseline_ms=4000,
-            total_time_comparison_ms=3000,
-            num_queries=22,
+            primary_baseline=100,
+            primary_comparison=130,
+            total_baseline=4000,
+            total_comparison=3000,
+            num_items=22,
             environment={"OS": "macOS", "Python": "3.12.2", "CPUs": "10", "Memory": "16GB"},
         )
         opts = ChartOptions(width=120, use_color=False, use_unicode=True)
@@ -1214,11 +1214,11 @@ class TestSummaryBox:
 
         stats = SummaryStats(
             title="Summary",
-            geo_mean_baseline_ms=100,
-            geo_mean_comparison_ms=130,
-            total_time_baseline_ms=4000,
-            total_time_comparison_ms=3000,
-            num_queries=22,
+            primary_baseline=100,
+            primary_comparison=130,
+            total_baseline=4000,
+            total_comparison=3000,
+            num_items=22,
             environment={"OS": "macOS", "Python": "3.12.2"},
         )
         opts = ChartOptions(width=120, use_color=True, use_unicode=True)

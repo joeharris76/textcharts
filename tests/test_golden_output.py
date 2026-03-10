@@ -62,12 +62,12 @@ def _bar_chart() -> tuple[str, str]:
 
 def _histogram() -> tuple[str, str]:
     bars = [
-        HistogramBar(query_id="Q1", latency_ms=120.5, is_best=True),
-        HistogramBar(query_id="Q2", latency_ms=340.2),
-        HistogramBar(query_id="Q3", latency_ms=89.1),
-        HistogramBar(query_id="Q4", latency_ms=567.8, is_worst=True),
-        HistogramBar(query_id="Q5", latency_ms=210.0),
-        HistogramBar(query_id="Q6", latency_ms=150.3),
+        HistogramBar(label="Q1", value=120.5, is_best=True),
+        HistogramBar(label="Q2", value=340.2),
+        HistogramBar(label="Q3", value=89.1),
+        HistogramBar(label="Q4", value=567.8, is_worst=True),
+        HistogramBar(label="Q5", value=210.0),
+        HistogramBar(label="Q6", value=150.3),
     ]
     chart = Histogram(data=bars, title="Query Latency", options=OPTS)
     return "histogram", chart.render()
@@ -158,12 +158,12 @@ def _diverging_bar() -> tuple[str, str]:
 def _summary_box() -> tuple[str, str]:
     stats = SummaryStats(
         title="TPC-H on DuckDB (SF 1)",
-        geo_mean_ms=156.3,
-        median_ms=142.0,
-        total_time_ms=3450.0,
-        num_queries=22,
-        best_queries=[("Q6", 12.5), ("Q1", 45.2), ("Q3", 67.8)],
-        worst_queries=[("Q21", 890.0), ("Q18", 670.0), ("Q9", 450.0)],
+        primary_value=156.3,
+        secondary_value=142.0,
+        total_value=3450.0,
+        num_items=22,
+        best_items=[("Q6", 12.5), ("Q1", 45.2), ("Q3", 67.8)],
+        worst_items=[("Q21", 890.0), ("Q18", 670.0), ("Q9", 450.0)],
         environment={"OS": "macOS 15.3", "CPUs": "12 (arm64)", "Memory": "36 GB"},
         platform_config={"Driver": "DuckDB 1.2.0", "Tuning": "Tuned"},
     )
@@ -239,9 +239,9 @@ def _cdf_chart() -> tuple[str, str]:
 
 def _rank_table() -> tuple[str, str]:
     data = RankTableData(
-        queries=["Q1", "Q2", "Q3", "Q4"],
-        platforms=["DuckDB", "SQLite", "Polars"],
-        times={
+        items=["Q1", "Q2", "Q3", "Q4"],
+        groups=["DuckDB", "SQLite", "Polars"],
+        values={
             ("DuckDB", "Q1"): 120.0,
             ("SQLite", "Q1"): 150.0,
             ("Polars", "Q1"): 135.0,

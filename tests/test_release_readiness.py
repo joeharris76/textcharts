@@ -109,7 +109,7 @@ def test_rank_table_factory_rejects_malformed_matrix():
     with pytest.raises(ValueError, match="matrix row 2 has 1 columns but expected 2"):
         rank_from_matrix(
             matrix=[[10.0, 20.0], [30.0]],
-            queries=["Q1", "Q2"],
-            platforms=["DuckDB", "Polars"],
+            items=["Q1", "Q2"],
+            groups=["DuckDB", "Polars"],
             options=ChartOptions(use_color=False),
         )

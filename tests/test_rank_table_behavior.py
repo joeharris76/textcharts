@@ -11,15 +11,15 @@ def _opts(**kw):
 
 
 def test_empty_data():
-    data = RankTableData(queries=[], platforms=[], times={})
+    data = RankTableData(items=[], groups=[], values={})
     assert "No data" in RankTable(data=data).render()
 
 
 def test_ranking_computation():
     data = RankTableData(
-        queries=["Q1", "Q2"],
-        platforms=["A", "B", "C"],
-        times={
+        items=["Q1", "Q2"],
+        groups=["A", "B", "C"],
+        values={
             ("A", "Q1"): 100, ("B", "Q1"): 200, ("C", "Q1"): 300,
             ("A", "Q2"): 300, ("B", "Q2"): 100, ("C", "Q2"): 200,
         },
@@ -45,9 +45,9 @@ def test_ordinal_formatting():
 
 def test_win_counts():
     data = RankTableData(
-        queries=["Q1", "Q2", "Q3"],
-        platforms=["A", "B"],
-        times={
+        items=["Q1", "Q2", "Q3"],
+        groups=["A", "B"],
+        values={
             ("A", "Q1"): 10, ("B", "Q1"): 20,   # A wins
             ("A", "Q2"): 20, ("B", "Q2"): 10,   # B wins
             ("A", "Q3"): 10, ("B", "Q3"): 20,   # A wins
@@ -64,9 +64,9 @@ def test_win_counts():
 
 def test_georank_computation():
     data = RankTableData(
-        queries=["Q1"],
-        platforms=["A", "B"],
-        times={("A", "Q1"): 10, ("B", "Q1"): 20},
+        items=["Q1"],
+        groups=["A", "B"],
+        values={("A", "Q1"): 10, ("B", "Q1"): 20},
     )
     result = RankTable(data=data, options=_opts()).render()
     assert "GeoRank" in result
@@ -79,9 +79,9 @@ def test_georank_computation():
 
 def test_natural_sort_queries():
     data = RankTableData(
-        queries=["Q10", "Q2", "Q1"],
-        platforms=["A"],
-        times={("A", "Q1"): 10, ("A", "Q2"): 20, ("A", "Q10"): 30},
+        items=["Q10", "Q2", "Q1"],
+        groups=["A"],
+        values={("A", "Q1"): 10, ("A", "Q2"): 20, ("A", "Q10"): 30},
     )
     result = RankTable(data=data, options=_opts()).render()
     lines = result.splitlines()
@@ -105,7 +105,7 @@ def test_from_matrix_factory():
 
 
 def test_from_matrix_validation():
-    with pytest.raises(ValueError, match="queries length"):
+    with pytest.raises(ValueError, match="items length"):
         from_matrix([[1, 2]], ["Q1", "Q2"], ["A", "B"])
     with pytest.raises(ValueError, match="columns"):
         from_matrix([[1, 2], [3]], ["Q1", "Q2"], ["A", "B"])

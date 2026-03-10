@@ -193,12 +193,12 @@ def _bar_chart(mode: str) -> str:
 
 def _histogram(mode: str) -> str:
     bars = [
-        HistogramBar(query_id="Route 1", latency_ms=12.0, is_best=True),
-        HistogramBar(query_id="Route 2", latency_ms=28.0),
-        HistogramBar(query_id="Route 3", latency_ms=9.0),
-        HistogramBar(query_id="Route 4", latency_ms=45.0, is_worst=True),
-        HistogramBar(query_id="Route 5", latency_ms=19.0),
-        HistogramBar(query_id="Route 6", latency_ms=14.0),
+        HistogramBar(label="Route 1", value=12.0, is_best=True),
+        HistogramBar(label="Route 2", value=28.0),
+        HistogramBar(label="Route 3", value=9.0),
+        HistogramBar(label="Route 4", value=45.0, is_worst=True),
+        HistogramBar(label="Route 5", value=19.0),
+        HistogramBar(label="Route 6", value=14.0),
     ]
     chart = Histogram(
         data=bars, title="Delivery Delays", y_label="Delay (min)",
@@ -321,12 +321,12 @@ def _diverging_bar(mode: str) -> str:
 def _summary_box(mode: str) -> str:
     stats = SummaryStats(
         title="Riverfront Festival Attendance",
-        geo_mean_ms=420.0,
-        median_ms=390.0,
-        total_time_ms=18600.0,
-        num_queries=18,
-        best_queries=[("Gate A", 180.0), ("Gate C", 240.0), ("Gate D", 275.0)],
-        worst_queries=[("Gate F", 860.0), ("Gate B", 710.0), ("Gate E", 650.0)],
+        primary_value=420.0,
+        secondary_value=390.0,
+        total_value=18600.0,
+        num_items=18,
+        best_items=[("Gate A", 180.0), ("Gate C", 240.0), ("Gate D", 275.0)],
+        worst_items=[("Gate F", 860.0), ("Gate B", 710.0), ("Gate E", 650.0)],
         environment={"Venue": "Riverfront Park", "Days": "3", "Volunteers": "48"},
         platform_config={"Ticket Type": "All-access", "Peak Window": "Sat 6-8pm"},
     )
@@ -392,7 +392,7 @@ def _stacked_bar(mode: str) -> str:
 
 def _sparkline_table(mode: str) -> str:
     data = SparklineTableData(
-        platforms=["North Store", "Central Store", "South Store"],
+        rows=["North Store", "Central Store", "South Store"],
         columns=[
             SparklineColumn(name="Revenue", values={"North Store": 82.0, "Central Store": 95.0, "South Store": 78.0}),
             SparklineColumn(name="Orders", values={"North Store": 64.0, "Central Store": 88.0, "South Store": 72.0}),
@@ -424,9 +424,9 @@ def _cdf_chart(mode: str) -> str:
 
 def _rank_table(mode: str) -> str:
     data = RankTableData(
-        queries=["Delivery", "Support", "Accuracy", "Onboarding"],
-        platforms=["Vendor A", "Vendor B", "Vendor C"],
-        times={
+        items=["Delivery", "Support", "Accuracy", "Onboarding"],
+        groups=["Vendor A", "Vendor B", "Vendor C"],
+        values={
             ("Vendor A", "Delivery"): 4.2,
             ("Vendor B", "Delivery"): 5.1,
             ("Vendor C", "Delivery"): 4.8,

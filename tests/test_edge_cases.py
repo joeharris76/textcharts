@@ -67,7 +67,7 @@ def test_bar_chart_handles_infinity_without_crash():
 
 def test_histogram_handles_zero_latency_without_division_error():
     chart = Histogram(
-        data=[HistogramBar(query_id="Q1", latency_ms=0), HistogramBar(query_id="Q2", latency_ms=0)],
+        data=[HistogramBar(label="Q1", value=0), HistogramBar(label="Q2", value=0)],
         options=ChartOptions(use_color=False),
     )
     result = chart.render()

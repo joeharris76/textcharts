@@ -152,11 +152,11 @@ class TestParsers:
 
     def test_parse_histogram_valid(self):
         result = parse_input("histogram", [
-            {"query_id": "Q1", "latency_ms": 100},
-            {"query_id": "Q2", "latency_ms": 200},
+            {"label": "Q1", "value": 100},
+            {"label": "Q2", "value": 200},
         ])
         assert len(result) == 2
-        assert result[0].query_id == "Q1"
+        assert result[0].label == "Q1"
 
     def test_parse_heatmap_valid(self):
         result = parse_input("heatmap", {
@@ -229,12 +229,12 @@ class TestParsers:
     def test_parse_summary_valid(self):
         result = parse_input("summary", {
             "title": "Test Summary",
-            "geo_mean_ms": 42.5,
-            "num_queries": 10,
+            "primary_value": 42.5,
+            "num_items": 10,
         })
         assert result.title == "Test Summary"
-        assert result.geo_mean_ms == 42.5
-        assert result.num_queries == 10
+        assert result.primary_value == 42.5
+        assert result.num_items == 10
 
     def test_parse_summary_empty(self):
         result = parse_input("summary", {})
@@ -285,21 +285,21 @@ class TestParsers:
 
     def test_parse_rank_valid(self):
         result = parse_input("rank", {
-            "queries": ["Q1", "Q2"],
-            "platforms": ["DuckDB", "SQLite"],
-            "times": {
+            "items": ["Q1", "Q2"],
+            "groups": ["DuckDB", "SQLite"],
+            "values": {
                 "DuckDB,Q1": 10, "DuckDB,Q2": 20,
                 "SQLite,Q1": 15, "SQLite,Q2": 25,
             },
         })
-        assert result.times[("DuckDB", "Q1")] == 10.0
+        assert result.values[("DuckDB", "Q1")] == 10.0
 
     def test_parse_rank_bad_key_format(self):
-        with pytest.raises(ParseError, match="must be 'platform,query' format"):
+        with pytest.raises(ParseError, match="must be 'group,item' format"):
             parse_input("rank", {
-                "queries": ["Q1"],
-                "platforms": ["DuckDB"],
-                "times": {"bad_key": 10},
+                "items": ["Q1"],
+                "groups": ["DuckDB"],
+                "values": {"bad_key": 10},
             })
 
     def test_parse_unknown_command(self):
@@ -319,9 +319,9 @@ SAMPLE_DATA = {
         {"label": "C", "value": 15},
     ],
     "histogram": [
-        {"query_id": "Q1", "latency_ms": 100},
-        {"query_id": "Q2", "latency_ms": 200},
-        {"query_id": "Q3", "latency_ms": 150},
+        {"label": "Q1", "value": 100},
+        {"label": "Q2", "value": 200},
+        {"label": "Q3", "value": 150},
     ],
     "heatmap": {
         "matrix": [[10, 20], [30, 40]],
@@ -353,9 +353,9 @@ SAMPLE_DATA = {
     ],
     "summary": {
         "title": "Test Summary",
-        "geo_mean_ms": 42.5,
-        "median_ms": 40.0,
-        "num_queries": 10,
+        "primary_value": 42.5,
+        "secondary_value": 40.0,
+        "num_items": 10,
     },
     "percentile": [
         {"name": "Q1", "p50": 10, "p90": 20, "p95": 25, "p99": 30},
@@ -394,9 +394,9 @@ SAMPLE_DATA = {
         {"name": "B", "values": [2, 4, 6, 8, 10, 12, 14, 16, 18, 20]},
     ],
     "rank": {
-        "queries": ["Q1", "Q2"],
-        "platforms": ["DuckDB", "SQLite"],
-        "times": {
+        "items": ["Q1", "Q2"],
+        "groups": ["DuckDB", "SQLite"],
+        "values": {
             "DuckDB,Q1": 10, "DuckDB,Q2": 20,
             "SQLite,Q1": 15, "SQLite,Q2": 25,
         },

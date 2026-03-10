@@ -18,9 +18,9 @@ from textcharts.cli import main
 SAMPLE_DATA = {
     "bar": [{"label": "A", "value": 10}, {"label": "B", "value": 20}, {"label": "C", "value": 15}],
     "histogram": [
-        {"query_id": "Q1", "latency_ms": 100},
-        {"query_id": "Q2", "latency_ms": 200},
-        {"query_id": "Q3", "latency_ms": 150},
+        {"label": "Q1", "value": 100},
+        {"label": "Q2", "value": 200},
+        {"label": "Q3", "value": 150},
     ],
     "heatmap": {
         "matrix": [[10, 20], [30, 40]],
@@ -50,7 +50,7 @@ SAMPLE_DATA = {
         {"label": "Q2", "pct_change": 15},
         {"label": "Q3", "pct_change": -5},
     ],
-    "summary": {"title": "Test Summary", "geo_mean_ms": 42.5, "median_ms": 40.0, "num_queries": 10},
+    "summary": {"title": "Test Summary", "primary_value": 42.5, "secondary_value": 40.0, "num_items": 10},
     "percentile": [
         {"name": "Q1", "p50": 10, "p90": 20, "p95": 25, "p99": 30},
         {"name": "Q2", "p50": 15, "p90": 25, "p95": 30, "p99": 40},
@@ -76,9 +76,9 @@ SAMPLE_DATA = {
         {"name": "B", "values": [2, 4, 6, 8, 10, 12, 14, 16, 18, 20]},
     ],
     "rank": {
-        "queries": ["Q1", "Q2"],
-        "platforms": ["DuckDB", "SQLite"],
-        "times": {"DuckDB,Q1": 10, "DuckDB,Q2": 20, "SQLite,Q1": 15, "SQLite,Q2": 25},
+        "items": ["Q1", "Q2"],
+        "groups": ["DuckDB", "SQLite"],
+        "values": {"DuckDB,Q1": 10, "DuckDB,Q2": 20, "SQLite,Q1": 15, "SQLite,Q2": 25},
     },
 }
 
