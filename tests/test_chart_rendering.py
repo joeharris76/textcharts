@@ -374,7 +374,7 @@ class TestScatterPlot:
         assert "Pareto" in result
         assert "Efficient" in result
 
-    def test_from_cost_performance_factory(self):
+    def test_scatter_from_points_factory(self):
         """Factory function accepts ScatterPoint objects."""
         points = [ScatterPoint(name="Test", x=50, y=100)]
         chart = scatter_from_points(points)
@@ -431,7 +431,7 @@ class TestLineChart:
         # Trend line uses '.' markers
         assert "." in result
 
-    def test_from_time_series_factory(self):
+    def test_line_from_points_factory(self):
         """Factory function accepts LinePoint objects."""
         points = [
             LinePoint(series="Test", x="Run1", y=100),
@@ -993,7 +993,7 @@ class TestDivergingBar:
         import logging
 
 
-        with caplog.at_level(logging.WARNING, logger="benchbox.core.visualization.ascii.diverging_bar"):
+        with caplog.at_level(logging.WARNING, logger="textcharts.diverging_bar"):
             diverging_from_data([{"label": "Q1", "pct_change": -10}])
         assert "unexpected type" in caplog.text
 
