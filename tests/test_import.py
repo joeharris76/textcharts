@@ -1,5 +1,8 @@
 """Smoke test: verify textcharts can be imported and all chart types render."""
 
+import re
+from pathlib import Path
+
 import textcharts
 from textcharts import (
     BarChart,
@@ -23,7 +26,10 @@ from textcharts import (
 
 
 def test_import_version():
-    assert textcharts.__version__ == "0.1.1"
+    pyproject = Path(__file__).resolve().parent.parent / "pyproject.toml"
+    match = re.search(r'^version = "(.+)"', pyproject.read_text(), re.MULTILINE)
+    assert match, "Could not find version in pyproject.toml"
+    assert textcharts.__version__ == match.group(1)
 
 
 def test_bar_chart_renders():

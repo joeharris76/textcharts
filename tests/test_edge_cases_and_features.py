@@ -176,8 +176,8 @@ class TestAllIdenticalValues:
     def test_histogram_identical_latencies(self):
         """Histogram handles all identical latencies."""
         data = [
-            HistogramBar(query_id="Q1", latency_ms=50),
-            HistogramBar(query_id="Q2", latency_ms=50),
+            HistogramBar(label="Q1", value=50),
+            HistogramBar(label="Q2", value=50),
         ]
         opts = ChartOptions(use_color=False)
         chart = Histogram(data=data, options=opts)
@@ -235,8 +235,8 @@ class TestNaNAndInfinity:
     def test_histogram_zero_latency(self):
         """Histogram handles zero latency without division by zero."""
         data = [
-            HistogramBar(query_id="Q1", latency_ms=0),
-            HistogramBar(query_id="Q2", latency_ms=0),
+            HistogramBar(label="Q1", value=0),
+            HistogramBar(label="Q2", value=0),
         ]
         opts = ChartOptions(use_color=False)
         chart = Histogram(data=data, options=opts)
@@ -389,10 +389,10 @@ class TestNewChartEdgeCases:
     def test_summary_box_comparison_flag(self):
         """SummaryStats.is_comparison correctly detects comparison mode."""
 
-        single = SummaryStats(geo_mean_ms=100)
+        single = SummaryStats(primary_value=100)
         assert not single.is_comparison
 
-        comparison = SummaryStats(geo_mean_baseline_ms=100, geo_mean_comparison_ms=80)
+        comparison = SummaryStats(primary_baseline=100, primary_comparison=80)
         assert comparison.is_comparison
 
     def test_comparison_bar_narrow_width(self):
@@ -466,7 +466,7 @@ class TestHistogramWidthAware:
         bars: list[HistogramBar] = []
         for p in platforms:
             for q in range(1, num_queries + 1):
-                bars.append(HistogramBar(query_id=str(q), latency_ms=10.0 + q, platform=p))
+                bars.append(HistogramBar(label=str(q), value=10.0 + q, platform=p))
         return bars
 
     # ------------------------------------------------------------------ chunking
@@ -483,7 +483,7 @@ class TestHistogramWidthAware:
         assert len(chunks) == 2
         # Each chunk should contain bars for exactly 5 unique queries.
         for chunk in chunks:
-            unique_qids = {b.query_id for b in chunk}
+            unique_qids = {b.label for b in chunk}
             assert len(unique_qids) == 5
 
     def test_chunk_data_no_split_when_fits(self):
@@ -711,21 +711,21 @@ class TestSubject:
 
     def test_subject_on_histogram(self):
         """Subject works on histogram chart type."""
-        data = [HistogramBar(query_id="Q1", latency_ms=10)]
+        data = [HistogramBar(label="Q1", value=10)]
         chart = Histogram(data=data, subject="Query Latency")
         assert chart.title == "Query Latency Histogram"
 
     def test_subject_on_summary_box(self):
         """Subject composes with SummaryStats default title."""
         from textcharts.summary_box import SummaryBox, SummaryStats
-        stats = SummaryStats(num_queries=1)
+        stats = SummaryStats(num_items=1)
         chart = SummaryBox(stats=stats, subject="Benchmark")
         assert chart.stats.title == "Benchmark Summary"
 
     def test_subject_does_not_affect_explicit_summary_title(self):
         """SummaryBox with explicit stats title ignores subject."""
         from textcharts.summary_box import SummaryBox, SummaryStats
-        stats = SummaryStats(title="My Report", num_queries=1)
+        stats = SummaryStats(title="My Report", num_items=1)
         chart = SummaryBox(stats=stats, subject="Ignored")
         assert chart.stats.title == "My Report"
 
@@ -782,10 +782,10 @@ class TestLowerIsBetter:
         from textcharts.summary_box import SummaryBox, SummaryStats
 
         stats = SummaryStats(
-            geo_mean_ms=100,
-            geo_mean_baseline_ms=120,
-            geo_mean_comparison_ms=100,
-            num_queries=1,
+            primary_value=100,
+            primary_baseline=120,
+            primary_comparison=100,
+            num_items=1,
         )
         opts = ChartOptions(use_color=True)
         chart = SummaryBox(stats=stats, options=opts)
@@ -797,10 +797,10 @@ class TestLowerIsBetter:
         from textcharts.summary_box import SummaryBox, SummaryStats
 
         stats = SummaryStats(
-            geo_mean_ms=120,
-            geo_mean_baseline_ms=100,
-            geo_mean_comparison_ms=120,
-            num_queries=1,
+            primary_value=120,
+            primary_baseline=100,
+            primary_comparison=120,
+            num_items=1,
             lower_is_better=False,
         )
         opts = ChartOptions(use_color=True)
@@ -860,13 +860,13 @@ class TestColoredLabels:
 class TestAxisLabels:
     """Tests for Phase 5: axis title labels."""
 
-    def test_histogram_has_query_id_axis(self):
-        """Histogram has 'Query ID' axis label."""
-        data = [HistogramBar(query_id="Q1", latency_ms=100)]
+    def test_histogram_has_value_axis(self):
+        """Histogram has 'Value' axis label by default."""
+        data = [HistogramBar(label="Q1", value=100)]
         opts = ChartOptions(use_color=False)
         chart = Histogram(data=data, options=opts)
         result = chart.render()
-        assert "Query ID" in result
+        assert "Value" in result
 
     def test_box_plot_has_axis_label(self):
         """Box plot has axis label matching y_label."""
@@ -895,7 +895,7 @@ class TestAxisLabels:
 
     def test_axis_label_has_arrow(self):
         """Axis labels include arrow indicator."""
-        data = [HistogramBar(query_id="Q1", latency_ms=100)]
+        data = [HistogramBar(label="Q1", value=100)]
         opts = ChartOptions(use_color=False, use_unicode=True)
         chart = Histogram(data=data, options=opts)
         result = chart.render()
@@ -904,7 +904,7 @@ class TestAxisLabels:
 
     def test_axis_label_ascii_fallback(self):
         """Axis labels use ASCII arrow when Unicode disabled."""
-        data = [HistogramBar(query_id="Q1", latency_ms=100)]
+        data = [HistogramBar(label="Q1", value=100)]
         opts = ChartOptions(use_color=False, use_unicode=False)
         chart = Histogram(data=data, options=opts)
         result = chart.render()
@@ -972,8 +972,8 @@ class TestHistogramOutliers:
     def test_outlier_detected_by_iqr(self):
         """Outlier bars are detected when value exceeds Q3 + 1.5*IQR."""
         # Create data where Q10 is clearly an outlier
-        data = [HistogramBar(query_id=f"Q{i}", latency_ms=float(10 + i)) for i in range(1, 10)]
-        data.append(HistogramBar(query_id="Q10", latency_ms=500.0))  # Clear outlier
+        data = [HistogramBar(label=f"Q{i}", value=float(10 + i)) for i in range(1, 10)]
+        data.append(HistogramBar(label="Q10", value=500.0))  # Clear outlier
         opts = ChartOptions(use_color=False, use_unicode=True)
         chart = Histogram(data=data, options=opts)
         chart.render()  # Triggers outlier detection
@@ -981,8 +981,8 @@ class TestHistogramOutliers:
 
     def test_outlier_uses_distinct_char(self):
         """Outlier bars use the configured distinct no-color unicode glyph."""
-        data = [HistogramBar(query_id=f"Q{i}", latency_ms=float(10 + i)) for i in range(1, 10)]
-        data.append(HistogramBar(query_id="Q10", latency_ms=500.0))
+        data = [HistogramBar(label=f"Q{i}", value=float(10 + i)) for i in range(1, 10)]
+        data.append(HistogramBar(label="Q10", value=500.0))
         opts = ChartOptions(use_color=False, use_unicode=True)
         chart = Histogram(data=data, options=opts)
         result = chart.render()
@@ -990,8 +990,8 @@ class TestHistogramOutliers:
 
     def test_outlier_ascii_fallback(self):
         """Outlier bars use the configured no-color ASCII fallback glyph."""
-        data = [HistogramBar(query_id=f"Q{i}", latency_ms=float(10 + i)) for i in range(1, 10)]
-        data.append(HistogramBar(query_id="Q10", latency_ms=500.0))
+        data = [HistogramBar(label=f"Q{i}", value=float(10 + i)) for i in range(1, 10)]
+        data.append(HistogramBar(label="Q10", value=500.0))
         opts = ChartOptions(use_color=False, use_unicode=False)
         chart = Histogram(data=data, options=opts)
         result = chart.render()
@@ -999,8 +999,8 @@ class TestHistogramOutliers:
 
     def test_outlier_in_legend(self):
         """Outlier indicator appears in legend."""
-        data = [HistogramBar(query_id=f"Q{i}", latency_ms=float(10 + i)) for i in range(1, 10)]
-        data.append(HistogramBar(query_id="Q10", latency_ms=500.0))
+        data = [HistogramBar(label=f"Q{i}", value=float(10 + i)) for i in range(1, 10)]
+        data.append(HistogramBar(label="Q10", value=500.0))
         opts = ChartOptions(use_color=False, use_unicode=True)
         chart = Histogram(data=data, options=opts)
         result = chart.render()
@@ -1008,7 +1008,7 @@ class TestHistogramOutliers:
 
     def test_no_outlier_with_uniform_data(self):
         """No outliers detected when data is uniform."""
-        data = [HistogramBar(query_id=f"Q{i}", latency_ms=100.0) for i in range(1, 11)]
+        data = [HistogramBar(label=f"Q{i}", value=100.0) for i in range(1, 11)]
         opts = ChartOptions(use_color=False)
         chart = Histogram(data=data, options=opts)
         chart.render()
@@ -1022,8 +1022,8 @@ class TestHistogramOutliers:
             comparison = 82 + i
             if i == 10:
                 comparison = 500  # clear outlier on one platform only
-            data.append(HistogramBar(query_id=f"Q{i}", latency_ms=baseline, platform="DF(df)"))
-            data.append(HistogramBar(query_id=f"Q{i}", latency_ms=comparison, platform="DF(sql)"))
+            data.append(HistogramBar(label=f"Q{i}", value=baseline, platform="DF(df)"))
+            data.append(HistogramBar(label=f"Q{i}", value=comparison, platform="DF(sql)"))
 
         opts = ChartOptions(use_color=False, use_unicode=True)
         chart = Histogram(data=data, options=opts)
@@ -1040,11 +1040,11 @@ class TestSummaryBoxDotLeader:
         """Comparison summary box uses dot-leader between values and percentage."""
 
         stats = SummaryStats(
-            geo_mean_baseline_ms=100.0,
-            geo_mean_comparison_ms=80.0,
-            total_time_baseline_ms=1000.0,
-            total_time_comparison_ms=800.0,
-            num_queries=10,
+            primary_baseline=100.0,
+            primary_comparison=80.0,
+            total_baseline=1000.0,
+            total_comparison=800.0,
+            num_items=10,
         )
         opts = ChartOptions(use_color=False, use_unicode=True)
         chart = SummaryBox(stats=stats, options=opts)
@@ -1056,8 +1056,8 @@ class TestSummaryBoxDotLeader:
         """Dot-leader uses period in ASCII mode."""
 
         stats = SummaryStats(
-            geo_mean_baseline_ms=100.0,
-            geo_mean_comparison_ms=80.0,
+            primary_baseline=100.0,
+            primary_comparison=80.0,
         )
         opts = ChartOptions(use_color=False, use_unicode=False)
         chart = SummaryBox(stats=stats, options=opts)
@@ -1069,23 +1069,23 @@ class TestSummaryBoxDotLeader:
         """No wide blank gap (>10 consecutive spaces) between value and percentage."""
 
         stats = SummaryStats(
-            geo_mean_baseline_ms=18.2,
-            geo_mean_comparison_ms=61.3,
-            num_queries=22,
+            primary_baseline=18.2,
+            primary_comparison=61.3,
+            num_items=22,
         )
         opts = ChartOptions(width=100, use_color=False, use_unicode=True)
         chart = SummaryBox(stats=stats, options=opts)
         result = chart.render()
-        # Find the Geo Mean line and check for no wide blank gap
+        # Find the Primary metric line and check for no wide blank gap
         for line in result.split("\n"):
-            if "Geo Mean" in line and "%" in line:
+            if "Primary" in line and "%" in line:
                 # Should not have more than 3 consecutive spaces (since dots fill the gap)
                 assert "     " not in line  # 5+ spaces means gap not filled
 
     def test_single_run_no_dot_leader(self):
         """Single-run summary box has no dot-leader (no percentage to trace to)."""
 
-        stats = SummaryStats(geo_mean_ms=100.0, total_time_ms=500.0, num_queries=5)
+        stats = SummaryStats(primary_value=100.0, total_value=500.0, num_items=5)
         opts = ChartOptions(use_color=False)
         chart = SummaryBox(stats=stats, options=opts)
         result = chart.render()
@@ -1098,11 +1098,11 @@ class TestSummaryBoxDotLeader:
         width = 120
         stats = SummaryStats(
             title="DataFusion (df) vs DataFusion (sql) Summary",
-            geo_mean_baseline_ms=62.6,
-            geo_mean_comparison_ms=66.5,  # +6.2% -> includes up arrow in no-color mode
-            total_time_baseline_ms=4900.0,
-            total_time_comparison_ms=4831.0,  # -1.4% (no arrow threshold)
-            num_queries=22,
+            primary_baseline=62.6,
+            primary_comparison=66.5,  # +6.2% -> includes up arrow in no-color mode
+            total_baseline=4900.0,
+            total_comparison=4831.0,  # -1.4% (no arrow threshold)
+            num_items=22,
         )
         opts = ChartOptions(width=width, use_color=False, use_unicode=True)
         chart = SummaryBox(stats=stats, options=opts)

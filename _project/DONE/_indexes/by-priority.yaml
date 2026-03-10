@@ -1,5 +1,5 @@
-generated_at: '2026-03-10T08:01:47.066180'
-total_items: 21
+generated_at: '2026-03-10T14:03:15.483221'
+total_items: 22
 priorities:
   Critical:
     count: 1
@@ -10,7 +10,7 @@ priorities:
       category: Core Functionality
       status: Completed
   High:
-    count: 12
+    count: 13
     items:
     - id: behavioral-tests-for-minimal-coverage-charts
       file: DONE/main/active/behavioral-tests-for-minimal-coverage-charts.yaml
@@ -40,6 +40,11 @@ priorities:
     - id: fix-terminal-capability-defaults-and-color-contract
       file: DONE/main/planning/fix-terminal-capability-defaults-and-color-contract.yaml
       title: Fix terminal capability defaults and color contract
+      category: Core Functionality
+      status: Completed
+    - id: generalize-benchbox-field-names
+      file: DONE/dev-012/active/generalize-benchbox-field-names.yaml
+      title: Generalize BenchBox-specific field names across all chart types
       category: Core Functionality
       status: Completed
     - id: cli-interface

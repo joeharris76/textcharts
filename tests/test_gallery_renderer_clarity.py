@@ -131,7 +131,7 @@ def test_bar_chart_renders_legend_for_multi_bar_output():
 def test_sparkline_table_colorizes_best_and_worst_legend(monkeypatch: pytest.MonkeyPatch):
     monkeypatch.setattr(base, "detect_terminal_capabilities", lambda: _capabilities(ColorMode.TRUECOLOR))
     data = SparklineTableData(
-        platforms=["North Store", "South Store"],
+        rows=["North Store", "South Store"],
         columns=[SparklineColumn(name="Revenue", values={"North Store": 82.0, "South Store": 95.0})],
     )
     chart = SparklineTable(data=data, options=ChartOptions(width=96, use_color=True))

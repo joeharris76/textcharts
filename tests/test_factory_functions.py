@@ -67,7 +67,7 @@ def test_bar_from_data():
 
 
 def test_histogram_from_data():
-    data = [HistogramBar(query_id="Q1", latency_ms=100)]
+    data = [HistogramBar(label="Q1", value=100)]
     chart = histogram_from_data(data, title="Hist Test", options=_opts())
     assert isinstance(chart, Histogram)
     assert "Q1" in chart.render()
@@ -139,7 +139,7 @@ def test_stacked_from_data():
 
 def test_sparkline_from_data():
     chart = sparkline_from_data(
-        platforms=["A", "B"],
+        rows=["A", "B"],
         metrics=[("Latency", {"A": 50, "B": 100}, False)],
         title="Spark Test",
         options=_opts(),
@@ -169,8 +169,8 @@ def test_percentile_from_series():
 def test_rank_from_matrix():
     chart = rank_from_matrix(
         matrix=[[10, 20], [30, 40]],
-        queries=["Q1", "Q2"],
-        platforms=["A", "B"],
+        items=["Q1", "Q2"],
+        groups=["A", "B"],
         title="Rank Test",
         options=_opts(),
     )

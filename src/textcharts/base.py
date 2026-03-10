@@ -570,7 +570,7 @@ class ChartBase(ABC):
         """Render an axis title label.
 
         Args:
-            label: The axis label text (e.g., "Query ID", "Execution Time (ms)").
+            label: The axis label text (e.g., "Category", "Execution Time (ms)").
             width: The available width for centering.
             axis: "x" for horizontal axis, "y" for vertical axis.
 

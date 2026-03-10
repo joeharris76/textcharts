@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "textcharts"
-version = "0.1.1"
+version = "0.1.2"
 description = "Beautiful ASCII charts for your terminal — bar, histogram, heatmap, box plot, and 11 more chart types with zero dependencies"
 readme = "README.md"
 license = "MIT"

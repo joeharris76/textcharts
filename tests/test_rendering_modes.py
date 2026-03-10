@@ -40,7 +40,7 @@ def _make_heatmap_args():
 
 
 def _make_histogram_data():
-    return [HistogramBar(query_id=f"Q{i}", latency_ms=float(i * 10)) for i in range(1, 6)]
+    return [HistogramBar(label=f"Q{i}", value=float(i * 10)) for i in range(1, 6)]
 
 
 def _make_scatter_data():

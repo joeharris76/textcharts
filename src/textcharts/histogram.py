@@ -1,4 +1,4 @@
-"""ASCII vertical bar histogram for query latency visualization."""
+"""ASCII vertical bar histogram for frequency distribution visualization."""
 
 from __future__ import annotations
 
@@ -27,8 +27,8 @@ if TYPE_CHECKING:
 class HistogramBar:
     """Data for a single histogram bar."""
 
-    query_id: str
-    latency_ms: float
+    label: str
+    value: float
     platform: str | None = None
     error: float | None = None
     is_best: bool = False
@@ -36,14 +36,14 @@ class HistogramBar:
 
 
 class Histogram(ChartBase):
-    """Vertical bar histogram showing per-query latency in ASCII.
+    """Vertical bar histogram for frequency distribution visualization.
 
-    Renders vertical bars with query IDs below, suitable for terminal display.
-    Automatically splits into multiple charts when queries exceed max_per_chart.
+    Renders vertical bars with labels below, suitable for terminal display.
+    Automatically splits into multiple charts when items exceed max_per_chart.
 
     Example output:
     ```
-    Query Latency Histogram (ms)
+    Histogram
     ────────────────────────────────────────
          ▄▄                    ▄▄
          ██ ▄▄    ▄▄    ▄▄    ██
@@ -63,7 +63,7 @@ class Histogram(ChartBase):
         data: Sequence[HistogramBar],
         title: str | None = None,
         y_label: str = "Value",
-        sort_by: str = "query_id",
+        sort_by: str = "label",
         max_per_chart: int = DEFAULT_MAX_BARS,
         show_mean_line: bool = True,
         options: ChartOptions | None = None,
@@ -73,15 +73,15 @@ class Histogram(ChartBase):
         """Initialize the histogram.
 
         Args:
-            data: Query latency data points.
+            data: Data points to plot.
             title: Chart title.
             y_label: Y-axis label.
-            sort_by: Sort order - "query_id" (natural) or "latency" (ranked).
-            max_per_chart: Maximum queries per chart before splitting.
+            sort_by: Sort order - "label" (natural) or "value" (ranked).
+            max_per_chart: Maximum items per chart before splitting.
             show_mean_line: Whether to show a horizontal mean line.
             options: Chart rendering options.
             subtitle: Optional subtitle line displayed below the title.
-            subject: Domain noun phrase prepended to default title (e.g. "Query Latency").
+            subject: Domain noun phrase prepended to default title.
         """
         super().__init__(options, subtitle=subtitle, title=title, subject=subject)
         self.data = list(data)
@@ -120,7 +120,7 @@ class Histogram(ChartBase):
         chunks = self._chunk_data(sorted_data, effective_max)
 
         # Calculate global statistics for consistent scaling
-        all_latencies = [d.latency_ms for d in sorted_data]
+        all_latencies = [d.value for d in sorted_data]
         global_max = max(all_latencies) if all_latencies else 1
         global_mean = sum(all_latencies) / len(all_latencies) if all_latencies else 0
 
@@ -145,9 +145,9 @@ class Histogram(ChartBase):
                 if p95 > 0:
                     upper_fence = p95 * 1.5
             for d in sorted_data:
-                if d.latency_ms > upper_fence:
-                    self._outlier_ids.add(d.query_id)
-                    self._outlier_bar_keys.add((d.platform, d.query_id))
+                if d.value > upper_fence:
+                    self._outlier_ids.add(d.label)
+                    self._outlier_bar_keys.add((d.platform, d.label))
             # Cap scale at fence so outliers don't compress the rest
             if upper_fence > 0 and global_max > upper_fence * 1.5:
                 scale_max = upper_fence * 1.5
@@ -160,8 +160,8 @@ class Histogram(ChartBase):
         for chunk_idx, chunk in enumerate(chunks):
             if len(chunks) > 1:
                 # Use actual query IDs for range labels
-                first_id = chunk[0].query_id
-                last_id = chunk[-1].query_id
+                first_id = chunk[0].label
+                last_id = chunk[-1].label
                 chunk_title = f"{self.title} ({first_id}-{last_id})"
             else:
                 chunk_title = self.title
@@ -178,26 +178,26 @@ class Histogram(ChartBase):
 
     def _sort_data(self) -> list[HistogramBar]:
         """Sort data according to sort_by setting."""
-        if self.sort_by == "latency":
-            return sorted(self.data, key=lambda d: d.latency_ms, reverse=True)
-        return sorted(self.data, key=lambda d: self._natural_sort_key(d.query_id))
+        if self.sort_by == "value":
+            return sorted(self.data, key=lambda d: d.value, reverse=True)
+        return sorted(self.data, key=lambda d: self._natural_sort_key(d.label))
 
     @staticmethod
-    def _natural_sort_key(query_id: str) -> tuple[str, int]:
-        """Natural sort key for query IDs (Q1, Q2, Q10 not Q1, Q10, Q2)."""
-        match = re.match(r"([A-Za-z]*)(\d+)", query_id)
+    def _natural_sort_key(label: str) -> tuple[str, int]:
+        """Natural sort key for labels (Q1, Q2, Q10 not Q1, Q10, Q2)."""
+        match = re.match(r"([A-Za-z]*)(\d+)", label)
         if match:
             prefix, num = match.groups()
             return (prefix.upper(), int(num))
-        return (query_id.upper(), 0)
+        return (label.upper(), 0)
 
     @staticmethod
-    def _compact_query_label(query_id: str, width: int) -> str:
-        """Compact a query label to fit width without collapsing numeric IDs."""
+    def _compact_label(label: str, width: int) -> str:
+        """Compact a label to fit width without collapsing numeric IDs."""
         if width <= 0:
             return ""
 
-        label = str(query_id)
+        label = str(label)
         if len(label) <= width:
             return label
 
@@ -230,20 +230,20 @@ class Histogram(ChartBase):
             return chunks
 
         # Multi-platform: chunk by unique query IDs
-        unique_queries = list(dict.fromkeys(d.query_id for d in sorted_data))
+        unique_queries = list(dict.fromkeys(d.label for d in sorted_data))
         if len(unique_queries) <= limit:
             return [sorted_data]
 
         chunks = []
         for i in range(0, len(unique_queries), limit):
             chunk_qids = set(unique_queries[i : i + limit])
-            chunk_bars = [d for d in sorted_data if d.query_id in chunk_qids]
+            chunk_bars = [d for d in sorted_data if d.label in chunk_qids]
             chunks.append(chunk_bars)
         return chunks
 
     def _is_outlier(self, datum: HistogramBar) -> bool:
         """Check whether a specific bar is an outlier."""
-        return (datum.platform, datum.query_id) in self._outlier_bar_keys
+        return (datum.platform, datum.label) in self._outlier_bar_keys
 
     def _get_outlier_char(self, no_color: bool, used_fills: set[str] | None = None) -> str:
         """Select an outlier glyph that stays distinct from normal series fills."""
@@ -330,12 +330,12 @@ class Histogram(ChartBase):
 
         label_row: list[str] = [" " * y_axis_width]
         for datum in chunk:
-            label = self._compact_query_label(datum.query_id, bar_width)
+            label = self._compact_label(datum.label, bar_width)
             label_row.append(label.center(bar_width))
             label_row.append(" ")
         lines.append("".join(label_row).rstrip())
 
-        lines.append(self._render_axis_label("Query ID", width, axis="x"))
+        lines.append(self._render_axis_label("", width, axis="x"))
 
         footer = self._build_simple_footer(chunk, global_mean, no_color, colors, y_axis_width)
         if footer:
@@ -347,7 +347,7 @@ class Histogram(ChartBase):
     def _normalize_bars(self, chunk: list[HistogramBar], global_max: float, chart_height: int) -> list[float]:
         """Normalize bar heights to chart row units."""
         if global_max > 0:
-            normalized = [(d.latency_ms / global_max) * chart_height for d in chunk]
+            normalized = [(d.value / global_max) * chart_height for d in chunk]
             return [max(0.125, n) if n > 0 else 0 for n in normalized]
         return [0] * len(chunk)
 
@@ -411,7 +411,7 @@ class Histogram(ChartBase):
     ) -> str:
         """Render a single bar cell in a simple histogram row."""
         is_outlier = self._is_outlier(datum)
-        is_truncated = self._capping_active and datum.latency_ms > self._scale_max
+        is_truncated = self._capping_active and datum.value > self._scale_max
         bar_color = self._simple_bar_color(datum, palette)
         outlier_char = self._get_outlier_char(no_color=no_color)
         fill_char = outlier_char if is_outlier else blocks[-1]
@@ -420,7 +420,7 @@ class Histogram(ChartBase):
             block = self._compute_bar_block(row, bar_height, fill_char, is_outlier, bar_width, blocks)
             # Top row of a truncated bar: append severity markers
             if is_truncated and row == chart_height:
-                markers = outlier_severity_markers(datum.latency_ms, self._scale_max)
+                markers = outlier_severity_markers(datum.value, self._scale_max)
                 if markers and len(markers) < bar_width:
                     block = block[: bar_width - len(markers)] + markers
                 elif markers and bar_width >= 2:
@@ -473,7 +473,7 @@ class Histogram(ChartBase):
         has_best = any(d.is_best for d in chunk)
         has_worst = any(d.is_worst for d in chunk)
         has_outlier = any(self._is_outlier(d) for d in chunk)
-        has_truncated = self._capping_active and any(d.latency_ms > self._scale_max for d in chunk)
+        has_truncated = self._capping_active and any(d.value > self._scale_max for d in chunk)
 
         if has_best:
             best_marker = self.options.get_series_marker(0)
@@ -515,7 +515,7 @@ class Histogram(ChartBase):
             lines.append(subtitle)
         lines.append(self._render_horizontal_line(width))
 
-        unique_queries = list(dict.fromkeys(d.query_id for d in chunk))
+        unique_queries = list(dict.fromkeys(d.label for d in chunk))
         num_platforms = len(self._platforms)
         num_queries = len(unique_queries)
 
@@ -530,7 +530,7 @@ class Histogram(ChartBase):
         lookup: dict[tuple[str, str], HistogramBar] = {}
         for d in chunk:
             if d.platform:
-                lookup[(d.platform, d.query_id)] = d
+                lookup[(d.platform, d.label)] = d
 
         mean_row = round((global_mean / global_max) * chart_height) if global_max > 0 else 0
 
@@ -556,12 +556,12 @@ class Histogram(ChartBase):
         label_row: list[str] = [" " * y_axis_width]
         total_group_width = num_platforms * sub_bar_width
         for qid in unique_queries:
-            label = self._compact_query_label(qid, total_group_width)
+            label = self._compact_label(qid, total_group_width)
             label_row.append(label.center(total_group_width))
             label_row.append(" ")
         lines.append("".join(label_row).rstrip())
 
-        lines.append(self._render_axis_label("Query ID", width, axis="x"))
+        lines.append(self._render_axis_label("", width, axis="x"))
 
         footer = self._build_grouped_footer(
             chunk,
@@ -653,10 +653,10 @@ class Histogram(ChartBase):
         palette: list[str],
     ) -> str:
         """Render a single bar cell in a grouped histogram row."""
-        raw_height = (datum.latency_ms / global_max) * chart_height if global_max > 0 else 0
+        raw_height = (datum.value / global_max) * chart_height if global_max > 0 else 0
         bar_height = max(0.125, raw_height) if raw_height > 0 else 0
         is_outlier = self._is_outlier(datum)
-        is_truncated = self._capping_active and datum.latency_ms > self._scale_max
+        is_truncated = self._capping_active and datum.value > self._scale_max
 
         bar_color = platform_colors.get(datum.platform or "", palette[0])
         outlier_char = self._get_outlier_char(no_color=no_color, used_fills=set(platform_fills.values()))
@@ -667,7 +667,7 @@ class Histogram(ChartBase):
             block = self._compute_bar_block(row, bar_height, fill_char, is_outlier, sub_bar_width, blocks)
             # Top row of a truncated bar: append severity markers
             if is_truncated and row == chart_height:
-                markers = outlier_severity_markers(datum.latency_ms, self._scale_max)
+                markers = outlier_severity_markers(datum.value, self._scale_max)
                 if markers and len(markers) < sub_bar_width:
                     block = block[: sub_bar_width - len(markers)] + markers
                 elif markers and sub_bar_width >= 2:
@@ -740,13 +740,13 @@ def from_data(
     data: Sequence,
     title: str | None = None,
     y_label: str = "Value",
-    sort_by: str = "query_id",
+    sort_by: str = "label",
     max_per_chart: int = Histogram.DEFAULT_MAX_BARS,
     show_mean_line: bool = True,
     options: ChartOptions | None = None,
     subject: str | None = None,
 ) -> Histogram:
-    """Create Histogram from objects with query_id/latency_ms attributes."""
+    """Create Histogram from objects with label/value attributes."""
     converted: list[HistogramBar] = []
     for item in data:
         if isinstance(item, HistogramBar):
@@ -754,8 +754,8 @@ def from_data(
         else:
             converted.append(
                 HistogramBar(
-                    query_id=getattr(item, "query_id", str(item)),
-                    latency_ms=getattr(item, "latency_ms", 0),
+                    label=getattr(item, "label", str(item)),
+                    value=getattr(item, "value", 0),
                     platform=getattr(item, "platform", None),
                     error=getattr(item, "error", None),
                     is_best=getattr(item, "is_best", False),

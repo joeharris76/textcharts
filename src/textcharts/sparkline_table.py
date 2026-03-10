@@ -1,4 +1,4 @@
-"""ASCII sparkline table for compact multi-metric platform comparison."""
+"""ASCII sparkline table for compact multi-metric comparison."""
 
 from __future__ import annotations
 
@@ -20,7 +20,7 @@ class SparklineColumn:
     """A single metric column in the sparkline table."""
 
     name: str
-    values: dict[str, float]  # platform -> value
+    values: dict[str, float]  # row name -> value
     higher_is_better: bool = False  # True for success rate, False for latency
 
 
@@ -28,21 +28,21 @@ class SparklineColumn:
 class SparklineTableData:
     """Complete data for a sparkline table."""
 
-    platforms: list[str]
+    rows: list[str]
     columns: list[SparklineColumn] = field(default_factory=list)
 
 
 class SparklineTable(ChartBase):
-    """Sparkline table showing compact multi-metric platform comparison.
+    """Sparkline table showing compact multi-metric comparison.
 
-    Each row is a platform, each column is a metric with an inline sparkline
+    Each row is an entry, each column is a metric with an inline sparkline
     bar showing the relative value. Best values are highlighted.
 
     Example output:
     ```
-    Platform Comparison Overview
+    Comparison Overview
     ──────────────────────────────────────────────────────────────
-    Platform   Total(ms)   GeoMean    P99(ms)   Load(s)   Success
+    Row        Total(ms)   GeoMean    P99(ms)   Load(s)   Success
     DuckDB     ▇  1,240    ▇  56      ▅ 120     ▂  2.1    ████ 100%
     Polars     ▆  1,580    ▆  72      ▇ 310     ▁  1.2    ████ 100%
     SQLite     ▃  4,820    ▃ 219      ▃ 450     ▅  8.4    ███░  95%
@@ -59,13 +59,13 @@ class SparklineTable(ChartBase):
     ):
         super().__init__(options, subtitle=subtitle, title=title, subject=subject)
         self.data = data
-        self.title = self._compose_title("Platform Comparison Overview")
+        self.title = self._compose_title("Comparison Overview")
 
     def render(self) -> str:
         """Render the sparkline table as a string."""
         self._detect_capabilities()
 
-        if not self.data.platforms or not self.data.columns:
+        if not self.data.rows or not self.data.columns:
             return "No data to display"
 
         colors = self.options.get_colors()
@@ -75,10 +75,10 @@ class SparklineTable(ChartBase):
         blocks = _SPARK_BLOCKS_UNICODE if use_unicode else _SPARK_BLOCKS_ASCII
 
         min_metric_col_width = 10
-        max_platform_col_width = max(9, width - min_metric_col_width)
-        platform_col_width = min(max_platform_col_width, max(len(p) for p in self.data.platforms) + 1)
+        max_row_col_width = max(9, width - min_metric_col_width)
+        row_col_width = min(max_row_col_width, max(len(p) for p in self.data.rows) + 1)
 
-        visible_columns = self._select_visible_columns(width, platform_col_width)
+        visible_columns = self._select_visible_columns(width, row_col_width)
 
         lines: list[str] = []
 
@@ -90,7 +90,7 @@ class SparklineTable(ChartBase):
         lines.append(self._render_horizontal_line(width))
 
         # Header row
-        header = "Platform".ljust(platform_col_width)
+        header = "Row".ljust(row_col_width)
         for col, col_width in visible_columns:
             header += col.name.center(col_width)
         lines.append(header)
@@ -100,15 +100,15 @@ class SparklineTable(ChartBase):
 
         # Data rows
         no_color = not self.options.use_color
-        platform_labels = self._build_platform_labels(self.data.platforms, platform_col_width - 1)
-        for platform in self.data.platforms:
-            row = platform_labels.get(platform, self._truncate_label(platform, platform_col_width - 1)).ljust(
-                platform_col_width
+        row_labels = self._build_row_labels(self.data.rows, row_col_width - 1)
+        for row_name in self.data.rows:
+            row = row_labels.get(row_name, self._truncate_label(row_name, row_col_width - 1)).ljust(
+                row_col_width
             )
 
             for i, (col, col_width) in enumerate(visible_columns):
                 cell = self._render_sparkline_cell(
-                    platform,
+                    row_name,
                     col,
                     col_width,
                     col_normalized[i],
@@ -136,16 +136,16 @@ class SparklineTable(ChartBase):
     def _normalize_columns(
         self, visible_columns: list[tuple[SparklineColumn, int]]
     ) -> tuple[list[dict[str, float]], list[str | None], list[str | None]]:
-        """Normalize values for each visible column and identify best/worst platforms."""
+        """Normalize values for each visible column and identify best/worst rows."""
         col_normalized: list[dict[str, float]] = []
         col_best: list[str | None] = []
         col_worst: list[str | None] = []
 
         for col, _ in visible_columns:
-            vals = {p: col.values.get(p, 0) for p in self.data.platforms}
+            vals = {p: col.values.get(p, 0) for p in self.data.rows}
             valid_vals = [v for v in vals.values() if math.isfinite(v)]
             if not valid_vals:
-                col_normalized.append(dict.fromkeys(self.data.platforms, 0.0))
+                col_normalized.append(dict.fromkeys(self.data.rows, 0.0))
                 col_best.append(None)
                 col_worst.append(None)
                 continue
@@ -154,7 +154,7 @@ class SparklineTable(ChartBase):
             rng = max_v - min_v if max_v > min_v else 1.0
 
             normalized = {}
-            for p in self.data.platforms:
+            for p in self.data.rows:
                 v = vals.get(p, 0)
                 norm = (v - min_v) / rng if rng > 0 else 0.5
                 if not col.higher_is_better:
@@ -174,7 +174,7 @@ class SparklineTable(ChartBase):
 
     def _render_sparkline_cell(
         self,
-        platform: str,
+        row_name: str,
         col: SparklineColumn,
         col_width: int,
         normalized: dict[str, float],
@@ -185,30 +185,30 @@ class SparklineTable(ChartBase):
         colors: object,
     ) -> str:
         """Render a single sparkline table cell with block char and value."""
-        norm = normalized.get(platform, 0)
-        val = col.values.get(platform, 0)
+        norm = normalized.get(row_name, 0)
+        val = col.values.get(row_name, 0)
 
         block_idx = min(len(blocks) - 1, max(0, int(norm * (len(blocks) - 1))))
         block_char = blocks[block_idx]
         val_str = self._format_compact_value(val)
 
-        if no_color and platform == best:
+        if no_color and row_name == best:
             cell = f"{block_char}+{val_str}"
-        elif no_color and platform == worst:
+        elif no_color and row_name == worst:
             cell = f"{block_char}-{val_str}"
         else:
             cell = f"{block_char} {val_str}"
         padded_cell = cell.ljust(col_width)
-        if platform == best:
+        if row_name == best:
             padded_cell = colors.colorize(padded_cell, fg_color="#1b9e77")
-        elif platform == worst:
+        elif row_name == worst:
             padded_cell = colors.colorize(padded_cell, fg_color="#d95f02")
 
         return padded_cell
 
-    def _select_visible_columns(self, width: int, platform_col_width: int) -> list[tuple[SparklineColumn, int]]:
+    def _select_visible_columns(self, width: int, row_col_width: int) -> list[tuple[SparklineColumn, int]]:
         """Select which columns fit within the terminal width."""
-        available = width - platform_col_width
+        available = width - row_col_width
         min_col_width = 10
         result: list[tuple[SparklineColumn, int]] = []
 
@@ -221,13 +221,13 @@ class SparklineTable(ChartBase):
 
         return result
 
-    def _build_platform_labels(self, platforms: list[str], max_label_len: int) -> dict[str, str]:
-        """Build visible platform labels and disambiguate truncation collisions."""
-        labels = {platform: self._truncate_label(platform, max_label_len) for platform in platforms}
+    def _build_row_labels(self, rows: list[str], max_label_len: int) -> dict[str, str]:
+        """Build visible row labels and disambiguate truncation collisions."""
+        labels = {row: self._truncate_label(row, max_label_len) for row in rows}
 
         buckets: dict[str, list[str]] = {}
-        for platform, label in labels.items():
-            buckets.setdefault(label, []).append(platform)
+        for row, label in labels.items():
+            buckets.setdefault(label, []).append(row)
 
         for label, names in buckets.items():
             if len(names) <= 1:
@@ -235,11 +235,11 @@ class SparklineTable(ChartBase):
 
             # Resolve collisions deterministically: reserve space for a suffix
             # and keep as much of each original name as possible.
-            for i, platform in enumerate(sorted(names), start=1):
+            for i, row in enumerate(sorted(names), start=1):
                 suffix = f"~{i}"
                 base_len = max(1, max_label_len - len(suffix))
-                base = self._truncate_label(platform, base_len)
-                labels[platform] = (base + suffix)[:max_label_len]
+                base = self._truncate_label(row, base_len)
+                labels[row] = (base + suffix)[:max_label_len]
 
         return labels
 
@@ -264,7 +264,7 @@ class SparklineTable(ChartBase):
 
 
 def from_data(
-    platforms: list[str],
+    rows: list[str],
     metrics: list[tuple[str, dict[str, float], bool]],
     title: str | None = None,
     options: ChartOptions | None = None,
@@ -273,8 +273,8 @@ def from_data(
     """Create SparklineTable from metric data.
 
     Args:
-        platforms: List of platform names.
-        metrics: List of (metric_name, {platform: value}, higher_is_better) tuples.
+        rows: List of row names.
+        metrics: List of (metric_name, {row: value}, higher_is_better) tuples.
         title: Optional chart title.
         options: Chart rendering options.
 
@@ -282,5 +282,5 @@ def from_data(
         Configured SparklineTable instance.
     """
     columns = [SparklineColumn(name=name, values=values, higher_is_better=hib) for name, values, hib in metrics]
-    data = SparklineTableData(platforms=platforms, columns=columns)
+    data = SparklineTableData(rows=rows, columns=columns)
     return SparklineTable(data=data, title=title, options=options, subject=subject)

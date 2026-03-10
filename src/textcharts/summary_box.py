@@ -1,4 +1,4 @@
-"""ASCII summary box renderer for aggregate benchmark statistics."""
+"""ASCII summary box renderer for aggregate statistics."""
 
 from __future__ import annotations
 
@@ -13,34 +13,40 @@ from textcharts.base import ChartBase, ChartOptions, TerminalColors
 class SummaryStats:
     """Aggregate statistics for a summary box.
 
-    For single-run summaries, only baseline fields are used.
+    For single-run summaries, only the primary fields are used.
     For comparison summaries, both baseline and comparison fields are used.
     """
 
     title: str = "Summary"
 
     # Aggregate metrics
-    geo_mean_ms: float | None = None
-    median_ms: float | None = None
-    total_time_ms: float | None = None
+    primary_value: float | None = None
+    secondary_value: float | None = None
+    total_value: float | None = None
 
     # Comparison metrics (only for two-run comparisons)
-    geo_mean_baseline_ms: float | None = None
-    geo_mean_comparison_ms: float | None = None
-    total_time_baseline_ms: float | None = None
-    total_time_comparison_ms: float | None = None
+    primary_baseline: float | None = None
+    primary_comparison: float | None = None
+    total_baseline: float | None = None
+    total_comparison: float | None = None
     baseline_name: str = "Baseline"
     comparison_name: str = "Comparison"
 
     # Counts
-    num_queries: int = 0
+    num_items: int = 0
     num_improved: int = 0
     num_stable: int = 0
     num_regressed: int = 0
 
-    # Best/worst queries
-    best_queries: list[tuple[str, float]] = field(default_factory=list)
-    worst_queries: list[tuple[str, float]] = field(default_factory=list)
+    # Best/worst items
+    best_items: list[tuple[str, float]] = field(default_factory=list)
+    worst_items: list[tuple[str, float]] = field(default_factory=list)
+
+    # Configurable rendered labels
+    primary_label: str = "Primary"
+    secondary_label: str = "Secondary"
+    total_label: str = "Total"
+    count_label: str = "Items"
 
     # Unit label for metric values (e.g. "ms", "ops", "requests")
     metric_label: str = "ms"
@@ -60,11 +66,11 @@ class SummaryStats:
     @property
     def is_comparison(self) -> bool:
         """Whether this is a comparison summary (two runs)."""
-        return self.geo_mean_baseline_ms is not None or self.total_time_baseline_ms is not None
+        return self.primary_baseline is not None or self.total_baseline is not None
 
 
 class SummaryBox(ChartBase):
-    """Bordered summary panel with aggregate benchmark statistics.
+    """Bordered summary panel with aggregate statistics.
 
     Displays key metrics in a box-drawing bordered panel. Supports
     both single-run and comparison summaries.
@@ -72,10 +78,10 @@ class SummaryBox(ChartBase):
     Example output:
     ```
     ┌──────────────────────────────────────┐
-    │       Benchmark Summary              │
+    │            Summary                   │
     ├──────────────────────────────────────┤
-    │  Geo Mean:  142.3ms → 98.7ms  -30.6%│
-    │  Total:     3.2s → 2.1s       -34.4%│
+    │  Primary:  142.3ms → 98.7ms  -30.6% │
+    │  Total:    3.2s → 2.1s       -34.4% │
     ├──────────────────────────────────────┤
     │  5 improved  12 stable  5 regressed  │
     ├──────────────────────────────────────┤
@@ -141,7 +147,7 @@ class SummaryBox(ChartBase):
                 lines.extend(self._render_single_metrics(box, colors, inner))
 
         # Comparison counts
-        if self.stats.is_comparison and self.stats.num_queries > 0:
+        if self.stats.is_comparison and self.stats.num_items > 0:
             lines.extend(self._render_counts_row(box, colors, inner, two_col or three_col))
 
         # Best/worst queries
@@ -283,8 +289,8 @@ class SummaryBox(ChartBase):
         return lines
 
     def _render_best_worst(self, box: dict[str, str], colors: TerminalColors, inner: int, two_col: bool) -> list[str]:
-        """Render the best and worst query rows."""
-        if not self.stats.best_queries and not self.stats.worst_queries:
+        """Render the best and worst item rows."""
+        if not self.stats.best_items and not self.stats.worst_items:
             return []
 
         lines: list[str] = []
@@ -293,10 +299,10 @@ class SummaryBox(ChartBase):
         if not (two_col and not self.stats.is_comparison):
             lines.append(f"{box['lm']}{box['h'] * (inner + 2)}{box['rm']}")
 
-        if self.stats.best_queries:
+        if self.stats.best_items:
             lines.append(
                 self._render_query_line(
-                    self.stats.best_queries,
+                    self.stats.best_items,
                     "Best",
                     "#66a61e",
                     box,
@@ -307,10 +313,10 @@ class SummaryBox(ChartBase):
                 )
             )
 
-        if self.stats.worst_queries:
+        if self.stats.worst_items:
             lines.append(
                 self._render_query_line(
-                    self.stats.worst_queries,
+                    self.stats.worst_items,
                     "Worst",
                     "#d95f02",
                     box,
@@ -352,6 +358,16 @@ class SummaryBox(ChartBase):
         colored_label = colors.colorize(label, fg_color=color) + items
         return f"{box['v']} {colored_label}{' ' * padding} {box['v']}"
 
+    def _label_width(self) -> int:
+        """Compute padding width from the longest configured label."""
+        labels = [
+            self.stats.primary_label,
+            self.stats.secondary_label,
+            self.stats.total_label,
+            self.stats.count_label,
+        ]
+        return max(len(lbl) for lbl in labels) + 1  # +1 for the colon
+
     def _render_comparison_metrics(
         self,
         box: dict[str, str],
@@ -360,14 +376,16 @@ class SummaryBox(ChartBase):
     ) -> list[str]:
         """Render comparison metrics (two runs)."""
         lines: list[str] = []
+        lw = self._label_width()
 
-        if self.stats.geo_mean_baseline_ms is not None and self.stats.geo_mean_comparison_ms is not None:
-            b_val = self.stats.geo_mean_baseline_ms
-            c_val = self.stats.geo_mean_comparison_ms
+        if self.stats.primary_baseline is not None and self.stats.primary_comparison is not None:
+            b_val = self.stats.primary_baseline
+            c_val = self.stats.primary_comparison
             pct = ((c_val - b_val) / b_val * 100) if b_val != 0 else 0.0
             arrow = "\u2192" if self.options.use_unicode else "->"
+            label_part = f"{self.stats.primary_label}:".ljust(lw + 1)
             metric_text = (
-                f"Geo Mean:  {self._format_value(b_val)}{self.stats.metric_label}"
+                f"{label_part}{self._format_value(b_val)}{self.stats.metric_label}"
                 f" {arrow} {self._format_value(c_val)}{self.stats.metric_label}"
             )
             pct_text = self._format_pct_colored(pct, colors)
@@ -376,22 +394,24 @@ class SummaryBox(ChartBase):
             leader = self._dot_leader(padding, colors)
             lines.append(f"{box['v']} {metric_text}{leader}{pct_text} {box['v']}")
 
-        if self.stats.total_time_baseline_ms is not None and self.stats.total_time_comparison_ms is not None:
-            b_val = self.stats.total_time_baseline_ms
-            c_val = self.stats.total_time_comparison_ms
+        if self.stats.total_baseline is not None and self.stats.total_comparison is not None:
+            b_val = self.stats.total_baseline
+            c_val = self.stats.total_comparison
             pct = ((c_val - b_val) / b_val * 100) if b_val != 0 else 0.0
             arrow = "\u2192" if self.options.use_unicode else "->"
             b_str = self._format_metric(b_val)
             c_str = self._format_metric(c_val)
-            metric_text = f"Total:     {b_str} {arrow} {c_str}"
+            label_part = f"{self.stats.total_label}:".ljust(lw + 1)
+            metric_text = f"{label_part}{b_str} {arrow} {c_str}"
             pct_text = self._format_pct_colored(pct, colors)
             visible_len = len(metric_text) + len(self._format_pct_visible(pct))
             padding = max(0, inner - visible_len)
             leader = self._dot_leader(padding, colors)
             lines.append(f"{box['v']} {metric_text}{leader}{pct_text} {box['v']}")
 
-        if self.stats.num_queries > 0:
-            queries_text = f"Queries:   {self.stats.num_queries}"
+        if self.stats.num_items > 0:
+            label_part = f"{self.stats.count_label}:".ljust(lw + 1)
+            queries_text = f"{label_part}{self.stats.num_items}"
             padding = max(0, inner - len(queries_text))
             lines.append(f"{box['v']} {queries_text}{' ' * padding} {box['v']}")
 
@@ -405,24 +425,29 @@ class SummaryBox(ChartBase):
     ) -> list[str]:
         """Render single-run metrics."""
         lines: list[str] = []
+        lw = self._label_width()
 
-        if self.stats.geo_mean_ms is not None:
-            text = f"Geo Mean:  {self._format_value(self.stats.geo_mean_ms)}{self.stats.metric_label}"
+        if self.stats.primary_value is not None:
+            label_part = f"{self.stats.primary_label}:".ljust(lw + 1)
+            text = f"{label_part}{self._format_value(self.stats.primary_value)}{self.stats.metric_label}"
             padding = max(0, inner - len(text))
             lines.append(f"{box['v']} {text}{' ' * padding} {box['v']}")
 
-        if self.stats.median_ms is not None:
-            text = f"Median:    {self._format_value(self.stats.median_ms)}{self.stats.metric_label}"
+        if self.stats.secondary_value is not None:
+            label_part = f"{self.stats.secondary_label}:".ljust(lw + 1)
+            text = f"{label_part}{self._format_value(self.stats.secondary_value)}{self.stats.metric_label}"
             padding = max(0, inner - len(text))
             lines.append(f"{box['v']} {text}{' ' * padding} {box['v']}")
 
-        if self.stats.total_time_ms is not None:
-            text = f"Total:     {self._format_metric(self.stats.total_time_ms)}"
+        if self.stats.total_value is not None:
+            label_part = f"{self.stats.total_label}:".ljust(lw + 1)
+            text = f"{label_part}{self._format_metric(self.stats.total_value)}"
             padding = max(0, inner - len(text))
             lines.append(f"{box['v']} {text}{' ' * padding} {box['v']}")
 
-        if self.stats.num_queries > 0:
-            text = f"Queries:   {self.stats.num_queries}"
+        if self.stats.num_items > 0:
+            label_part = f"{self.stats.count_label}:".ljust(lw + 1)
+            text = f"{label_part}{self.stats.num_items}"
             padding = max(0, inner - len(text))
             lines.append(f"{box['v']} {text}{' ' * padding} {box['v']}")
 
@@ -431,37 +456,46 @@ class SummaryBox(ChartBase):
     def _build_metric_texts_single(self) -> list[str]:
         """Build plain metric text lines for single-run (no borders)."""
         texts: list[str] = []
-        if self.stats.geo_mean_ms is not None:
-            texts.append(f"Geo Mean:  {self._format_value(self.stats.geo_mean_ms)}{self.stats.metric_label}")
-        if self.stats.median_ms is not None:
-            texts.append(f"Median:    {self._format_value(self.stats.median_ms)}{self.stats.metric_label}")
-        if self.stats.total_time_ms is not None:
-            texts.append(f"Total:     {self._format_metric(self.stats.total_time_ms)}")
-        if self.stats.num_queries > 0:
-            texts.append(f"Queries:   {self.stats.num_queries}")
+        lw = self._label_width()
+        if self.stats.primary_value is not None:
+            label_part = f"{self.stats.primary_label}:".ljust(lw + 1)
+            texts.append(f"{label_part}{self._format_value(self.stats.primary_value)}{self.stats.metric_label}")
+        if self.stats.secondary_value is not None:
+            label_part = f"{self.stats.secondary_label}:".ljust(lw + 1)
+            texts.append(f"{label_part}{self._format_value(self.stats.secondary_value)}{self.stats.metric_label}")
+        if self.stats.total_value is not None:
+            label_part = f"{self.stats.total_label}:".ljust(lw + 1)
+            texts.append(f"{label_part}{self._format_metric(self.stats.total_value)}")
+        if self.stats.num_items > 0:
+            label_part = f"{self.stats.count_label}:".ljust(lw + 1)
+            texts.append(f"{label_part}{self.stats.num_items}")
         return texts
 
     def _build_metric_texts_comparison(self, colors: TerminalColors) -> list[str]:
         """Build plain metric text lines for comparison (no borders)."""
         texts: list[str] = []
+        lw = self._label_width()
         arrow = "\u2192" if self.options.use_unicode else "->"
-        if self.stats.geo_mean_baseline_ms is not None and self.stats.geo_mean_comparison_ms is not None:
-            b, c = self.stats.geo_mean_baseline_ms, self.stats.geo_mean_comparison_ms
+        if self.stats.primary_baseline is not None and self.stats.primary_comparison is not None:
+            b, c = self.stats.primary_baseline, self.stats.primary_comparison
             pct = ((c - b) / b * 100) if b != 0 else 0.0
             pct_text = self._format_pct_colored(pct, colors)
+            label_part = f"{self.stats.primary_label}:".ljust(lw + 1)
             texts.append(
-                f"Geo Mean:  {self._format_value(b)}{self.stats.metric_label}"
+                f"{label_part}{self._format_value(b)}{self.stats.metric_label}"
                 f" {arrow} {self._format_value(c)}{self.stats.metric_label}"
                 f" {pct_text}"
             )
-        if self.stats.total_time_baseline_ms is not None and self.stats.total_time_comparison_ms is not None:
-            b, c = self.stats.total_time_baseline_ms, self.stats.total_time_comparison_ms
+        if self.stats.total_baseline is not None and self.stats.total_comparison is not None:
+            b, c = self.stats.total_baseline, self.stats.total_comparison
             b_str, c_str = self._format_metric(b), self._format_metric(c)
             pct = ((c - b) / b * 100) if b != 0 else 0.0
             pct_text = self._format_pct_colored(pct, colors)
-            texts.append(f"Total:     {b_str} {arrow} {c_str} {pct_text}")
-        if self.stats.num_queries > 0:
-            texts.append(f"Queries:   {self.stats.num_queries}")
+            label_part = f"{self.stats.total_label}:".ljust(lw + 1)
+            texts.append(f"{label_part}{b_str} {arrow} {c_str} {pct_text}")
+        if self.stats.num_items > 0:
+            label_part = f"{self.stats.count_label}:".ljust(lw + 1)
+            texts.append(f"{label_part}{self.stats.num_items}")
         return texts
 
     def _build_env_lines(self, colors: TerminalColors) -> list[str]:

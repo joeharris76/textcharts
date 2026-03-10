@@ -1,8 +1,8 @@
-generated_at: '2026-03-10T08:01:47.066165'
+generated_at: '2026-03-10T14:03:15.483207'
 total_categories: 3
 categories:
   Core Functionality:
-    count: 12
+    count: 13
     items:
     - id: configurable-outlier-cap
       file: DONE/main/active/configurable-outlier-cap.yaml
@@ -27,6 +27,11 @@ categories:
     - id: fix-terminal-capability-defaults-and-color-contract
       file: DONE/main/planning/fix-terminal-capability-defaults-and-color-contract.yaml
       title: Fix terminal capability defaults and color contract
+      priority: High
+      status: Completed
+    - id: generalize-benchbox-field-names
+      file: DONE/dev-012/active/generalize-benchbox-field-names.yaml
+      title: Generalize BenchBox-specific field names across all chart types
       priority: High
       status: Completed
     - id: cli-interface
