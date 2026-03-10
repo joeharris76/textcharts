@@ -8,7 +8,7 @@ from typing import TYPE_CHECKING, Any
 
 logger = logging.getLogger(__name__)
 
-from textcharts.base import ASCIIChartBase, ASCIIChartOptions, outlier_severity_markers, robust_p95
+from textcharts.base import ChartBase, ChartOptions, outlier_severity_markers, robust_p95
 
 if TYPE_CHECKING:
     from collections.abc import Sequence
@@ -26,7 +26,7 @@ class BarData:
     is_worst: bool = False
 
 
-class ASCIIBarChart(ASCIIChartBase):
+class BarChart(ChartBase):
     """Horizontal bar chart rendered in ASCII/Unicode.
 
     Example output:
@@ -45,7 +45,7 @@ class ASCIIBarChart(ASCIIChartBase):
         title: str | None = None,
         metric_label: str = "Value",
         sort_by: str = "value",
-        options: ASCIIChartOptions | None = None,
+        options: ChartOptions | None = None,
         subtitle: str | None = None,
         subject: str | None = None,
     ):
@@ -207,10 +207,10 @@ def from_data(
     title: str | None = None,
     metric_label: str = "Value",
     sort_by: str = "value",
-    options: ASCIIChartOptions | None = None,
+    options: ChartOptions | None = None,
     subject: str | None = None,
-) -> ASCIIBarChart:
-    """Create ASCIIBarChart from objects with label/value attributes."""
+) -> BarChart:
+    """Create BarChart from objects with label/value attributes."""
     converted: list[BarData] = []
     for item in data:
         if isinstance(item, BarData):
@@ -227,7 +227,7 @@ def from_data(
                 )
             )
 
-    return ASCIIBarChart(
+    return BarChart(
         data=converted,
         title=title,
         metric_label=metric_label,
@@ -237,9 +237,13 @@ def from_data(
     )
 
 
-def from_bar_data(*args: Any, **kwargs: Any) -> ASCIIBarChart:
+def from_bar_data(*args: Any, **kwargs: Any) -> BarChart:
     """Deprecated: use from_data() instead."""
     import warnings
 
     warnings.warn("from_bar_data() is deprecated, use from_data() instead", DeprecationWarning, stacklevel=2)
     return from_data(*args, **kwargs)
+
+
+# Backward-compat aliases — remove after all consumers are updated
+ASCIIBarChart = BarChart

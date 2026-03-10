@@ -6,7 +6,7 @@ import math
 from collections.abc import Callable
 from dataclasses import dataclass, field
 
-from textcharts.base import ASCIIChartBase, ASCIIChartOptions, TerminalColors
+from textcharts.base import ChartBase, ChartOptions, TerminalColors
 
 
 @dataclass
@@ -63,7 +63,7 @@ class SummaryStats:
         return self.geo_mean_baseline_ms is not None or self.total_time_baseline_ms is not None
 
 
-class ASCIISummaryBox(ASCIIChartBase):
+class SummaryBox(ChartBase):
     """Bordered summary panel with aggregate benchmark statistics.
 
     Displays key metrics in a box-drawing bordered panel. Supports
@@ -88,7 +88,7 @@ class ASCIISummaryBox(ASCIIChartBase):
     def __init__(
         self,
         stats: SummaryStats,
-        options: ASCIIChartOptions | None = None,
+        options: ChartOptions | None = None,
         subtitle: str | None = None,
         subject: str | None = None,
     ):
@@ -550,3 +550,7 @@ class ASCIISummaryBox(ASCIIChartBase):
         if ms >= 1_000:
             return f"{ms / 1_000:.1f}s"
         return f"{ms:.1f}ms"
+
+
+# Backward-compat aliases — remove after all consumers are updated
+ASCIISummaryBox = SummaryBox

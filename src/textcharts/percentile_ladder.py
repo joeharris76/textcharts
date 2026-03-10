@@ -10,8 +10,8 @@ from typing import TYPE_CHECKING
 logger = logging.getLogger(__name__)
 
 from textcharts.base import (
-    ASCIIChartBase,
-    ASCIIChartOptions,
+    ChartBase,
+    ChartOptions,
     TerminalColors,
     outlier_severity_markers,
     robust_p95,
@@ -72,7 +72,7 @@ def compute_percentile(values: Sequence[float], p: float) -> float:
     return sorted_vals[f] * (c - k) + sorted_vals[c] * (k - f)
 
 
-class ASCIIPercentileLadder(ASCIIChartBase):
+class PercentileLadder(ChartBase):
     """ASCII percentile ladder chart showing P50/P90/P95/P99 latency bands.
 
     Each platform gets a single row with layered horizontal bar segments
@@ -102,7 +102,7 @@ class ASCIIPercentileLadder(ASCIIChartBase):
         data: Sequence[PercentileData],
         title: str | None = None,
         metric_label: str = "",
-        options: ASCIIChartOptions | None = None,
+        options: ChartOptions | None = None,
         subtitle: str | None = None,
         subject: str | None = None,
     ):
@@ -302,10 +302,10 @@ def from_series(
     platform_queries: Sequence[tuple[str, Sequence[float]]],
     title: str | None = None,
     metric_label: str = "ms",
-    options: ASCIIChartOptions | None = None,
+    options: ChartOptions | None = None,
     subject: str | None = None,
-) -> ASCIIPercentileLadder:
-    """Create ASCIIPercentileLadder from raw query timing data.
+) -> PercentileLadder:
+    """Create PercentileLadder from raw query timing data.
 
     Args:
         platform_queries: Sequence of (platform_name, query_times) tuples.
@@ -314,7 +314,7 @@ def from_series(
         options: Chart rendering options.
 
     Returns:
-        Configured ASCIIPercentileLadder instance.
+        Configured PercentileLadder instance.
     """
     converted: list[PercentileData] = []
     for name, values in platform_queries:
@@ -332,7 +332,7 @@ def from_series(
             )
         )
 
-    return ASCIIPercentileLadder(
+    return PercentileLadder(
         data=converted,
         title=title,
         metric_label=metric_label,
@@ -347,3 +347,7 @@ def from_query_results(*args, **kwargs):
 
     warnings.warn("from_query_results() is deprecated, use from_series() instead", DeprecationWarning, stacklevel=2)
     return from_series(*args, **kwargs)
+
+
+# Backward-compat aliases — remove after all consumers are updated
+ASCIIPercentileLadder = PercentileLadder

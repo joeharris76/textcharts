@@ -9,8 +9,8 @@ from typing import TYPE_CHECKING
 
 from textcharts.base import (
     DEFAULT_PALETTE,
-    ASCIIChartBase,
-    ASCIIChartOptions,
+    ChartBase,
+    ChartOptions,
     TerminalColors,
     outlier_severity_markers,
     robust_p95,
@@ -49,7 +49,7 @@ _SEGMENT_FILLS_UNICODE = ("░", "▒", "▓", "█", "▚", "▞", "▖", "▗"
 _SEGMENT_FILLS_ASCII = (".", "-", "=", "#", "+", "*", "~", "^")
 
 
-class ASCIIStackedBar(ASCIIChartBase):
+class StackedBar(ChartBase):
     """Stacked horizontal bar chart showing phase-level time decomposition.
 
     Each bar represents a platform and the segments show time spent in each
@@ -71,7 +71,7 @@ class ASCIIStackedBar(ASCIIChartBase):
         self,
         data: Sequence[StackedBarData],
         title: str | None = None,
-        options: ASCIIChartOptions | None = None,
+        options: ChartOptions | None = None,
         subtitle: str | None = None,
         metric_label: str = "",
         value_formatter: Callable[[float], str] | None = None,
@@ -256,10 +256,10 @@ class ASCIIStackedBar(ASCIIChartBase):
 def from_data(
     data: Sequence[StackedBarData],
     title: str | None = None,
-    options: ASCIIChartOptions | None = None,
+    options: ChartOptions | None = None,
     subject: str | None = None,
-) -> ASCIIStackedBar:
-    """Create ASCIIStackedBar from phase breakdown data.
+) -> StackedBar:
+    """Create StackedBar from phase breakdown data.
 
     Args:
         data: Sequence of StackedBarData instances.
@@ -268,9 +268,9 @@ def from_data(
         subject: Domain noun phrase prepended to default title.
 
     Returns:
-        Configured ASCIIStackedBar instance.
+        Configured StackedBar instance.
     """
-    return ASCIIStackedBar(data=data, title=title, options=options, subject=subject)
+    return StackedBar(data=data, title=title, options=options, subject=subject)
 
 
 def from_phase_data(*args, **kwargs):
@@ -279,3 +279,7 @@ def from_phase_data(*args, **kwargs):
 
     warnings.warn("from_phase_data() is deprecated, use from_data() instead", DeprecationWarning, stacklevel=2)
     return from_data(*args, **kwargs)
+
+
+# Backward-compat aliases — remove after all consumers are updated
+ASCIIStackedBar = StackedBar

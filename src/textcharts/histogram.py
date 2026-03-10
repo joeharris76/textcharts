@@ -13,8 +13,8 @@ logger = logging.getLogger(__name__)
 from textcharts.base import (
     DEFAULT_PALETTE,
     TRUNCATION_MARKER,
-    ASCIIChartBase,
-    ASCIIChartOptions,
+    ChartBase,
+    ChartOptions,
     outlier_severity_markers,
     robust_p95,
 )
@@ -35,7 +35,7 @@ class HistogramBar:
     is_worst: bool = False
 
 
-class ASCIIQueryHistogram(ASCIIChartBase):
+class Histogram(ChartBase):
     """Vertical bar histogram showing per-query latency in ASCII.
 
     Renders vertical bars with query IDs below, suitable for terminal display.
@@ -66,7 +66,7 @@ class ASCIIQueryHistogram(ASCIIChartBase):
         sort_by: str = "query_id",
         max_per_chart: int = DEFAULT_MAX_BARS,
         show_mean_line: bool = True,
-        options: ASCIIChartOptions | None = None,
+        options: ChartOptions | None = None,
         subtitle: str | None = None,
         subject: str | None = None,
     ):
@@ -741,12 +741,12 @@ def from_data(
     title: str | None = None,
     y_label: str = "Value",
     sort_by: str = "query_id",
-    max_per_chart: int = ASCIIQueryHistogram.DEFAULT_MAX_BARS,
+    max_per_chart: int = Histogram.DEFAULT_MAX_BARS,
     show_mean_line: bool = True,
-    options: ASCIIChartOptions | None = None,
+    options: ChartOptions | None = None,
     subject: str | None = None,
-) -> ASCIIQueryHistogram:
-    """Create ASCIIQueryHistogram from objects with query_id/latency_ms attributes."""
+) -> Histogram:
+    """Create Histogram from objects with query_id/latency_ms attributes."""
     converted: list[HistogramBar] = []
     for item in data:
         if isinstance(item, HistogramBar):
@@ -763,7 +763,7 @@ def from_data(
                 )
             )
 
-    return ASCIIQueryHistogram(
+    return Histogram(
         data=converted,
         title=title,
         y_label=y_label,
@@ -783,5 +783,6 @@ def from_query_latency_data(*args, **kwargs):
     return from_data(*args, **kwargs)
 
 
-# Standalone alias — consistent with other chart types (ASCIIBarChart, ASCIIBoxPlot, etc.)
-ASCIIHistogram = ASCIIQueryHistogram
+# Backward-compat aliases — remove after all consumers are updated
+ASCIIHistogram = Histogram
+ASCIIQueryHistogram = Histogram

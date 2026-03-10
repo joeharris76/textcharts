@@ -94,7 +94,7 @@ def _build_chart_options(options: dict[str, Any] | None) -> Any | None:
     if not options:
         return None
 
-    from textcharts.base import ASCIIChartOptions
+    from textcharts.base import ChartOptions
 
     opt_kwargs: dict[str, Any] = {}
     field_map = {
@@ -113,4 +113,4 @@ def _build_chart_options(options: dict[str, Any] | None) -> Any | None:
     if not opt_kwargs:
         return None
 
-    return ASCIIChartOptions(**opt_kwargs)
+    return ChartOptions(**opt_kwargs)

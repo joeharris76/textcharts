@@ -351,7 +351,7 @@ class TerminalColors:
 
 
 @dataclass
-class ASCIIChartOptions:
+class ChartOptions:
     """Configuration options for ASCII chart rendering."""
 
     width: int | None = None  # None = auto-detect
@@ -445,17 +445,17 @@ class ASCIIChartOptions:
         return markers[index % len(markers)]
 
 
-class ASCIIChartBase(ABC):
+class ChartBase(ABC):
     """Abstract base class for ASCII chart renderers."""
 
     def __init__(
         self,
-        options: ASCIIChartOptions | None = None,
+        options: ChartOptions | None = None,
         subtitle: str | None = None,
         title: str | None = None,
         subject: str | None = None,
     ):
-        self.options = options or ASCIIChartOptions()
+        self.options = options or ChartOptions()
         self._capabilities: TerminalCapabilities | None = None
         self.subtitle: str | None = subtitle
         self._explicit_title: str | None = title
@@ -509,7 +509,7 @@ class ASCIIChartBase(ABC):
     @staticmethod
     def _sanitize_text(text: str) -> str:
         """Strip ANSI escape sequences from user-supplied text."""
-        return ASCIIChartBase._ANSI_ESCAPE_RE.sub("", text)
+        return ChartBase._ANSI_ESCAPE_RE.sub("", text)
 
     def _render_title(self, title: str, width: int) -> str:
         """Render a centered title line."""
@@ -635,3 +635,8 @@ class ASCIIChartBase(ABC):
         if current_line:
             lines.append("  " + "   ".join(current_line))
         return lines
+
+
+# Backward-compat aliases — remove after all consumers are updated
+ASCIIChartOptions = ChartOptions
+ASCIIChartBase = ChartBase

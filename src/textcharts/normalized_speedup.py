@@ -7,7 +7,7 @@ import math
 from dataclasses import dataclass
 from typing import TYPE_CHECKING
 
-from textcharts.base import ASCIIChartBase, ASCIIChartOptions
+from textcharts.base import ChartBase, ChartOptions
 
 if TYPE_CHECKING:
     from collections.abc import Sequence
@@ -24,7 +24,7 @@ class SpeedupData:
     is_baseline: bool = False
 
 
-class ASCIINormalizedSpeedup(ASCIIChartBase):
+class NormalizedSpeedup(ChartBase):
     """Normalized speedup chart showing platform performance relative to a baseline.
 
     Bars extend right for faster-than-baseline ratios and left for slower,
@@ -47,7 +47,7 @@ class ASCIINormalizedSpeedup(ASCIIChartBase):
         data: Sequence[SpeedupData],
         title: str | None = None,
         baseline_name: str | None = None,
-        options: ASCIIChartOptions | None = None,
+        options: ChartOptions | None = None,
         subtitle: str | None = None,
         subject: str | None = None,
     ):
@@ -189,10 +189,10 @@ def from_ratios(
     platform_times: Sequence[tuple[str, float]],
     baseline: str | None = None,
     title: str | None = None,
-    options: ASCIIChartOptions | None = None,
+    options: ChartOptions | None = None,
     subject: str | None = None,
-) -> ASCIINormalizedSpeedup:
-    """Create ASCIINormalizedSpeedup from platform timing data.
+) -> NormalizedSpeedup:
+    """Create NormalizedSpeedup from platform timing data.
 
     Args:
         platform_times: Sequence of (platform_name, total_time_ms) tuples.
@@ -201,10 +201,10 @@ def from_ratios(
         options: Chart rendering options.
 
     Returns:
-        Configured ASCIINormalizedSpeedup instance.
+        Configured NormalizedSpeedup instance.
     """
     if not platform_times:
-        return ASCIINormalizedSpeedup(data=[], title=title, options=options, subject=subject)
+        return NormalizedSpeedup(data=[], title=title, options=options, subject=subject)
 
     # Select baseline
     if baseline == "slowest":
@@ -227,7 +227,7 @@ def from_ratios(
         ratio = baseline_time / time_ms if time_ms > 0 else 0.0
         converted.append(SpeedupData(name=name, ratio=ratio, is_baseline=(name == baseline_name)))
 
-    return ASCIINormalizedSpeedup(
+    return NormalizedSpeedup(
         data=converted,
         title=title,
         baseline_name=baseline_name,
@@ -242,3 +242,7 @@ def from_normalized_results(*args, **kwargs):
 
     warnings.warn("from_normalized_results() is deprecated, use from_ratios() instead", DeprecationWarning, stacklevel=2)
     return from_ratios(*args, **kwargs)
+
+
+# Backward-compat aliases — remove after all consumers are updated
+ASCIINormalizedSpeedup = NormalizedSpeedup

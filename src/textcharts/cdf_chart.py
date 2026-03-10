@@ -10,8 +10,8 @@ from typing import TYPE_CHECKING
 from textcharts.base import (
     DEFAULT_PALETTE,
     TRUNCATION_MARKER,
-    ASCIIChartBase,
-    ASCIIChartOptions,
+    ChartBase,
+    ChartOptions,
     robust_p95,
 )
 
@@ -32,7 +32,7 @@ class CDFSeriesData:
     values: list[float]
 
 
-class ASCIICDFChart(ASCIIChartBase):
+class CDFChart(ChartBase):
     """CDF chart showing cumulative distribution of query latency.
 
     The X-axis is execution time, the Y-axis is the cumulative proportion
@@ -65,7 +65,7 @@ class ASCIICDFChart(ASCIIChartBase):
         x_label: str = "Value",
         y_label: str = "Cumulative Share",
         height: int = PLOT_HEIGHT,
-        options: ASCIIChartOptions | None = None,
+        options: ChartOptions | None = None,
         subtitle: str | None = None,
         subject: str | None = None,
     ):
@@ -225,10 +225,10 @@ def from_series(
     title: str | None = None,
     x_label: str = "Value",
     y_label: str = "Cumulative Share",
-    options: ASCIIChartOptions | None = None,
+    options: ChartOptions | None = None,
     subject: str | None = None,
-) -> ASCIICDFChart:
-    """Create ASCIICDFChart from raw query timing data.
+) -> CDFChart:
+    """Create CDFChart from raw query timing data.
 
     Args:
         platform_queries: Sequence of (platform_name, query_times) tuples.
@@ -236,10 +236,10 @@ def from_series(
         options: Chart rendering options.
 
     Returns:
-        Configured ASCIICDFChart instance.
+        Configured CDFChart instance.
     """
     data = [CDFSeriesData(name=name, values=list(values)) for name, values in platform_queries]
-    return ASCIICDFChart(data=data, title=title, x_label=x_label, y_label=y_label, options=options, subject=subject)
+    return CDFChart(data=data, title=title, x_label=x_label, y_label=y_label, options=options, subject=subject)
 
 
 def from_query_results(*args, **kwargs):
@@ -248,3 +248,7 @@ def from_query_results(*args, **kwargs):
 
     warnings.warn("from_query_results() is deprecated, use from_series() instead", DeprecationWarning, stacklevel=2)
     return from_series(*args, **kwargs)
+
+
+# Backward-compat aliases — remove after all consumers are updated
+ASCIICDFChart = CDFChart

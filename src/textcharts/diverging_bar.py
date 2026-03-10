@@ -6,7 +6,7 @@ import logging
 from dataclasses import dataclass
 from typing import TYPE_CHECKING
 
-from textcharts.base import ASCIIChartBase, ASCIIChartOptions
+from textcharts.base import ChartBase, ChartOptions
 
 if TYPE_CHECKING:
     from collections.abc import Sequence
@@ -22,7 +22,7 @@ class DivergingBarData:
     pct_change: float  # Negative = improvement, positive = regression
 
 
-class ASCIIDivergingBar(ASCIIChartBase):
+class DivergingBar(ChartBase):
     """Diverging bar chart showing percentage changes centered on zero.
 
     Left side = improvements (faster), right side = regressions (slower).
@@ -53,7 +53,7 @@ class ASCIIDivergingBar(ASCIIChartBase):
         data: Sequence[DivergingBarData],
         title: str | None = None,
         clip_pct: float = DEFAULT_CLIP_PCT,
-        options: ASCIIChartOptions | None = None,
+        options: ChartOptions | None = None,
         subtitle: str | None = None,
         subject: str | None = None,
         lower_is_better: bool = True,
@@ -246,10 +246,10 @@ class ASCIIDivergingBar(ASCIIChartBase):
 def from_data(
     data: Sequence,
     title: str | None = None,
-    options: ASCIIChartOptions | None = None,
+    options: ChartOptions | None = None,
     subject: str | None = None,
-) -> ASCIIDivergingBar:
-    """Create ASCIIDivergingBar from regression data.
+) -> DivergingBar:
+    """Create DivergingBar from regression data.
 
     Accepts DivergingBarData objects or dicts with compatible keys.
     """
@@ -269,7 +269,7 @@ def from_data(
                 )
             )
 
-    return ASCIIDivergingBar(
+    return DivergingBar(
         data=converted,
         title=title,
         options=options,
@@ -283,3 +283,7 @@ def from_regression_data(*args, **kwargs):
 
     warnings.warn("from_regression_data() is deprecated, use from_data() instead", DeprecationWarning, stacklevel=2)
     return from_data(*args, **kwargs)
+
+
+# Backward-compat aliases — remove after all consumers are updated
+ASCIIDivergingBar = DivergingBar

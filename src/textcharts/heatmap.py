@@ -6,8 +6,8 @@ from typing import TYPE_CHECKING
 
 from textcharts.base import (
     TRUNCATION_MARKER,
-    ASCIIChartBase,
-    ASCIIChartOptions,
+    ChartBase,
+    ChartOptions,
     ColorMode,
     robust_p95,
 )
@@ -16,7 +16,7 @@ if TYPE_CHECKING:
     from collections.abc import Sequence
 
 
-class ASCIIHeatmap(ASCIIChartBase):
+class Heatmap(ChartBase):
     """ASCII heatmap showing query execution times across platforms.
 
     Example output (with colors):
@@ -61,7 +61,7 @@ class ASCIIHeatmap(ASCIIChartBase):
         x_label: str = "Columns",
         show_values: bool = True,
         color_scheme: str = "diverging",
-        options: ASCIIChartOptions | None = None,
+        options: ChartOptions | None = None,
         subtitle: str | None = None,
         subject: str | None = None,
     ):
@@ -383,11 +383,11 @@ def from_matrix(
     x_label: str = "Platform",
     show_values: bool = True,
     color_scheme: str = "diverging",
-    options: ASCIIChartOptions | None = None,
+    options: ChartOptions | None = None,
     subject: str | None = None,
-) -> ASCIIHeatmap:
-    """Create ASCIIHeatmap from matrix data (compatible with QueryHeatmap)."""
-    return ASCIIHeatmap(
+) -> Heatmap:
+    """Create Heatmap from matrix data (compatible with QueryHeatmap)."""
+    return Heatmap(
         matrix=matrix,
         row_labels=queries,
         col_labels=platforms,
@@ -399,3 +399,7 @@ def from_matrix(
         options=options,
         subject=subject,
     )
+
+
+# Backward-compat aliases — remove after all consumers are updated
+ASCIIHeatmap = Heatmap

@@ -7,7 +7,7 @@ import math
 from dataclasses import dataclass
 from typing import TYPE_CHECKING
 
-from textcharts.base import ASCIIChartBase, ASCIIChartOptions
+from textcharts.base import ChartBase, ChartOptions
 
 if TYPE_CHECKING:
     from collections.abc import Sequence
@@ -24,7 +24,7 @@ class RankTableData:
     times: dict[tuple[str, str], float]  # (platform, query) -> execution time
 
 
-class ASCIIRankTable(ASCIIChartBase):
+class RankTable(ChartBase):
     """Rank table showing per-query competitive rankings across platforms.
 
     Each cell shows the ordinal rank (1st, 2nd, 3rd...) of each platform
@@ -47,7 +47,7 @@ class ASCIIRankTable(ASCIIChartBase):
         self,
         data: RankTableData,
         title: str | None = None,
-        options: ASCIIChartOptions | None = None,
+        options: ChartOptions | None = None,
         subtitle: str | None = None,
         subject: str | None = None,
     ):
@@ -198,10 +198,10 @@ def from_matrix(
     queries: Sequence[str],
     platforms: Sequence[str],
     title: str | None = None,
-    options: ASCIIChartOptions | None = None,
+    options: ChartOptions | None = None,
     subject: str | None = None,
-) -> ASCIIRankTable:
-    """Create ASCIIRankTable from the same matrix format as ASCIIHeatmap.
+) -> RankTable:
+    """Create RankTable from the same matrix format as ASCIIHeatmap.
 
     Args:
         matrix: 2D matrix of execution times [query_idx][platform_idx].
@@ -211,7 +211,7 @@ def from_matrix(
         options: Chart rendering options.
 
     Returns:
-        Configured ASCIIRankTable instance.
+        Configured RankTable instance.
     """
     if len(matrix) != len(queries):
         raise ValueError("queries length must match the number of matrix rows")
@@ -233,7 +233,7 @@ def from_matrix(
         platforms=list(platforms),
         times=times,
     )
-    return ASCIIRankTable(data=data, title=title, options=options, subject=subject)
+    return RankTable(data=data, title=title, options=options, subject=subject)
 
 
 def from_heatmap_data(*args, **kwargs):
@@ -242,3 +242,7 @@ def from_heatmap_data(*args, **kwargs):
 
     warnings.warn("from_heatmap_data() is deprecated, use from_matrix() instead", DeprecationWarning, stacklevel=2)
     return from_matrix(*args, **kwargs)
+
+
+# Backward-compat aliases — remove after all consumers are updated
+ASCIIRankTable = RankTable

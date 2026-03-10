@@ -11,8 +11,8 @@ logger = logging.getLogger(__name__)
 
 from textcharts.base import (
     DEFAULT_PALETTE,
-    ASCIIChartBase,
-    ASCIIChartOptions,
+    ChartBase,
+    ChartOptions,
     outlier_severity_markers,
 )
 
@@ -90,7 +90,7 @@ class BoxPlotSeries:
     values: Sequence[float]
 
 
-class ASCIIBoxPlot(ASCIIChartBase):
+class BoxPlot(ChartBase):
     """ASCII box plot for showing distributions.
 
     Example output:
@@ -130,7 +130,7 @@ class ASCIIBoxPlot(ASCIIChartBase):
         y_label: str = "Value",
         show_stats: bool = True,
         show_mean: bool = True,
-        options: ASCIIChartOptions | None = None,
+        options: ChartOptions | None = None,
         subtitle: str | None = None,
         subject: str | None = None,
     ):
@@ -380,10 +380,10 @@ def from_series(
     y_label: str = "Value",
     show_stats: bool = True,
     show_mean: bool = True,
-    options: ASCIIChartOptions | None = None,
+    options: ChartOptions | None = None,
     subject: str | None = None,
-) -> ASCIIBoxPlot:
-    """Create ASCIIBoxPlot from objects with name/values attributes."""
+) -> BoxPlot:
+    """Create BoxPlot from objects with name/values attributes."""
     converted: list[BoxPlotSeries] = []
     for item in series:
         if isinstance(item, BoxPlotSeries):
@@ -396,7 +396,7 @@ def from_series(
                 )
             )
 
-    return ASCIIBoxPlot(
+    return BoxPlot(
         series=converted,
         title=title,
         y_label=y_label,
@@ -413,3 +413,7 @@ def from_distribution_series(*args, **kwargs):
 
     warnings.warn("from_distribution_series() is deprecated, use from_series() instead", DeprecationWarning, stacklevel=2)
     return from_series(*args, **kwargs)
+
+
+# Backward-compat aliases — remove after all consumers are updated
+ASCIIBoxPlot = BoxPlot

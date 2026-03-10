@@ -8,7 +8,7 @@ from typing import TYPE_CHECKING
 
 logger = logging.getLogger(__name__)
 
-from textcharts.base import DEFAULT_PALETTE, TRUNCATION_MARKER, ASCIIChartBase, ASCIIChartOptions, ColorMode, robust_p95
+from textcharts.base import DEFAULT_PALETTE, TRUNCATION_MARKER, ChartBase, ChartOptions, ColorMode, robust_p95
 
 if TYPE_CHECKING:
     from collections.abc import Sequence
@@ -24,7 +24,7 @@ class ScatterPoint:
     is_pareto: bool = False
 
 
-class ASCIIScatterPlot(ASCIIChartBase):
+class ScatterPlot(ChartBase):
     """ASCII scatter plot for cost vs performance trade-off visualization.
 
     Example output:
@@ -58,7 +58,7 @@ class ASCIIScatterPlot(ASCIIChartBase):
         x_label: str = "X",
         y_label: str = "Y",
         show_pareto: bool = True,
-        options: ASCIIChartOptions | None = None,
+        options: ChartOptions | None = None,
         subtitle: str | None = None,
         subject: str | None = None,
     ):
@@ -304,10 +304,10 @@ def from_points(
     x_label: str = "X",
     y_label: str = "Y",
     show_pareto: bool = True,
-    options: ASCIIChartOptions | None = None,
+    options: ChartOptions | None = None,
     subject: str | None = None,
-) -> ASCIIScatterPlot:
-    """Create ASCIIScatterPlot from objects with name/x/y attributes."""
+) -> ScatterPlot:
+    """Create ScatterPlot from objects with name/x/y attributes."""
     converted: list[ScatterPoint] = []
     for item in points:
         if isinstance(item, ScatterPoint):
@@ -321,7 +321,7 @@ def from_points(
                 )
             )
 
-    return ASCIIScatterPlot(
+    return ScatterPlot(
         points=converted,
         title=title,
         x_label=x_label,
@@ -338,3 +338,7 @@ def from_cost_performance_points(*args, **kwargs):
 
     warnings.warn("from_cost_performance_points() is deprecated, use from_points() instead", DeprecationWarning, stacklevel=2)
     return from_points(*args, **kwargs)
+
+
+# Backward-compat aliases — remove after all consumers are updated
+ASCIIScatterPlot = ScatterPlot

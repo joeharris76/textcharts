@@ -6,7 +6,7 @@ import logging
 import math
 from dataclasses import dataclass, field
 
-from textcharts.base import ASCIIChartBase, ASCIIChartOptions, ColorMode
+from textcharts.base import ChartBase, ChartOptions, ColorMode
 
 logger = logging.getLogger(__name__)
 
@@ -32,7 +32,7 @@ class SparklineTableData:
     columns: list[SparklineColumn] = field(default_factory=list)
 
 
-class ASCIISparklineTable(ASCIIChartBase):
+class SparklineTable(ChartBase):
     """Sparkline table showing compact multi-metric platform comparison.
 
     Each row is a platform, each column is a metric with an inline sparkline
@@ -53,7 +53,7 @@ class ASCIISparklineTable(ASCIIChartBase):
         self,
         data: SparklineTableData,
         title: str | None = None,
-        options: ASCIIChartOptions | None = None,
+        options: ChartOptions | None = None,
         subtitle: str | None = None,
         subject: str | None = None,
     ):
@@ -267,10 +267,10 @@ def from_data(
     platforms: list[str],
     metrics: list[tuple[str, dict[str, float], bool]],
     title: str | None = None,
-    options: ASCIIChartOptions | None = None,
+    options: ChartOptions | None = None,
     subject: str | None = None,
-) -> ASCIISparklineTable:
-    """Create ASCIISparklineTable from metric data.
+) -> SparklineTable:
+    """Create SparklineTable from metric data.
 
     Args:
         platforms: List of platform names.
@@ -279,11 +279,11 @@ def from_data(
         options: Chart rendering options.
 
     Returns:
-        Configured ASCIISparklineTable instance.
+        Configured SparklineTable instance.
     """
     columns = [SparklineColumn(name=name, values=values, higher_is_better=hib) for name, values, hib in metrics]
     data = SparklineTableData(platforms=platforms, columns=columns)
-    return ASCIISparklineTable(data=data, title=title, options=options, subject=subject)
+    return SparklineTable(data=data, title=title, options=options, subject=subject)
 
 
 def from_metrics(*args, **kwargs):
@@ -292,3 +292,7 @@ def from_metrics(*args, **kwargs):
 
     warnings.warn("from_metrics() is deprecated, use from_data() instead", DeprecationWarning, stacklevel=2)
     return from_data(*args, **kwargs)
+
+
+# Backward-compat aliases — remove after all consumers are updated
+ASCIISparklineTable = SparklineTable

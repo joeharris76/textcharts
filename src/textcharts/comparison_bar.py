@@ -9,8 +9,8 @@ from typing import TYPE_CHECKING
 
 from textcharts.base import (
     DEFAULT_PALETTE,
-    ASCIIChartBase,
-    ASCIIChartOptions,
+    ChartBase,
+    ChartOptions,
     TerminalColors,
     outlier_severity_markers,
 )
@@ -32,7 +32,7 @@ class ComparisonBarData:
     comparison_name: str = "Comparison"
 
 
-class ASCIIComparisonBar(ASCIIChartBase):
+class ComparisonBar(ChartBase):
     """Paired comparison bar chart showing side-by-side bars per query.
 
     Each query shows two horizontal bars (e.g., SQL and DataFrame) with
@@ -60,7 +60,7 @@ class ASCIIComparisonBar(ASCIIChartBase):
         data: Sequence[ComparisonBarData],
         title: str | None = None,
         metric_label: str = "Value",
-        options: ASCIIChartOptions | None = None,
+        options: ChartOptions | None = None,
         subtitle: str | None = None,
         subject: str | None = None,
         lower_is_better: bool = True,
@@ -289,10 +289,10 @@ def from_data(
     data: Sequence,
     title: str | None = None,
     metric_label: str = "Value",
-    options: ASCIIChartOptions | None = None,
+    options: ChartOptions | None = None,
     subject: str | None = None,
-) -> ASCIIComparisonBar:
-    """Create ASCIIComparisonBar from comparison data.
+) -> ComparisonBar:
+    """Create ComparisonBar from comparison data.
 
     Accepts ComparisonBarData objects or dicts with compatible keys.
     """
@@ -315,7 +315,7 @@ def from_data(
                 )
             )
 
-    return ASCIIComparisonBar(
+    return ComparisonBar(
         data=converted,
         title=title,
         metric_label=metric_label,
@@ -330,3 +330,7 @@ def from_comparison_data(*args, **kwargs):
 
     warnings.warn("from_comparison_data() is deprecated, use from_data() instead", DeprecationWarning, stacklevel=2)
     return from_data(*args, **kwargs)
+
+
+# Backward-compat aliases — remove after all consumers are updated
+ASCIIComparisonBar = ComparisonBar

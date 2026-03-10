@@ -12,8 +12,8 @@ logger = logging.getLogger(__name__)
 from textcharts.base import (
     DEFAULT_PALETTE,
     TRUNCATION_MARKER,
-    ASCIIChartBase,
-    ASCIIChartOptions,
+    ChartBase,
+    ChartOptions,
     ColorMode,
     robust_p95,
 )
@@ -32,7 +32,7 @@ class LinePoint:
     label: str | None = None
 
 
-class ASCIILineChart(ASCIIChartBase):
+class LineChart(ChartBase):
     """ASCII line chart for time series and trend visualization.
 
     Example output:
@@ -66,7 +66,7 @@ class ASCIILineChart(ASCIIChartBase):
         x_label: str = "X",
         y_label: str = "Y",
         show_trend: bool = False,
-        options: ASCIIChartOptions | None = None,
+        options: ChartOptions | None = None,
         subtitle: str | None = None,
         subject: str | None = None,
     ):
@@ -331,10 +331,10 @@ def from_points(
     x_label: str = "Run",
     y_label: str = "Y",
     show_trend: bool = False,
-    options: ASCIIChartOptions | None = None,
+    options: ChartOptions | None = None,
     subject: str | None = None,
-) -> ASCIILineChart:
-    """Create ASCIILineChart from objects with series/x/y attributes."""
+) -> LineChart:
+    """Create LineChart from objects with series/x/y attributes."""
     converted: list[LinePoint] = []
     for item in points:
         if isinstance(item, LinePoint):
@@ -349,7 +349,7 @@ def from_points(
                 )
             )
 
-    return ASCIILineChart(
+    return LineChart(
         points=converted,
         title=title,
         x_label=x_label,
@@ -366,3 +366,7 @@ def from_time_series_points(*args, **kwargs):
 
     warnings.warn("from_time_series_points() is deprecated, use from_points() instead", DeprecationWarning, stacklevel=2)
     return from_points(*args, **kwargs)
+
+
+# Backward-compat aliases — remove after all consumers are updated
+ASCIILineChart = LineChart
