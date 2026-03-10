@@ -39,7 +39,7 @@ class CommandInfo:
     name: str
     description: str
     chart_module: str  # e.g., "textcharts.bar_chart"
-    chart_class: str  # e.g., "ASCIIBarChart"
+    chart_class: str  # e.g., "BarChart" — module-level class name
     data_param_name: str  # Constructor param name for data: "data", "points", "series", "stats", "matrix"
     data_fields: list[DataFieldInfo] = field(default_factory=list)
     input_is_list: bool = True  # True if data is a list of items, False if single object
@@ -54,7 +54,7 @@ def _build_registry() -> dict[str, CommandInfo]:
             name="bar",
             description="Horizontal bar chart for comparing values across categories",
             chart_module="textcharts.bar_chart",
-            chart_class="ASCIIBarChart",
+            chart_class="BarChart",
             data_param_name="data",
             data_fields=[
                 DataFieldInfo("label", "string", "Category label"),
@@ -73,7 +73,7 @@ def _build_registry() -> dict[str, CommandInfo]:
             name="histogram",
             description="Vertical bar histogram for query latency or frequency distribution",
             chart_module="textcharts.histogram",
-            chart_class="ASCIIQueryHistogram",
+            chart_class="Histogram",
             data_param_name="data",
             data_fields=[
                 DataFieldInfo("query_id", "string", "Query or item identifier"),
@@ -94,7 +94,7 @@ def _build_registry() -> dict[str, CommandInfo]:
             name="heatmap",
             description="Matrix heatmap with color intensity showing value magnitude",
             chart_module="textcharts.heatmap",
-            chart_class="ASCIIHeatmap",
+            chart_class="Heatmap",
             data_param_name="matrix",
             input_is_list=False,
             data_fields=[
@@ -114,7 +114,7 @@ def _build_registry() -> dict[str, CommandInfo]:
             name="boxplot",
             description="Box plot showing distribution with quartiles, whiskers, and outliers",
             chart_module="textcharts.box_plot",
-            chart_class="ASCIIBoxPlot",
+            chart_class="BoxPlot",
             data_param_name="series",
             data_fields=[
                 DataFieldInfo("name", "string", "Series name"),
@@ -130,7 +130,7 @@ def _build_registry() -> dict[str, CommandInfo]:
             name="line",
             description="Line chart for time series or trend visualization",
             chart_module="textcharts.line_chart",
-            chart_class="ASCIILineChart",
+            chart_class="LineChart",
             data_param_name="points",
             data_fields=[
                 DataFieldInfo("series", "string", "Series name for grouping"),
@@ -148,7 +148,7 @@ def _build_registry() -> dict[str, CommandInfo]:
             name="scatter",
             description="Scatter plot for cost vs. performance with optional Pareto frontier",
             chart_module="textcharts.scatter_plot",
-            chart_class="ASCIIScatterPlot",
+            chart_class="ScatterPlot",
             data_param_name="points",
             data_fields=[
                 DataFieldInfo("name", "string", "Point label"),
@@ -166,7 +166,7 @@ def _build_registry() -> dict[str, CommandInfo]:
             name="comparison",
             description="Side-by-side paired bar chart comparing baseline vs. comparison values",
             chart_module="textcharts.comparison_bar",
-            chart_class="ASCIIComparisonBar",
+            chart_class="ComparisonBar",
             data_param_name="data",
             data_fields=[
                 DataFieldInfo("label", "string", "Item label"),
@@ -187,7 +187,7 @@ def _build_registry() -> dict[str, CommandInfo]:
             name="diverging",
             description="Centered diverging bar chart showing improvement/regression as percentage change",
             chart_module="textcharts.diverging_bar",
-            chart_class="ASCIIDivergingBar",
+            chart_class="DivergingBar",
             data_param_name="data",
             data_fields=[
                 DataFieldInfo("label", "string", "Item label"),
@@ -201,7 +201,7 @@ def _build_registry() -> dict[str, CommandInfo]:
             name="summary",
             description="Bordered summary box with aggregate statistics and environment info",
             chart_module="textcharts.summary_box",
-            chart_class="ASCIISummaryBox",
+            chart_class="SummaryBox",
             data_param_name="stats",
             input_is_list=False,
             data_fields=[
@@ -232,7 +232,7 @@ def _build_registry() -> dict[str, CommandInfo]:
             name="percentile",
             description="Layered percentile bands showing P50/P90/P95/P99 distribution",
             chart_module="textcharts.percentile_ladder",
-            chart_class="ASCIIPercentileLadder",
+            chart_class="PercentileLadder",
             data_param_name="data",
             data_fields=[
                 DataFieldInfo("name", "string", "Series name"),
@@ -249,7 +249,7 @@ def _build_registry() -> dict[str, CommandInfo]:
             name="speedup",
             description="Log-scale normalized speedup chart relative to a baseline",
             chart_module="textcharts.normalized_speedup",
-            chart_class="ASCIINormalizedSpeedup",
+            chart_class="NormalizedSpeedup",
             data_param_name="data",
             data_fields=[
                 DataFieldInfo("name", "string", "Platform or variant name"),
@@ -264,7 +264,7 @@ def _build_registry() -> dict[str, CommandInfo]:
             name="stacked",
             description="Stacked horizontal bar chart showing phase or component breakdown",
             chart_module="textcharts.stacked_bar",
-            chart_class="ASCIIStackedBar",
+            chart_class="StackedBar",
             data_param_name="data",
             data_fields=[
                 DataFieldInfo("label", "string", "Bar label"),
@@ -283,7 +283,7 @@ def _build_registry() -> dict[str, CommandInfo]:
             name="sparkline",
             description="Compact table with inline sparkline mini-charts for multi-metric comparison",
             chart_module="textcharts.sparkline_table",
-            chart_class="ASCIISparklineTable",
+            chart_class="SparklineTable",
             data_param_name="data",
             input_is_list=False,
             data_fields=[
@@ -299,7 +299,7 @@ def _build_registry() -> dict[str, CommandInfo]:
             name="cdf",
             description="Cumulative distribution function chart for comparing value distributions",
             chart_module="textcharts.cdf_chart",
-            chart_class="ASCIICDFChart",
+            chart_class="CDFChart",
             data_param_name="data",
             data_fields=[
                 DataFieldInfo("name", "string", "Series name"),
@@ -315,7 +315,7 @@ def _build_registry() -> dict[str, CommandInfo]:
             name="rank",
             description="Competitive ranking table with win counts across queries",
             chart_module="textcharts.rank_table",
-            chart_class="ASCIIRankTable",
+            chart_class="RankTable",
             data_param_name="data",
             input_is_list=False,
             data_fields=[

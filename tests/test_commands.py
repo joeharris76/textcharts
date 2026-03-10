@@ -37,7 +37,7 @@ class TestRegistry:
         cmd = get_command("bar")
         assert isinstance(cmd, CommandInfo)
         assert cmd.name == "bar"
-        assert cmd.chart_class == "ASCIIBarChart"
+        assert cmd.chart_class == "BarChart"
 
     def test_get_command_unknown_raises(self):
         with pytest.raises(KeyError, match="Unknown command 'nope'"):
