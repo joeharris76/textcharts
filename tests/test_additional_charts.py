@@ -7,11 +7,10 @@ from textcharts.cdf_chart import CDFChart, CDFSeriesData
 from textcharts.cdf_chart import from_series as cdf_from_series
 from textcharts.normalized_speedup import NormalizedSpeedup, SpeedupData
 from textcharts.normalized_speedup import from_ratios as speedup_from_ratios
-from textcharts.percentile_ladder import PercentileLadder, PercentileData, compute_percentile
+from textcharts.percentile_ladder import PercentileData, PercentileLadder, compute_percentile
 from textcharts.percentile_ladder import from_series as percentile_from_series
-from textcharts.rank_table import RankTable, RankTableData
-from textcharts.rank_table import from_matrix
-from textcharts.sparkline_table import SparklineTable, SparklineColumn, SparklineTableData
+from textcharts.rank_table import RankTable, RankTableData, from_matrix
+from textcharts.sparkline_table import SparklineColumn, SparklineTable, SparklineTableData
 from textcharts.stacked_bar import StackedBar, StackedBarData, StackedBarSegment
 
 

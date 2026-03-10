@@ -41,8 +41,17 @@ init_version=$(python3 -c "import re; print(re.search(r'__version__ = \"(.+)\"',
 [[ "$toml_version" == "$current_version" ]] || die "pyproject.toml version ($toml_version) != branch version ($current_version)"
 [[ "$init_version" == "$current_version" ]] || die "__init__.py version ($init_version) != branch version ($current_version)"
 
+# Lint (auto-fix then verify)
+info "running ruff auto-fix and lint check"
+uv run --group dev -- ruff check --fix src/ tests/ || true
+uv run --group dev -- ruff check src/ tests/ || die "lint errors remain after auto-fix — resolve manually"
+
 # Clean working tree
-[[ -z "$(git status --porcelain)" ]] || die "working tree is not clean — commit or stash changes first"
+if [[ -n "$(git status --porcelain)" ]]; then
+    info "lint fixes applied — committing"
+    git add -u
+    git commit -m "style: auto-fix lint errors"
+fi
 
 # gh CLI authenticated
 gh auth status >/dev/null 2>&1 || die "gh CLI not authenticated — run 'gh auth login'"

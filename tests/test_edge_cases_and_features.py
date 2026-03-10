@@ -717,21 +717,22 @@ class TestSubject:
 
     def test_subject_on_summary_box(self):
         """Subject composes with SummaryStats default title."""
-        from textcharts.summary_box import SummaryStats, SummaryBox
+        from textcharts.summary_box import SummaryBox, SummaryStats
         stats = SummaryStats(num_queries=1)
         chart = SummaryBox(stats=stats, subject="Benchmark")
         assert chart.stats.title == "Benchmark Summary"
 
     def test_subject_does_not_affect_explicit_summary_title(self):
         """SummaryBox with explicit stats title ignores subject."""
-        from textcharts.summary_box import SummaryStats, SummaryBox
+        from textcharts.summary_box import SummaryBox, SummaryStats
         stats = SummaryStats(title="My Report", num_queries=1)
         chart = SummaryBox(stats=stats, subject="Ignored")
         assert chart.stats.title == "My Report"
 
     def test_subject_via_factory_function(self):
         """Subject passes through factory functions."""
-        from textcharts.bar_chart import from_data as bar_from_data, BarData as BD
+        from textcharts.bar_chart import BarData as BD
+        from textcharts.bar_chart import from_data as bar_from_data
         chart = bar_from_data([BD(label="A", value=1)], subject="Sales")
         assert chart.title == "Sales Bar Chart"
 

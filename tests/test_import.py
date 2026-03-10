@@ -23,7 +23,7 @@ from textcharts import (
 
 
 def test_import_version():
-    assert textcharts.__version__ == "0.1.0"
+    assert textcharts.__version__ == "0.1.1"
 
 
 def test_bar_chart_renders():

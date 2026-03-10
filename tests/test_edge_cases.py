@@ -2,17 +2,17 @@ from __future__ import annotations
 
 from textcharts import (
     BarChart,
+    BarData,
     BoxPlot,
+    BoxPlotSeries,
     ChartBase,
     ChartOptions,
     Heatmap,
     Histogram,
-    LineChart,
-    ScatterPlot,
-    BarData,
-    BoxPlotSeries,
     HistogramBar,
+    LineChart,
     LinePoint,
+    ScatterPlot,
     ScatterPoint,
 )
 

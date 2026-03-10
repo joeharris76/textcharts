@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from textcharts import ChartOptions, SparklineTable, SparklineColumn, SparklineTableData
+from textcharts import ChartOptions, SparklineColumn, SparklineTable, SparklineTableData
 from textcharts.sparkline_table import from_data as sparkline_from_data
 
 

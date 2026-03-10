@@ -193,8 +193,8 @@ def test_summary_box_subtitle_renders_inside_box():
     assert "TPC-H SF=1" in result
     # Subtitle should appear between title and metrics separator
     lines = result.splitlines()
-    title_idx = next(i for i, l in enumerate(lines) if "DuckDB Summary" in l)
-    subtitle_idx = next(i for i, l in enumerate(lines) if "TPC-H SF=1" in l)
+    title_idx = next(i for i, line in enumerate(lines) if "DuckDB Summary" in line)
+    subtitle_idx = next(i for i, line in enumerate(lines) if "TPC-H SF=1" in line)
     assert subtitle_idx == title_idx + 1
 
 
@@ -203,7 +203,7 @@ def test_summary_box_no_subtitle_by_default():
     chart = SummaryBox(stats=stats, options=ChartOptions(use_color=False))
     result = chart.render()
     lines = result.splitlines()
-    title_idx = next(i for i, l in enumerate(lines) if "Test" in l)
+    title_idx = next(i for i, line in enumerate(lines) if "Test" in line)
     # Next line after title should be the metrics separator, not a subtitle
     assert lines[title_idx + 1].strip().startswith("+") or lines[title_idx + 1].strip().startswith("├")
 

@@ -5,17 +5,17 @@ import pytest
 import textcharts.base as base
 from textcharts import (
     BarChart,
+    BarData,
     CDFChart,
+    CDFSeriesData,
     ChartOptions,
     Heatmap,
     LineChart,
-    ScatterPlot,
-    SparklineTable,
-    BarData,
-    CDFSeriesData,
     LinePoint,
+    ScatterPlot,
     ScatterPoint,
     SparklineColumn,
+    SparklineTable,
     SparklineTableData,
 )
 from textcharts.base import ColorMode, TerminalCapabilities
