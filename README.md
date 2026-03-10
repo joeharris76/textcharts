@@ -25,25 +25,23 @@ pip install textcharts
 ## Quick Start
 
 ```python
-from textcharts import BarChart, BarData, ChartOptions
+from textcharts import BoxPlot, BoxPlotSeries
 
-data = [
-    BarData(label="Fiction", value=18.4, is_best=True),
-    BarData(label="Children", value=14.2),
-    BarData(label="Comics", value=9.8),
-    BarData(label="Stationery", value=6.1, is_worst=True),
+downtown = [1825, 1900, 1980, 2100, 2250, 2400, 2550, 2710, 2980]
+riverside = [1450, 1525, 1600, 1680, 1750, 1820, 1950, 2080, 2220]
+midtown = [1650, 1710, 1780, 1840, 1920, 2010, 2140, 2280, 2450]
+
+series = [
+    BoxPlotSeries(name="Downtown", values=downtown),
+    BoxPlotSeries(name="Riverside", values=riverside),
+    BoxPlotSeries(name="Midtown", values=midtown),
 ]
-chart = BarChart(data=data, title="April Bookstore Revenue", metric_label="k USD")
+chart = BoxPlot(
+    series=series,
+    title="Apartment Rents",
+    subtitle="Monthly rent distribution by neighborhood",
+)
 print(chart.render())
-```
-
-```
-April Bookstore Revenue (k USD)
-────────────────────────────────────────────────────────────────────────────────
-Fiction   ████████████████████████████████████████████████████████████████ 18.4
-Children  ██████████████████████████████████████████████████               14.2
-Comics    ██████████████████████████████                                    9.8
-Stationery ▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓                                               6.1
 ```
 
 ## Chart Types
@@ -91,7 +89,7 @@ textcharts list
 textcharts scatter --help
 ```
 
-See [docs/input-formats.md](docs/input-formats.md) for the JSON schema of each
+See the [input formats reference](https://joeharris76.github.io/textcharts/latest/input-formats.html) for the JSON schema of each
 chart type.
 
 ## MCP Server
@@ -117,7 +115,7 @@ Add to your MCP client config (Claude Desktop, Claude Code, etc.):
 
 This exposes 17 tools: `textcharts_bar`, `textcharts_heatmap`, ...,
 `textcharts_list`, and `textcharts_describe`. See
-[docs/mcp-setup.md](docs/mcp-setup.md) for full configuration options.
+the [MCP setup guide](https://joeharris76.github.io/textcharts/latest/mcp-setup.html) for full configuration options.
 
 ## Configuration
 
