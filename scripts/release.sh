@@ -59,25 +59,24 @@ ask "proceed with release v${current_version} and next cycle dev-${next_version}
 info "pushing ${branch} to origin"
 git push origin "$branch"
 
-# Open PR
+# Open PR (or reuse existing)
 info "opening PR: ${branch} -> main"
-pr_url=$(gh pr create \
-    --base main \
-    --head "$branch" \
-    --title "release: v${current_version}" \
-    --body "$(cat <<BODY
+if pr_url=$(gh pr view "$branch" --json url --jq .url 2>/dev/null); then
+    info "using existing PR: ${pr_url}"
+else
+    pr_url=$(gh pr create \
+        --base main \
+        --head "$branch" \
+        --title "release: v${current_version}" \
+        --body "$(cat <<BODY
 ## Release v${current_version}
 
 Squash-merge of \`${branch}\` into \`main\`.
 
 See [CHANGELOG.md](https://github.com/joeharris76/textcharts/blob/${branch}/CHANGELOG.md) for details.
 BODY
-)" 2>&1) || {
-    # PR may already exist
-    pr_url=$(gh pr view "$branch" --json url --jq .url 2>/dev/null) \
-        || die "failed to create or find PR"
-    info "using existing PR: ${pr_url}"
-}
+)") || die "failed to create PR"
+fi
 info "PR: ${pr_url}"
 
 # Squash-merge
