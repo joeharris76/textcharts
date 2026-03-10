@@ -15,10 +15,14 @@ width detection. Pure Python, no external dependencies, Python 3.10+.
 
    from textcharts import BoxPlot, BoxPlotSeries
 
+   downtown = [1825, 1900, 1980, 2100, 2250, 2400, 2550, 2710, 2980]
+   riverside = [1450, 1525, 1600, 1680, 1750, 1820, 1950, 2080, 2220]
+   midtown = [1650, 1710, 1780, 1840, 1920, 2010, 2140, 2280, 2450]
+
    series = [
-       BoxPlotSeries(name="Downtown", values=[1825, 1900, 1980, 2100, 2250, 2400, 2550, 2710, 2980]),
-       BoxPlotSeries(name="Riverside", values=[1450, 1525, 1600, 1680, 1750, 1820, 1950, 2080, 2220]),
-       BoxPlotSeries(name="Midtown", values=[1650, 1710, 1780, 1840, 1920, 2010, 2140, 2280, 2450]),
+       BoxPlotSeries(name="Downtown", values=downtown),
+       BoxPlotSeries(name="Riverside", values=riverside),
+       BoxPlotSeries(name="Midtown", values=midtown),
    ]
    chart = BoxPlot(
        series=series,
