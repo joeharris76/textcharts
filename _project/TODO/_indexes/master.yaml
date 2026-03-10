@@ -1,3 +1,19 @@
-generated_at: '2026-03-10T08:01:47.021662'
-total_items: 0
-items: []
+generated_at: '2026-03-10T11:45:14.331186'
+total_items: 1
+items:
+- id: generalize-benchbox-field-names
+  file: TODO/dev-012/planning/generalize-benchbox-field-names.yaml
+  title: Generalize BenchBox-specific field names across all chart types
+  worktree: dev-012
+  category: Core Functionality
+  priority: High
+  status: Not Started
+  tags:
+  - breaking-change
+  - api-cleanup
+  - mcp
+  - cli
+  estimated_effort: 2-3 days
+  work_total: 8
+  work_done: 0
+  work_ready: 1
