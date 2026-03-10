@@ -1066,7 +1066,7 @@ class TestSummaryBox:
         chart = SummaryBox(stats=stats, options=opts)
         result = chart.render()
         assert "SQL vs DF Summary" in result
-        assert "Geo Mean" in result
+        assert "Primary" in result
         assert "142.3" in result
         assert "98.7" in result
         assert "5 improved" in result
