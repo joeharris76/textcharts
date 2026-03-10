@@ -76,17 +76,17 @@ def parse_bar(data: Any) -> list:
 
 
 def parse_histogram(data: Any) -> list:
-    """Parse histogram data: list of {query_id, latency_ms, platform?, error?, is_best?, is_worst?}."""
+    """Parse histogram data: list of {label, value, platform?, error?, is_best?, is_worst?}."""
     from textcharts.histogram import HistogramBar
 
     items = _require_list(data, "histogram")
     result = []
     for i, d in enumerate(items):
         ctx = f"histogram[{i}]"
-        _require_keys(d, ["query_id", "latency_ms"], ctx)
+        _require_keys(d, ["label", "value"], ctx)
         result.append(HistogramBar(
-            query_id=str(d["query_id"]),
-            latency_ms=_coerce_float(d["latency_ms"], "latency_ms", ctx),
+            label=str(d["label"]),
+            value=_coerce_float(d["value"], "value", ctx),
             platform=str(d["platform"]) if d.get("platform") is not None else None,
             error=_coerce_float(d["error"], "error", ctx) if d.get("error") is not None else None,
             is_best=bool(d.get("is_best", False)),
