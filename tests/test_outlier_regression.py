@@ -21,7 +21,7 @@ from textcharts.comparison_bar import ComparisonBar, ComparisonBarData
 from textcharts.heatmap import Heatmap
 from textcharts.histogram import Histogram, HistogramBar
 from textcharts.line_chart import LineChart, LinePoint
-from textcharts.percentile_ladder import PercentileLadder, PercentileData
+from textcharts.percentile_ladder import PercentileData, PercentileLadder
 from textcharts.scatter_plot import ScatterPlot, ScatterPoint
 from textcharts.stacked_bar import StackedBar, StackedBarData, StackedBarSegment
 

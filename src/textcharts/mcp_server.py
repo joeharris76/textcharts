@@ -77,7 +77,8 @@ def _create_chart_handler(chart_name: str):
             data: Chart data (list of objects or single object depending on chart type).
             title: Optional chart title.
             subtitle: Optional subtitle line displayed below the title.
-            subject: Domain noun phrase prepended to default title (e.g. "Query Latency" produces "Query Latency Histogram").
+            subject: Domain noun phrase prepended to default title
+                (e.g. "Query Latency" produces "Query Latency Histogram").
             width: Chart width in characters.
             height: Chart height in rows.
             use_color: Enable ANSI color output.
@@ -106,7 +107,10 @@ def _create_chart_handler(chart_name: str):
             chart_kwargs = {k: v for k, v in chart_params.items() if k in valid_names}
 
         try:
-            return execute_command(chart_name, data, title=title, subtitle=subtitle, subject=subject, options=options, **chart_kwargs)
+            return execute_command(
+                chart_name, data, title=title, subtitle=subtitle,
+                subject=subject, options=options, **chart_kwargs,
+            )
         except (ParseError, KeyError, ValueError, TypeError) as e:
             return f"Error: {e}"
 

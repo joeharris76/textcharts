@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "textcharts"
-version = "0.1.0"
+version = "0.1.1"
 description = "Beautiful ASCII charts for your terminal — bar, histogram, heatmap, box plot, and 11 more chart types with zero dependencies"
 readme = "README.md"
 license = "MIT"
@@ -46,6 +46,7 @@ textcharts-mcp = "textcharts.mcp_server:main"
 dev = [
     "ansi2html>=1.9",
     "furo>=2025.9.25",
+    "myst-parser>=4.0.1",
     "pillow>=11.0",
     "pytest>=7.0",
     "pytest-cov>=6.0",

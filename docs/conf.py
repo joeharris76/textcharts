@@ -30,6 +30,7 @@ author = "Joe Harris"
 copyright = "2026, Joe Harris"
 
 extensions = [
+    "myst_parser",
     "sphinx.ext.autodoc",
     "sphinx.ext.autosummary",
     "sphinx.ext.napoleon",

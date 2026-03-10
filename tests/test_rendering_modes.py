@@ -8,9 +8,9 @@ import pytest
 
 import textcharts.base as base
 from textcharts import (
-    ChartOptions,
     BarChart,
     BarData,
+    ChartOptions,
     Heatmap,
     Histogram,
     HistogramBar,

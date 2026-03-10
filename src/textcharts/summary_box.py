@@ -366,7 +366,10 @@ class SummaryBox(ChartBase):
             c_val = self.stats.geo_mean_comparison_ms
             pct = ((c_val - b_val) / b_val * 100) if b_val != 0 else 0.0
             arrow = "\u2192" if self.options.use_unicode else "->"
-            metric_text = f"Geo Mean:  {self._format_value(b_val)}{self.stats.metric_label} {arrow} {self._format_value(c_val)}{self.stats.metric_label}"
+            metric_text = (
+                f"Geo Mean:  {self._format_value(b_val)}{self.stats.metric_label}"
+                f" {arrow} {self._format_value(c_val)}{self.stats.metric_label}"
+            )
             pct_text = self._format_pct_colored(pct, colors)
             visible_len = len(metric_text) + len(self._format_pct_visible(pct))
             padding = max(0, inner - visible_len)
@@ -446,7 +449,11 @@ class SummaryBox(ChartBase):
             b, c = self.stats.geo_mean_baseline_ms, self.stats.geo_mean_comparison_ms
             pct = ((c - b) / b * 100) if b != 0 else 0.0
             pct_text = self._format_pct_colored(pct, colors)
-            texts.append(f"Geo Mean:  {self._format_value(b)}{self.stats.metric_label} {arrow} {self._format_value(c)}{self.stats.metric_label} {pct_text}")
+            texts.append(
+                f"Geo Mean:  {self._format_value(b)}{self.stats.metric_label}"
+                f" {arrow} {self._format_value(c)}{self.stats.metric_label}"
+                f" {pct_text}"
+            )
         if self.stats.total_time_baseline_ms is not None and self.stats.total_time_comparison_ms is not None:
             b, c = self.stats.total_time_baseline_ms, self.stats.total_time_comparison_ms
             b_str, c_str = self._format_metric(b), self._format_metric(c)

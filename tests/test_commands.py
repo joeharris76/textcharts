@@ -15,7 +15,6 @@ from textcharts.commands import (
 from textcharts.commands.parsers import ParseError, parse_input
 from textcharts.commands.registry import COMMON_OPTIONS, REGISTRY
 
-
 # ---------------------------------------------------------------------------
 # Registry tests
 # ---------------------------------------------------------------------------

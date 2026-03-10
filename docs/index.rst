@@ -128,6 +128,8 @@ type in color, greyscale, and monochrome modes.
    guides/chart-selection
    guides/chart-gallery
    guides/configuration
+   guides/cli
+   mcp-setup
    concepts/public-api
    concepts/rendering-behavior
 
@@ -140,6 +142,7 @@ type in color, greyscale, and monochrome modes.
    reference/api
    reference/charts
    reference/factories
+   input-formats
 
 .. toctree::
    :maxdepth: 2

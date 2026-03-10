@@ -225,7 +225,11 @@ def _build_registry() -> dict[str, CommandInfo]:
                 ),
                 DataFieldInfo("environment", "object", "Environment info dict (OS, Python, etc.)", required=False),
                 DataFieldInfo("platform_config", "object", "Platform config dict", required=False),
-                DataFieldInfo("metric_label", "string", "Unit label for values (e.g. ms, ops)", required=False, default="ms"),
+                DataFieldInfo(
+                    "metric_label", "string",
+                    "Unit label for values (e.g. ms, ops)",
+                    required=False, default="ms",
+                ),
             ],
         ),
         "percentile": CommandInfo(

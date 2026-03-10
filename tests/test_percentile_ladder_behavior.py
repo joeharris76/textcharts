@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from textcharts import ChartOptions, PercentileLadder, PercentileData
+from textcharts import ChartOptions, PercentileData, PercentileLadder
 from textcharts.percentile_ladder import compute_percentile, from_series
 
 

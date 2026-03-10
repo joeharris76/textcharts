@@ -7,7 +7,6 @@ and verify rendering, error handling, and meta-commands.
 from __future__ import annotations
 
 import json
-import tempfile
 from io import StringIO
 from unittest import mock
 
@@ -121,7 +120,7 @@ class TestListCommand:
     def test_list_shows_15_entries(self):
         out, _, code = _run_cli(["list"])
         assert code == 0
-        lines = [l for l in out.strip().split("\n") if l.strip()]
+        lines = [line for line in out.strip().split("\n") if line.strip()]
         assert len(lines) == 15
 
 
