@@ -5,7 +5,7 @@ import pytest
 import textcharts.base as base
 from textcharts import BarChart, BarData, ChartOptions, Heatmap
 from textcharts.base import ColorMode, TerminalCapabilities
-from textcharts.rank_table import from_heatmap_data
+from textcharts.rank_table import from_matrix as rank_from_matrix
 
 
 def _capabilities(color_mode: ColorMode) -> TerminalCapabilities:
@@ -107,7 +107,7 @@ def test_heatmap_rejects_ragged_rows():
 
 def test_rank_table_factory_rejects_malformed_matrix():
     with pytest.raises(ValueError, match="matrix row 2 has 1 columns but expected 2"):
-        from_heatmap_data(
+        rank_from_matrix(
             matrix=[[10.0, 20.0], [30.0]],
             queries=["Q1", "Q2"],
             platforms=["DuckDB", "Polars"],

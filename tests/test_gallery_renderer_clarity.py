@@ -4,13 +4,13 @@ import pytest
 
 import textcharts.base as base
 from textcharts import (
-    ASCIIBarChart,
-    ASCIICDFChart,
-    ASCIIChartOptions,
-    ASCIIHeatmap,
-    ASCIILineChart,
-    ASCIIScatterPlot,
-    ASCIISparklineTable,
+    BarChart,
+    CDFChart,
+    ChartOptions,
+    Heatmap,
+    LineChart,
+    ScatterPlot,
+    SparklineTable,
     BarData,
     CDFSeriesData,
     LinePoint,
@@ -32,12 +32,12 @@ def _capabilities(color_mode: ColorMode) -> TerminalCapabilities:
 
 
 def test_heatmap_uses_configured_x_axis_label():
-    chart = ASCIIHeatmap(
+    chart = Heatmap(
         matrix=[[88.0, 91.0]],
         row_labels=["Class A"],
         col_labels=["Math", "Science"],
         x_label="Subjects",
-        options=ASCIIChartOptions(width=80, use_color=False),
+        options=ChartOptions(width=80, use_color=False),
     )
 
     result = chart.render()
@@ -47,11 +47,11 @@ def test_heatmap_uses_configured_x_axis_label():
 
 
 def test_line_chart_compacts_axis_labels_onto_one_line():
-    chart = ASCIILineChart(
+    chart = LineChart(
         points=[LinePoint(series="Organic", x=1, y=320.0), LinePoint(series="Organic", x=2, y=355.0)],
         x_label="Week",
         y_label="Signups",
-        options=ASCIIChartOptions(width=80, use_color=False),
+        options=ChartOptions(width=80, use_color=False),
     )
 
     result = chart.render()
@@ -62,11 +62,11 @@ def test_line_chart_compacts_axis_labels_onto_one_line():
 
 
 def test_scatter_plot_compacts_axis_labels_onto_one_line():
-    chart = ASCIIScatterPlot(
+    chart = ScatterPlot(
         points=[ScatterPoint(name="Launch", x=8.0, y=410.0), ScatterPoint(name="Newsletter", x=2.0, y=220.0)],
         x_label="Cost (USD)",
         y_label="Performance",
-        options=ASCIIChartOptions(width=96, use_color=False),
+        options=ChartOptions(width=96, use_color=False),
     )
 
     result = chart.render()
@@ -77,14 +77,14 @@ def test_scatter_plot_compacts_axis_labels_onto_one_line():
 
 
 def test_cdf_chart_compacts_axis_labels_onto_one_line():
-    chart = ASCIICDFChart(
+    chart = CDFChart(
         data=[
             CDFSeriesData(name="Weekday", values=[2, 3, 4, 5]),
             CDFSeriesData(name="Weekend", values=[3, 5, 7, 9]),
         ],
         x_label="Wait Time (min)",
         y_label="Cumulative Share",
-        options=ASCIIChartOptions(width=96, use_color=False),
+        options=ChartOptions(width=96, use_color=False),
     )
 
     result = chart.render()
@@ -93,7 +93,7 @@ def test_cdf_chart_compacts_axis_labels_onto_one_line():
 
 
 def test_scatter_plot_uses_distinct_markers_for_points():
-    chart = ASCIIScatterPlot(
+    chart = ScatterPlot(
         points=[
             ScatterPoint(name="Launch", x=8.0, y=410.0),
             ScatterPoint(name="Retargeting", x=5.5, y=280.0),
@@ -101,7 +101,7 @@ def test_scatter_plot_uses_distinct_markers_for_points():
         ],
         x_label="Cost (USD)",
         y_label="Conversions",
-        options=ASCIIChartOptions(width=96, use_color=False),
+        options=ChartOptions(width=96, use_color=False),
     )
 
     result = chart.render()
@@ -112,13 +112,13 @@ def test_scatter_plot_uses_distinct_markers_for_points():
 
 
 def test_bar_chart_renders_legend_for_multi_bar_output():
-    chart = ASCIIBarChart(
+    chart = BarChart(
         data=[
             BarData(label="Fiction", value=18.4),
             BarData(label="Children", value=14.2),
             BarData(label="Comics", value=9.3),
         ],
-        options=ASCIIChartOptions(width=96, use_color=False),
+        options=ChartOptions(width=96, use_color=False),
     )
 
     result = chart.render()
@@ -134,7 +134,7 @@ def test_sparkline_table_colorizes_best_and_worst_legend(monkeypatch: pytest.Mon
         platforms=["North Store", "South Store"],
         columns=[SparklineColumn(name="Revenue", values={"North Store": 82.0, "South Store": 95.0})],
     )
-    chart = ASCIISparklineTable(data=data, options=ASCIIChartOptions(width=96, use_color=True))
+    chart = SparklineTable(data=data, options=ChartOptions(width=96, use_color=True))
 
     result = chart.render()
 

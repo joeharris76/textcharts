@@ -6,8 +6,8 @@ import pytest
 
 import textcharts.base as base
 from textcharts.base import (
-    ASCIIChartBase,
-    ASCIIChartOptions,
+    ChartBase,
+    ChartOptions,
     ColorMode,
     TerminalCapabilities,
     TerminalColors,
@@ -18,7 +18,7 @@ from textcharts.base import (
 )
 
 
-class _DummyChart(ASCIIChartBase):
+class _DummyChart(ChartBase):
     def render(self) -> str:
         return ""
 
@@ -76,13 +76,13 @@ def test_terminal_colors_modes_and_colorize():
 
 
 def test_chart_options_width_and_character_selection():
-    opts = ASCIIChartOptions(width=200)
+    opts = ChartOptions(width=200)
     assert opts.get_effective_width() == 140
 
-    opts = ASCIIChartOptions(width=20)
+    opts = ChartOptions(width=20)
     assert opts.get_effective_width() == 40
 
-    opts = ASCIIChartOptions(use_unicode=False, use_color=False)
+    opts = ChartOptions(use_unicode=False, use_color=False)
     assert "#" in opts.get_horizontal_block_chars()
     assert "#" in opts.get_vertical_block_chars()
     assert opts.get_box_chars()["h"] == "-"
@@ -92,7 +92,7 @@ def test_chart_options_width_and_character_selection():
 
 
 def test_chart_options_auto_width_uses_cached_capabilities():
-    opts = ASCIIChartOptions()
+    opts = ChartOptions()
     opts._capabilities = TerminalCapabilities(width=100, height=24, color_mode=ColorMode.BASIC)
 
     assert opts.get_effective_width() == 98
@@ -111,7 +111,7 @@ def test_percentile_and_outlier_helpers_cover_edge_cases():
 
 def test_base_render_helpers_and_subtitle_formatting():
     chart = _DummyChart(
-        options=ASCIIChartOptions(use_color=False, use_unicode=True),
+        options=ChartOptions(use_color=False, use_unicode=True),
         subtitle="TPC-H | SF=1 | v1 | tuned",
     )
 
@@ -129,12 +129,12 @@ def test_base_render_helpers_and_subtitle_formatting():
 
 
 def test_base_legend_wraps_and_respects_show_legend():
-    chart = _DummyChart(options=ASCIIChartOptions(width=40, use_color=False))
+    chart = _DummyChart(options=ChartOptions(width=40, use_color=False))
     lines = chart._render_legend(
         [("DuckDB", "#1b9e77"), ("SQLite", "#d95f02"), ("Polars", "#7570b3"), ("Pandas", "#666666")],
         chart.options.get_colors(),
     )
     assert len(lines) >= 2
 
-    no_legend = _DummyChart(options=ASCIIChartOptions(width=40, use_color=False, show_legend=False))
+    no_legend = _DummyChart(options=ChartOptions(width=40, use_color=False, show_legend=False))
     assert no_legend._render_legend([("DuckDB", "#1b9e77")], no_legend.options.get_colors()) == []

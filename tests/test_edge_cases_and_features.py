@@ -1,4 +1,4 @@
-"""Tests for textcharts rendering (migrated from BenchBox)."""
+"""Tests for textcharts rendering."""
 
 from __future__ import annotations
 
@@ -6,22 +6,24 @@ from unittest.mock import patch
 
 import pytest
 
-from textcharts.bar_chart import ASCIIBarChart, BarData, from_bar_data
+from textcharts.bar_chart import BarChart, BarData
+from textcharts.bar_chart import from_data as bar_from_data
 from textcharts.base import (
-    ASCIIChartBase,
-    ASCIIChartOptions,
+    ChartBase,
+    ChartOptions,
     ColorMode,
     TerminalCapabilities,
     TerminalColors,
 )
-from textcharts.box_plot import ASCIIBoxPlot, BoxPlotSeries, compute_quartiles
-from textcharts.comparison_bar import ASCIIComparisonBar, ComparisonBarData
-from textcharts.diverging_bar import ASCIIDivergingBar, DivergingBarData
-from textcharts.heatmap import ASCIIHeatmap, from_matrix
-from textcharts.histogram import ASCIIQueryHistogram, HistogramBar
-from textcharts.line_chart import ASCIILineChart, LinePoint
-from textcharts.scatter_plot import ASCIIScatterPlot, ScatterPoint, from_cost_performance_points
-from textcharts.summary_box import ASCIISummaryBox, SummaryStats
+from textcharts.box_plot import BoxPlot, BoxPlotSeries, compute_quartiles
+from textcharts.comparison_bar import ComparisonBar, ComparisonBarData
+from textcharts.diverging_bar import DivergingBar, DivergingBarData
+from textcharts.heatmap import Heatmap, from_matrix
+from textcharts.histogram import Histogram, HistogramBar
+from textcharts.line_chart import LineChart, LinePoint
+from textcharts.scatter_plot import ScatterPlot, ScatterPoint
+from textcharts.scatter_plot import from_points as scatter_from_points
+from textcharts.summary_box import SummaryBox, SummaryStats
 
 
 class TestComputeQuartiles:
@@ -79,8 +81,8 @@ class TestNegativeValues:
             BarData(label="Positive", value=100),
             BarData(label="Zero", value=0),
         ]
-        opts = ASCIIChartOptions(use_color=False)
-        chart = ASCIIBarChart(data=data, options=opts)
+        opts = ChartOptions(use_color=False)
+        chart = BarChart(data=data, options=opts)
         result = chart.render()
         assert "Negative" in result
         assert "Positive" in result
@@ -88,8 +90,8 @@ class TestNegativeValues:
     def test_box_plot_negative_values(self):
         """Box plot handles negative distributions."""
         series = [BoxPlotSeries(name="Neg", values=[-100, -50, -30, -10, 0, 10])]
-        opts = ASCIIChartOptions(use_color=False)
-        chart = ASCIIBoxPlot(series=series, options=opts)
+        opts = ChartOptions(use_color=False)
+        chart = BoxPlot(series=series, options=opts)
         result = chart.render()
         assert "Neg" in result
         assert "median" in result
@@ -100,8 +102,8 @@ class TestNegativeValues:
             ScatterPoint(name="NegNeg", x=-10, y=-20),
             ScatterPoint(name="PosPos", x=10, y=20),
         ]
-        opts = ASCIIChartOptions(use_color=False)
-        chart = ASCIIScatterPlot(points=points, options=opts)
+        opts = ChartOptions(use_color=False)
+        chart = ScatterPlot(points=points, options=opts)
         result = chart.render()
         assert "NegNeg" in result
         assert "PosPos" in result
@@ -113,8 +115,8 @@ class TestNegativeValues:
             LinePoint(series="Test", x=2, y=0),
             LinePoint(series="Test", x=3, y=50),
         ]
-        opts = ASCIIChartOptions(use_color=False)
-        chart = ASCIILineChart(points=points, options=opts)
+        opts = ChartOptions(use_color=False)
+        chart = LineChart(points=points, options=opts)
         result = chart.render()
         assert "Test" in result
 
@@ -125,8 +127,8 @@ class TestAllIdenticalValues:
     def test_bar_chart_identical_values(self):
         """Bar chart handles all identical values."""
         data = [BarData(label="A", value=50), BarData(label="B", value=50)]
-        opts = ASCIIChartOptions(use_color=False)
-        chart = ASCIIBarChart(data=data, options=opts)
+        opts = ChartOptions(use_color=False)
+        chart = BarChart(data=data, options=opts)
         result = chart.render()
         assert "A" in result
         assert "B" in result
@@ -134,8 +136,8 @@ class TestAllIdenticalValues:
     def test_box_plot_identical_values(self):
         """Box plot handles all identical values without stdev crash."""
         series = [BoxPlotSeries(name="Same", values=[42, 42, 42, 42, 42])]
-        opts = ASCIIChartOptions(use_color=False)
-        chart = ASCIIBoxPlot(series=series, options=opts)
+        opts = ChartOptions(use_color=False)
+        chart = BoxPlot(series=series, options=opts)
         result = chart.render()
         assert "Same" in result
         assert "42" in result
@@ -143,8 +145,8 @@ class TestAllIdenticalValues:
     def test_heatmap_identical_values(self):
         """Heatmap handles all identical values."""
         matrix = [[100, 100], [100, 100]]
-        opts = ASCIIChartOptions(use_color=False)
-        chart = ASCIIHeatmap(matrix=matrix, row_labels=["Q1", "Q2"], col_labels=["A", "B"], options=opts)
+        opts = ChartOptions(use_color=False)
+        chart = Heatmap(matrix=matrix, row_labels=["Q1", "Q2"], col_labels=["A", "B"], options=opts)
         result = chart.render()
         assert "Q1" in result
 
@@ -154,8 +156,8 @@ class TestAllIdenticalValues:
             ScatterPoint(name="A", x=50, y=100),
             ScatterPoint(name="B", x=50, y=100),
         ]
-        opts = ASCIIChartOptions(use_color=False)
-        chart = ASCIIScatterPlot(points=points, options=opts)
+        opts = ChartOptions(use_color=False)
+        chart = ScatterPlot(points=points, options=opts)
         result = chart.render()
         assert "A" in result
 
@@ -166,8 +168,8 @@ class TestAllIdenticalValues:
             LinePoint(series="Flat", x=2, y=100),
             LinePoint(series="Flat", x=3, y=100),
         ]
-        opts = ASCIIChartOptions(use_color=False)
-        chart = ASCIILineChart(points=points, options=opts)
+        opts = ChartOptions(use_color=False)
+        chart = LineChart(points=points, options=opts)
         result = chart.render()
         assert "Flat" in result
 
@@ -177,8 +179,8 @@ class TestAllIdenticalValues:
             HistogramBar(query_id="Q1", latency_ms=50),
             HistogramBar(query_id="Q2", latency_ms=50),
         ]
-        opts = ASCIIChartOptions(use_color=False)
-        chart = ASCIIQueryHistogram(data=data, options=opts)
+        opts = ChartOptions(use_color=False)
+        chart = Histogram(data=data, options=opts)
         result = chart.render()
         assert "Q1" in result
 
@@ -189,23 +191,23 @@ class TestSingleDataPoint:
     def test_box_plot_single_value_series(self):
         """Box plot with single-value series doesn't crash."""
         series = [BoxPlotSeries(name="One", values=[42])]
-        opts = ASCIIChartOptions(use_color=False)
-        chart = ASCIIBoxPlot(series=series, options=opts)
+        opts = ChartOptions(use_color=False)
+        chart = BoxPlot(series=series, options=opts)
         result = chart.render()
         assert "One" in result
 
     def test_line_chart_single_point(self):
         """Line chart with single point renders."""
         points = [LinePoint(series="Solo", x=1, y=100)]
-        opts = ASCIIChartOptions(use_color=False)
-        chart = ASCIILineChart(points=points, options=opts)
+        opts = ChartOptions(use_color=False)
+        chart = LineChart(points=points, options=opts)
         result = chart.render()
         assert "Solo" in result
 
     def test_heatmap_single_cell(self):
         """Heatmap with single cell renders."""
-        opts = ASCIIChartOptions(use_color=False)
-        chart = ASCIIHeatmap(matrix=[[42]], row_labels=["Q1"], col_labels=["A"], options=opts)
+        opts = ChartOptions(use_color=False)
+        chart = Heatmap(matrix=[[42]], row_labels=["Q1"], col_labels=["A"], options=opts)
         result = chart.render()
         assert "Q1" in result
         assert "42" in result
@@ -217,16 +219,16 @@ class TestNaNAndInfinity:
     def test_bar_chart_nan(self):
         """Bar chart handles NaN values without crash."""
         data = [BarData(label="Normal", value=100), BarData(label="NaN", value=float("nan"))]
-        opts = ASCIIChartOptions(use_color=False)
-        chart = ASCIIBarChart(data=data, options=opts)
+        opts = ChartOptions(use_color=False)
+        chart = BarChart(data=data, options=opts)
         result = chart.render()
         assert "Normal" in result
 
     def test_bar_chart_infinity(self):
         """Bar chart handles Infinity values without crash."""
         data = [BarData(label="Normal", value=100), BarData(label="Inf", value=float("inf"))]
-        opts = ASCIIChartOptions(use_color=False)
-        chart = ASCIIBarChart(data=data, options=opts)
+        opts = ChartOptions(use_color=False)
+        chart = BarChart(data=data, options=opts)
         result = chart.render()
         assert "Normal" in result
 
@@ -236,8 +238,8 @@ class TestNaNAndInfinity:
             HistogramBar(query_id="Q1", latency_ms=0),
             HistogramBar(query_id="Q2", latency_ms=0),
         ]
-        opts = ASCIIChartOptions(use_color=False)
-        chart = ASCIIQueryHistogram(data=data, options=opts)
+        opts = ChartOptions(use_color=False)
+        chart = Histogram(data=data, options=opts)
         result = chart.render()
         assert "Q1" in result
 
@@ -248,8 +250,8 @@ class TestNarrowWidth:
     def test_bar_chart_narrow(self):
         """Bar chart renders at minimum width without crash."""
         data = [BarData(label="VeryLongLabelThatExceedsWidth", value=100)]
-        opts = ASCIIChartOptions(width=40, use_color=False)
-        chart = ASCIIBarChart(data=data, options=opts)
+        opts = ChartOptions(width=40, use_color=False)
+        chart = BarChart(data=data, options=opts)
         result = chart.render()
         assert len(max(result.split("\n"), key=len)) <= 40
 
@@ -257,8 +259,8 @@ class TestNarrowWidth:
         """Heatmap truncates columns when too narrow."""
         matrix = [[i * 10 for i in range(10)]]
         col_labels = [f"Platform{i}" for i in range(10)]
-        opts = ASCIIChartOptions(width=40, use_color=False)
-        chart = ASCIIHeatmap(matrix=matrix, row_labels=["Q1"], col_labels=col_labels, options=opts)
+        opts = ChartOptions(width=40, use_color=False)
+        chart = Heatmap(matrix=matrix, row_labels=["Q1"], col_labels=col_labels, options=opts)
         result = chart.render()
         assert "Q1" in result
         # Should truncate some columns
@@ -267,8 +269,8 @@ class TestNarrowWidth:
     def test_scatter_plot_narrow(self):
         """Scatter plot renders at minimum width."""
         points = [ScatterPoint(name="A", x=10, y=20), ScatterPoint(name="B", x=30, y=40)]
-        opts = ASCIIChartOptions(width=40, use_color=False)
-        chart = ASCIIScatterPlot(points=points, options=opts)
+        opts = ChartOptions(width=40, use_color=False)
+        chart = ScatterPlot(points=points, options=opts)
         result = chart.render()
         assert "A" in result
 
@@ -278,20 +280,20 @@ class TestANSISanitization:
 
     def test_sanitize_strips_ansi(self):
         """_sanitize_text strips ANSI escape sequences."""
-        result = ASCIIChartBase._sanitize_text("\033[1;31mRED\033[0m")
+        result = ChartBase._sanitize_text("\033[1;31mRED\033[0m")
         assert result == "RED"
         assert "\033" not in result
 
     def test_sanitize_preserves_normal_text(self):
         """_sanitize_text preserves normal text."""
-        result = ASCIIChartBase._sanitize_text("Normal text")
+        result = ChartBase._sanitize_text("Normal text")
         assert result == "Normal text"
 
     def test_bar_chart_ansi_in_label(self):
         """Bar chart sanitizes ANSI in labels."""
         data = [BarData(label="\033[31mInjected\033[0m", value=100)]
-        opts = ASCIIChartOptions(use_color=False)
-        chart = ASCIIBarChart(data=data, options=opts)
+        opts = ChartOptions(use_color=False)
+        chart = BarChart(data=data, options=opts)
         result = chart.render()
         assert "Injected" in result
         assert "\033[31m" not in result
@@ -299,8 +301,8 @@ class TestANSISanitization:
     def test_title_ansi_sanitization(self):
         """Chart titles have ANSI sequences stripped."""
         data = [BarData(label="Test", value=100)]
-        opts = ASCIIChartOptions(use_color=False, title="\033[2JCleared")
-        chart = ASCIIBarChart(data=data, options=opts)
+        opts = ChartOptions(use_color=False, title="\033[2JCleared")
+        chart = BarChart(data=data, options=opts)
         result = chart.render()
         assert "Cleared" in result
         assert "\033[2J" not in result
@@ -310,7 +312,7 @@ class TestFactoryFunctionValidation:
     """Tests that factory functions warn on unexpected types."""
 
     def test_bar_data_factory_unknown_type_uses_getattr(self):
-        """from_bar_data handles non-BarData types via getattr fallback."""
+        """bar_from_data handles non-BarData types via getattr fallback."""
         from dataclasses import dataclass
 
         @dataclass
@@ -318,12 +320,12 @@ class TestFactoryFunctionValidation:
             label: str = "test"
             value: float = 42
 
-        chart = from_bar_data([CustomBar()])
+        chart = bar_from_data([CustomBar()])
         result = chart.render()
         assert "test" in result
 
     def test_scatter_factory_unknown_type_uses_getattr(self):
-        """from_cost_performance_points handles non-ScatterPoint types via getattr fallback."""
+        """scatter_from_points handles non-ScatterPoint types via getattr fallback."""
         from dataclasses import dataclass
 
         @dataclass
@@ -332,7 +334,7 @@ class TestFactoryFunctionValidation:
             cost: float = 10
             performance: float = 20
 
-        chart = from_cost_performance_points([CustomPoint()])
+        chart = scatter_from_points([CustomPoint()])
         result = chart.render()
         assert "test" in result
 
@@ -347,8 +349,8 @@ class TestNewChartEdgeCases:
         """ComparisonBar handles NaN values."""
 
         data = [ComparisonBarData(label="Q1", baseline_value=float("nan"), comparison_value=50)]
-        opts = ASCIIChartOptions(use_color=False)
-        chart = ASCIIComparisonBar(data=data, options=opts)
+        opts = ChartOptions(use_color=False)
+        chart = ComparisonBar(data=data, options=opts)
         result = chart.render()
         assert "Q1" in result
 
@@ -356,8 +358,8 @@ class TestNewChartEdgeCases:
         """ComparisonBar handles identical baseline and comparison values."""
 
         data = [ComparisonBarData(label="Q1", baseline_value=100, comparison_value=100)]
-        opts = ASCIIChartOptions(use_color=False)
-        chart = ASCIIComparisonBar(data=data, options=opts)
+        opts = ChartOptions(use_color=False)
+        chart = ComparisonBar(data=data, options=opts)
         result = chart.render()
         assert "Q1" in result
 
@@ -365,8 +367,8 @@ class TestNewChartEdgeCases:
         """DivergingBar handles zero percentage change."""
 
         data = [DivergingBarData(label="Q1", pct_change=0.0)]
-        opts = ASCIIChartOptions(use_color=False)
-        chart = ASCIIDivergingBar(data=data, options=opts)
+        opts = ChartOptions(use_color=False)
+        chart = DivergingBar(data=data, options=opts)
         result = chart.render()
         assert "Q1" in result
         assert "0 improved" in result or "1 stable" in result
@@ -378,8 +380,8 @@ class TestNewChartEdgeCases:
             DivergingBarData(label="Q1", pct_change=-95.0),
             DivergingBarData(label="Q2", pct_change=+1500.0),
         ]
-        opts = ASCIIChartOptions(use_color=False)
-        chart = ASCIIDivergingBar(data=data, options=opts)
+        opts = ChartOptions(use_color=False)
+        chart = DivergingBar(data=data, options=opts)
         result = chart.render()
         assert "+1500.0%" in result
         assert "-95.0%" in result
@@ -397,8 +399,8 @@ class TestNewChartEdgeCases:
         """ComparisonBar renders at minimum width."""
 
         data = [ComparisonBarData(label="Q1", baseline_value=100, comparison_value=75)]
-        opts = ASCIIChartOptions(width=40, use_color=False)
-        chart = ASCIIComparisonBar(data=data, options=opts)
+        opts = ChartOptions(width=40, use_color=False)
+        chart = ComparisonBar(data=data, options=opts)
         result = chart.render()
         assert "Q1" in result
 
@@ -406,13 +408,13 @@ class TestNewChartEdgeCases:
 class TestHeatmapColumnFitting:
     """Tests for heatmap column-shrinking behavior (fit all cols before truncating)."""
 
-    def _make_heatmap(self, num_cols: int, width: int = 120) -> ASCIIHeatmap:
+    def _make_heatmap(self, num_cols: int, width: int = 120) -> Heatmap:
         """Build a heatmap with ``num_cols`` platforms and a fixed chart width."""
         matrix = [[float(10 * (i + 1) + j) for j in range(num_cols)] for i in range(3)]
         row_labels = [f"Q{i + 1}" for i in range(3)]
         col_labels = [f"Platform{j + 1}" for j in range(num_cols)]
-        opts = ASCIIChartOptions(width=width, use_color=False)
-        return ASCIIHeatmap(matrix=matrix, row_labels=row_labels, col_labels=col_labels, options=opts)
+        opts = ChartOptions(width=width, use_color=False)
+        return Heatmap(matrix=matrix, row_labels=row_labels, col_labels=col_labels, options=opts)
 
     def test_all_columns_shown_when_they_fit(self):
         """When columns comfortably fit at default cell width, all are rendered."""
@@ -472,8 +474,8 @@ class TestHistogramWidthAware:
     def test_chunk_data_respects_max_queries_override(self):
         """_chunk_data splits by the max_queries override, not self.max_per_chart."""
         bars = self._make_bars(10, ["A", "B"])
-        opts = ASCIIChartOptions(width=120, use_color=False)
-        hist = ASCIIQueryHistogram(data=bars, options=opts)
+        opts = ChartOptions(width=120, use_color=False)
+        hist = Histogram(data=bars, options=opts)
         # Bootstrap internal state that render() normally sets.
         hist._use_grouped = True
         hist._platforms = ["A", "B"]
@@ -487,8 +489,8 @@ class TestHistogramWidthAware:
     def test_chunk_data_no_split_when_fits(self):
         """_chunk_data returns one chunk when unique queries ≤ max_queries."""
         bars = self._make_bars(8, ["A", "B"])
-        opts = ASCIIChartOptions(width=120, use_color=False)
-        hist = ASCIIQueryHistogram(data=bars, options=opts)
+        opts = ChartOptions(width=120, use_color=False)
+        hist = Histogram(data=bars, options=opts)
         hist._use_grouped = True
         hist._platforms = ["A", "B"]
         chunks = hist._chunk_data(hist._sort_data(), max_queries=10)
@@ -498,8 +500,8 @@ class TestHistogramWidthAware:
         """render() splits into multiple charts when 6 platforms × 22 queries exceed width=120."""
         platforms = [f"DuckDB 1.{v}.0" for v in range(6)]
         bars = self._make_bars(22, platforms)
-        opts = ASCIIChartOptions(width=120, use_color=False)
-        hist = ASCIIQueryHistogram(data=bars, options=opts)
+        opts = ChartOptions(width=120, use_color=False)
+        hist = Histogram(data=bars, options=opts)
         result = hist.render()
         # Two chart blocks separated by a blank line.
         assert "\n\n" in result
@@ -508,8 +510,8 @@ class TestHistogramWidthAware:
         """render() produces one chart when queries fit within the width."""
         platforms = ["A", "B"]
         bars = self._make_bars(5, platforms)
-        opts = ASCIIChartOptions(width=120, use_color=False)
-        hist = ASCIIQueryHistogram(data=bars, options=opts, title="TestTitle")
+        opts = ChartOptions(width=120, use_color=False)
+        hist = Histogram(data=bars, options=opts, title="TestTitle")
         result = hist.render()
         # Only one chart header line rendered (no split into multiple charts).
         assert result.count("TestTitle") == 1
@@ -521,8 +523,8 @@ class TestHistogramWidthAware:
         # Build 6 long-named platforms to force a wide footer.
         platforms = [f"DuckDB {1 + i}.{i}.{i}" for i in range(6)]
         bars = self._make_bars(3, platforms)
-        opts = ASCIIChartOptions(width=80, use_color=False)
-        hist = ASCIIQueryHistogram(data=bars, options=opts)
+        opts = ChartOptions(width=80, use_color=False)
+        hist = Histogram(data=bars, options=opts)
         # Drive internal state.
         hist._use_grouped = True
         hist._platforms = platforms
@@ -549,8 +551,8 @@ class TestHistogramWidthAware:
         """_build_grouped_footer stays on one line when legend is short."""
         platforms = ["A", "B"]
         bars = self._make_bars(2, platforms)
-        opts = ASCIIChartOptions(width=120, use_color=False)
-        hist = ASCIIQueryHistogram(data=bars, options=opts)
+        opts = ChartOptions(width=120, use_color=False)
+        hist = Histogram(data=bars, options=opts)
         hist._use_grouped = True
         hist._platforms = platforms
         hist._outlier_bar_keys = set()
@@ -580,8 +582,8 @@ class TestHistogramWidthAware:
         platforms = [f"DuckDB {1 + i}.{i}.{i}" for i in range(6)]
         bars = self._make_bars(3, platforms)
         chart_width = 80
-        opts = ASCIIChartOptions(width=chart_width, use_color=False)
-        hist = ASCIIQueryHistogram(data=bars, options=opts)
+        opts = ChartOptions(width=chart_width, use_color=False)
+        hist = Histogram(data=bars, options=opts)
         hist._use_grouped = True
         hist._platforms = platforms
         hist._outlier_bar_keys = set()
@@ -613,8 +615,8 @@ class TestLabelTruncation:
         """Bar chart shows full names up to 25 characters."""
         name = "DataFusion Platform X"  # 21 chars
         data = [BarData(label=name, value=100)]
-        opts = ASCIIChartOptions(width=100, use_color=False)
-        chart = ASCIIBarChart(data=data, options=opts)
+        opts = ChartOptions(width=100, use_color=False)
+        chart = BarChart(data=data, options=opts)
         result = chart.render()
         assert name in result
 
@@ -622,8 +624,8 @@ class TestLabelTruncation:
         """Bar chart truncates names longer than 30 characters."""
         name = "A" * 35
         data = [BarData(label=name, value=100)]
-        opts = ASCIIChartOptions(width=100, use_color=False)
-        chart = ASCIIBarChart(data=data, options=opts)
+        opts = ChartOptions(width=100, use_color=False)
+        chart = BarChart(data=data, options=opts)
         result = chart.render()
         assert name not in result
         assert ".." in result
@@ -633,8 +635,8 @@ class TestLabelTruncation:
 
         name = "DataFusion (sql)"  # 16 chars
         data = [ComparisonBarData(label="Q1", baseline_value=100, comparison_value=80, baseline_name=name)]
-        opts = ASCIIChartOptions(width=100, use_color=False)
-        chart = ASCIIComparisonBar(data=data, options=opts)
+        opts = ChartOptions(width=100, use_color=False)
+        chart = ComparisonBar(data=data, options=opts)
         result = chart.render()
         assert name in result
 
@@ -642,8 +644,8 @@ class TestLabelTruncation:
         """BoxPlot shows full series names up to 30 chars."""
         name = "DataFusion Platform"  # 19 chars
         series = [BoxPlotSeries(name=name, values=[10, 20, 30, 40, 50])]
-        opts = ASCIIChartOptions(width=100, use_color=False)
-        chart = ASCIIBoxPlot(series=series, options=opts)
+        opts = ChartOptions(width=100, use_color=False)
+        chart = BoxPlot(series=series, options=opts)
         result = chart.render()
         assert name in result
 
@@ -654,24 +656,24 @@ class TestSubtitle:
     def test_subtitle_renders_string(self):
         """Subtitle renders the provided string."""
         data = [BarData(label="Q1", value=100)]
-        opts = ASCIIChartOptions(use_color=False)
-        chart = ASCIIBarChart(data=data, options=opts, subtitle="DuckDB 1.2.0")
+        opts = ChartOptions(use_color=False)
+        chart = BarChart(data=data, options=opts, subtitle="DuckDB 1.2.0")
         result = chart.render()
         assert "DuckDB 1.2.0" in result
 
     def test_subtitle_renders_complex_string(self):
         """Subtitle renders a multi-part string."""
         data = [BarData(label="Q1", value=100)]
-        opts = ASCIIChartOptions(use_color=False)
-        chart = ASCIIBarChart(data=data, options=opts, subtitle="TPC-H | SF=1 | DuckDB 1.2.0")
+        opts = ChartOptions(use_color=False)
+        chart = BarChart(data=data, options=opts, subtitle="TPC-H | SF=1 | DuckDB 1.2.0")
         result = chart.render()
         assert "TPC-H | SF=1 | DuckDB 1.2.0" in result
 
     def test_no_subtitle_without_value(self):
         """No subtitle line when subtitle is not set."""
         data = [BarData(label="Q1", value=100)]
-        opts = ASCIIChartOptions(use_color=False)
-        chart = ASCIIBarChart(data=data, options=opts)
+        opts = ChartOptions(use_color=False)
+        chart = BarChart(data=data, options=opts)
         result = chart.render()
         # Title line and separator should be adjacent (no subtitle between)
         lines = result.split("\n")
@@ -689,48 +691,48 @@ class TestSubject:
     def test_subject_composes_with_default_title(self):
         """Subject is prepended to the chart's default title."""
         data = [BarData(label="Q1", value=100)]
-        opts = ASCIIChartOptions(use_color=False)
-        chart = ASCIIBarChart(data=data, options=opts, subject="Revenue")
+        opts = ChartOptions(use_color=False)
+        chart = BarChart(data=data, options=opts, subject="Revenue")
         assert chart.title == "Revenue Bar Chart"
         assert "Revenue Bar Chart" in chart.render()
 
     def test_explicit_title_wins_over_subject(self):
         """When both title and subject are provided, explicit title wins."""
         data = [BarData(label="Q1", value=100)]
-        opts = ASCIIChartOptions(use_color=False)
-        chart = ASCIIBarChart(data=data, options=opts, title="Custom", subject="Ignored")
+        opts = ChartOptions(use_color=False)
+        chart = BarChart(data=data, options=opts, title="Custom", subject="Ignored")
         assert chart.title == "Custom"
 
     def test_default_title_without_subject(self):
         """Without subject, the generic default title is used."""
         data = [BarData(label="Q1", value=100)]
-        chart = ASCIIBarChart(data=data)
+        chart = BarChart(data=data)
         assert chart.title == "Bar Chart"
 
     def test_subject_on_histogram(self):
         """Subject works on histogram chart type."""
         data = [HistogramBar(query_id="Q1", latency_ms=10)]
-        chart = ASCIIQueryHistogram(data=data, subject="Query Latency")
+        chart = Histogram(data=data, subject="Query Latency")
         assert chart.title == "Query Latency Histogram"
 
     def test_subject_on_summary_box(self):
         """Subject composes with SummaryStats default title."""
-        from textcharts.summary_box import SummaryStats, ASCIISummaryBox
+        from textcharts.summary_box import SummaryStats, SummaryBox
         stats = SummaryStats(num_queries=1)
-        chart = ASCIISummaryBox(stats=stats, subject="Benchmark")
+        chart = SummaryBox(stats=stats, subject="Benchmark")
         assert chart.stats.title == "Benchmark Summary"
 
     def test_subject_does_not_affect_explicit_summary_title(self):
         """SummaryBox with explicit stats title ignores subject."""
-        from textcharts.summary_box import SummaryStats, ASCIISummaryBox
+        from textcharts.summary_box import SummaryStats, SummaryBox
         stats = SummaryStats(title="My Report", num_queries=1)
-        chart = ASCIISummaryBox(stats=stats, subject="Ignored")
+        chart = SummaryBox(stats=stats, subject="Ignored")
         assert chart.stats.title == "My Report"
 
     def test_subject_via_factory_function(self):
         """Subject passes through factory functions."""
-        from textcharts.bar_chart import from_bar_data, BarData as BD
-        chart = from_bar_data([BD(label="A", value=1)], subject="Sales")
+        from textcharts.bar_chart import from_data as bar_from_data, BarData as BD
+        chart = bar_from_data([BD(label="A", value=1)], subject="Sales")
         assert chart.title == "Sales Bar Chart"
 
 
@@ -740,8 +742,8 @@ class TestLowerIsBetter:
     def test_comparison_bar_default_lower_is_better(self):
         """Default lower_is_better=True: positive % = regression (red)."""
         data = [ComparisonBarData("Q1", 100, 120, "A", "B")]
-        opts = ASCIIChartOptions(use_color=True, use_unicode=True)
-        chart = ASCIIComparisonBar(data=data, options=opts)
+        opts = ChartOptions(use_color=True, use_unicode=True)
+        chart = ComparisonBar(data=data, options=opts)
         result = chart.render()
         # Positive change → red (#d95f02) with default lower_is_better=True
         assert "#d95f02" in result or "+20.0%" in result
@@ -749,8 +751,8 @@ class TestLowerIsBetter:
     def test_comparison_bar_higher_is_better(self):
         """lower_is_better=False: positive % = improvement (green)."""
         data = [ComparisonBarData("Q1", 100, 120, "A", "B")]
-        opts = ASCIIChartOptions(use_color=True, use_unicode=True)
-        chart = ASCIIComparisonBar(data=data, options=opts, lower_is_better=False)
+        opts = ChartOptions(use_color=True, use_unicode=True)
+        chart = ComparisonBar(data=data, options=opts, lower_is_better=False)
         result = chart.render()
         # Positive change → green (#66a61e) with lower_is_better=False
         assert "#66a61e" in result or "+20.0%" in result
@@ -758,8 +760,8 @@ class TestLowerIsBetter:
     def test_diverging_bar_default_lower_is_better(self):
         """Default: negative pct = green (improvement), positive = red (regression)."""
         data = [DivergingBarData("Q1", -15.0), DivergingBarData("Q2", 25.0)]
-        opts = ASCIIChartOptions(use_color=True, use_unicode=True)
-        chart = ASCIIDivergingBar(data=data, options=opts)
+        opts = ChartOptions(use_color=True, use_unicode=True)
+        chart = DivergingBar(data=data, options=opts)
         result = chart.render()
         assert "1 improved" in result
         assert "1 regressed" in result
@@ -767,8 +769,8 @@ class TestLowerIsBetter:
     def test_diverging_bar_higher_is_better(self):
         """lower_is_better=False: positive pct = green, negative = red."""
         data = [DivergingBarData("Q1", -15.0), DivergingBarData("Q2", 25.0)]
-        opts = ASCIIChartOptions(use_color=True, use_unicode=True)
-        chart = ASCIIDivergingBar(data=data, options=opts, lower_is_better=False)
+        opts = ChartOptions(use_color=True, use_unicode=True)
+        chart = DivergingBar(data=data, options=opts, lower_is_better=False)
         result = chart.render()
         # With higher-is-better, positive is improvement, negative is regression
         assert "1 improved" in result
@@ -776,7 +778,7 @@ class TestLowerIsBetter:
 
     def test_summary_box_default_lower_is_better(self):
         """Default: negative pct gets green coloring."""
-        from textcharts.summary_box import ASCIISummaryBox, SummaryStats
+        from textcharts.summary_box import SummaryBox, SummaryStats
 
         stats = SummaryStats(
             geo_mean_ms=100,
@@ -784,14 +786,14 @@ class TestLowerIsBetter:
             geo_mean_comparison_ms=100,
             num_queries=1,
         )
-        opts = ASCIIChartOptions(use_color=True)
-        chart = ASCIISummaryBox(stats=stats, options=opts)
+        opts = ChartOptions(use_color=True)
+        chart = SummaryBox(stats=stats, options=opts)
         result = chart.render()
         assert isinstance(result, str)
 
     def test_summary_box_higher_is_better(self):
         """lower_is_better=False: positive pct gets green coloring."""
-        from textcharts.summary_box import ASCIISummaryBox, SummaryStats
+        from textcharts.summary_box import SummaryBox, SummaryStats
 
         stats = SummaryStats(
             geo_mean_ms=120,
@@ -800,8 +802,8 @@ class TestLowerIsBetter:
             num_queries=1,
             lower_is_better=False,
         )
-        opts = ASCIIChartOptions(use_color=True)
-        chart = ASCIISummaryBox(stats=stats, options=opts)
+        opts = ChartOptions(use_color=True)
+        chart = SummaryBox(stats=stats, options=opts)
         result = chart.render()
         assert isinstance(result, str)
 
@@ -812,10 +814,10 @@ class TestColoredLabels:
     def test_bar_chart_label_has_ansi(self):
         """Bar chart labels include ANSI color codes when color enabled."""
         data = [BarData(label="DuckDB", value=100)]
-        opts = ASCIIChartOptions(use_color=True)
+        opts = ChartOptions(use_color=True)
         _caps = TerminalCapabilities(color_mode=ColorMode.EXTENDED)
         with patch("textcharts.base.detect_terminal_capabilities", return_value=_caps):
-            chart = ASCIIBarChart(data=data, options=opts)
+            chart = BarChart(data=data, options=opts)
             result = chart.render()
         # The label line should contain ANSI escape codes
         lines = [line for line in result.split("\n") if "DuckDB" in line]
@@ -824,8 +826,8 @@ class TestColoredLabels:
     def test_bar_chart_label_no_ansi_when_disabled(self):
         """Bar chart labels have no ANSI codes when color disabled."""
         data = [BarData(label="DuckDB", value=100)]
-        opts = ASCIIChartOptions(use_color=False)
-        chart = ASCIIBarChart(data=data, options=opts)
+        opts = ChartOptions(use_color=False)
+        chart = BarChart(data=data, options=opts)
         result = chart.render()
         data_lines = [line for line in result.split("\n") if "DuckDB" in line]
         assert all("\033[" not in line for line in data_lines)
@@ -833,10 +835,10 @@ class TestColoredLabels:
     def test_box_plot_label_has_ansi(self):
         """Box plot series labels include ANSI color codes."""
         series = [BoxPlotSeries(name="DuckDB", values=[10, 20, 30, 40, 50])]
-        opts = ASCIIChartOptions(use_color=True)
+        opts = ChartOptions(use_color=True)
         _caps = TerminalCapabilities(color_mode=ColorMode.EXTENDED)
         with patch("textcharts.base.detect_terminal_capabilities", return_value=_caps):
-            chart = ASCIIBoxPlot(series=series, options=opts)
+            chart = BoxPlot(series=series, options=opts)
             result = chart.render()
         label_lines = [line for line in result.split("\n") if "DuckDB" in line]
         assert any("\033[" in line for line in label_lines)
@@ -845,10 +847,10 @@ class TestColoredLabels:
         """ComparisonBar run names include ANSI color codes."""
 
         data = [ComparisonBarData(label="Q1", baseline_value=100, comparison_value=80)]
-        opts = ASCIIChartOptions(use_color=True)
+        opts = ChartOptions(use_color=True)
         _caps = TerminalCapabilities(color_mode=ColorMode.EXTENDED)
         with patch("textcharts.base.detect_terminal_capabilities", return_value=_caps):
-            chart = ASCIIComparisonBar(data=data, options=opts)
+            chart = ComparisonBar(data=data, options=opts)
             result = chart.render()
         name_lines = [line for line in result.split("\n") if "Baseline" in line or "Comparison" in line]
         assert any("\033[" in line for line in name_lines)
@@ -860,32 +862,32 @@ class TestAxisLabels:
     def test_histogram_has_query_id_axis(self):
         """Histogram has 'Query ID' axis label."""
         data = [HistogramBar(query_id="Q1", latency_ms=100)]
-        opts = ASCIIChartOptions(use_color=False)
-        chart = ASCIIQueryHistogram(data=data, options=opts)
+        opts = ChartOptions(use_color=False)
+        chart = Histogram(data=data, options=opts)
         result = chart.render()
         assert "Query ID" in result
 
     def test_box_plot_has_axis_label(self):
         """Box plot has axis label matching y_label."""
         series = [BoxPlotSeries(name="Test", values=[10, 20, 30])]
-        opts = ASCIIChartOptions(use_color=False)
-        chart = ASCIIBoxPlot(series=series, y_label="Latency (ms)", options=opts)
+        opts = ChartOptions(use_color=False)
+        chart = BoxPlot(series=series, y_label="Latency (ms)", options=opts)
         result = chart.render()
         assert "Latency (ms)" in result
 
     def test_heatmap_has_platform_axis(self):
         """Heatmap has column axis label."""
         matrix = [[1, 2], [3, 4]]
-        opts = ASCIIChartOptions(use_color=False)
-        chart = ASCIIHeatmap(matrix=matrix, row_labels=["Q1", "Q2"], col_labels=["A", "B"], options=opts)
+        opts = ChartOptions(use_color=False)
+        chart = Heatmap(matrix=matrix, row_labels=["Q1", "Q2"], col_labels=["A", "B"], options=opts)
         result = chart.render()
         assert "Columns" in result or "Platform" in result
 
     def test_scatter_plot_has_axis_labels(self):
         """Scatter plot has both axis labels."""
         points = [ScatterPoint(name="A", x=1, y=2), ScatterPoint(name="B", x=3, y=4)]
-        opts = ASCIIChartOptions(use_color=False)
-        chart = ASCIIScatterPlot(points=points, x_label="Cost", y_label="Performance", options=opts)
+        opts = ChartOptions(use_color=False)
+        chart = ScatterPlot(points=points, x_label="Cost", y_label="Performance", options=opts)
         result = chart.render()
         assert "Cost" in result
         assert "Performance" in result
@@ -893,8 +895,8 @@ class TestAxisLabels:
     def test_axis_label_has_arrow(self):
         """Axis labels include arrow indicator."""
         data = [HistogramBar(query_id="Q1", latency_ms=100)]
-        opts = ASCIIChartOptions(use_color=False, use_unicode=True)
-        chart = ASCIIQueryHistogram(data=data, options=opts)
+        opts = ChartOptions(use_color=False, use_unicode=True)
+        chart = Histogram(data=data, options=opts)
         result = chart.render()
         # Unicode arrow →
         assert "\u2192" in result
@@ -902,8 +904,8 @@ class TestAxisLabels:
     def test_axis_label_ascii_fallback(self):
         """Axis labels use ASCII arrow when Unicode disabled."""
         data = [HistogramBar(query_id="Q1", latency_ms=100)]
-        opts = ASCIIChartOptions(use_color=False, use_unicode=False)
-        chart = ASCIIQueryHistogram(data=data, options=opts)
+        opts = ChartOptions(use_color=False, use_unicode=False)
+        chart = Histogram(data=data, options=opts)
         result = chart.render()
         assert "->" in result
 
@@ -914,39 +916,39 @@ class TestHeatmapDivergingPalette:
     def test_diverging_palette_is_default(self):
         """Diverging palette (blue→red) is the default."""
         matrix = [[1, 2], [3, 4]]
-        chart = ASCIIHeatmap(
+        chart = Heatmap(
             matrix=matrix,
             row_labels=["Q1", "Q2"],
             col_labels=["A", "B"],
-            options=ASCIIChartOptions(use_color=False),
+            options=ChartOptions(use_color=False),
         )
-        assert chart._color_scale == ASCIIHeatmap.COLOR_SCALE_DIVERGING
+        assert chart._color_scale == Heatmap.COLOR_SCALE_DIVERGING
 
     def test_sequential_palette_selectable(self):
         """Sequential palette can be selected via color_scheme parameter."""
         matrix = [[1, 2], [3, 4]]
-        chart = ASCIIHeatmap(
+        chart = Heatmap(
             matrix=matrix,
             row_labels=["Q1", "Q2"],
             col_labels=["A", "B"],
             color_scheme="sequential",
-            options=ASCIIChartOptions(use_color=False),
+            options=ChartOptions(use_color=False),
         )
-        assert chart._color_scale == ASCIIHeatmap.COLOR_SCALE_SEQUENTIAL
+        assert chart._color_scale == Heatmap.COLOR_SCALE_SEQUENTIAL
 
     def test_diverging_palette_colors(self):
         """Diverging palette has blue and red endpoints."""
-        assert "#2166ac" in ASCIIHeatmap.COLOR_SCALE_DIVERGING  # Blue
-        assert "#b2182b" in ASCIIHeatmap.COLOR_SCALE_DIVERGING  # Red
+        assert "#2166ac" in Heatmap.COLOR_SCALE_DIVERGING  # Blue
+        assert "#b2182b" in Heatmap.COLOR_SCALE_DIVERGING  # Red
 
     def test_scale_legend_shows_fast_slow(self):
         """Scale legend indicates fast and slow ends of the scale."""
         matrix = [[1, 2], [3, 4]]
-        chart = ASCIIHeatmap(
+        chart = Heatmap(
             matrix=matrix,
             row_labels=["Q1", "Q2"],
             col_labels=["A", "B"],
-            options=ASCIIChartOptions(use_color=False),
+            options=ChartOptions(use_color=False),
         )
         result = chart.render()
         assert "fast" in result
@@ -960,7 +962,7 @@ class TestHeatmapDivergingPalette:
             platforms=["A", "B"],
             color_scheme="sequential",
         )
-        assert chart._color_scale == ASCIIHeatmap.COLOR_SCALE_SEQUENTIAL
+        assert chart._color_scale == Heatmap.COLOR_SCALE_SEQUENTIAL
 
 
 class TestHistogramOutliers:
@@ -971,8 +973,8 @@ class TestHistogramOutliers:
         # Create data where Q10 is clearly an outlier
         data = [HistogramBar(query_id=f"Q{i}", latency_ms=float(10 + i)) for i in range(1, 10)]
         data.append(HistogramBar(query_id="Q10", latency_ms=500.0))  # Clear outlier
-        opts = ASCIIChartOptions(use_color=False, use_unicode=True)
-        chart = ASCIIQueryHistogram(data=data, options=opts)
+        opts = ChartOptions(use_color=False, use_unicode=True)
+        chart = Histogram(data=data, options=opts)
         chart.render()  # Triggers outlier detection
         assert "Q10" in chart._outlier_ids
 
@@ -980,8 +982,8 @@ class TestHistogramOutliers:
         """Outlier bars use the configured distinct no-color unicode glyph."""
         data = [HistogramBar(query_id=f"Q{i}", latency_ms=float(10 + i)) for i in range(1, 10)]
         data.append(HistogramBar(query_id="Q10", latency_ms=500.0))
-        opts = ASCIIChartOptions(use_color=False, use_unicode=True)
-        chart = ASCIIQueryHistogram(data=data, options=opts)
+        opts = ChartOptions(use_color=False, use_unicode=True)
+        chart = Histogram(data=data, options=opts)
         result = chart.render()
         assert chart._get_outlier_char(no_color=True) in result
 
@@ -989,8 +991,8 @@ class TestHistogramOutliers:
         """Outlier bars use the configured no-color ASCII fallback glyph."""
         data = [HistogramBar(query_id=f"Q{i}", latency_ms=float(10 + i)) for i in range(1, 10)]
         data.append(HistogramBar(query_id="Q10", latency_ms=500.0))
-        opts = ASCIIChartOptions(use_color=False, use_unicode=False)
-        chart = ASCIIQueryHistogram(data=data, options=opts)
+        opts = ChartOptions(use_color=False, use_unicode=False)
+        chart = Histogram(data=data, options=opts)
         result = chart.render()
         assert chart._get_outlier_char(no_color=True) in result
 
@@ -998,16 +1000,16 @@ class TestHistogramOutliers:
         """Outlier indicator appears in legend."""
         data = [HistogramBar(query_id=f"Q{i}", latency_ms=float(10 + i)) for i in range(1, 10)]
         data.append(HistogramBar(query_id="Q10", latency_ms=500.0))
-        opts = ASCIIChartOptions(use_color=False, use_unicode=True)
-        chart = ASCIIQueryHistogram(data=data, options=opts)
+        opts = ChartOptions(use_color=False, use_unicode=True)
+        chart = Histogram(data=data, options=opts)
         result = chart.render()
         assert "Outlier" in result
 
     def test_no_outlier_with_uniform_data(self):
         """No outliers detected when data is uniform."""
         data = [HistogramBar(query_id=f"Q{i}", latency_ms=100.0) for i in range(1, 11)]
-        opts = ASCIIChartOptions(use_color=False)
-        chart = ASCIIQueryHistogram(data=data, options=opts)
+        opts = ChartOptions(use_color=False)
+        chart = Histogram(data=data, options=opts)
         chart.render()
         assert len(chart._outlier_ids) == 0
 
@@ -1022,8 +1024,8 @@ class TestHistogramOutliers:
             data.append(HistogramBar(query_id=f"Q{i}", latency_ms=baseline, platform="DF(df)"))
             data.append(HistogramBar(query_id=f"Q{i}", latency_ms=comparison, platform="DF(sql)"))
 
-        opts = ASCIIChartOptions(use_color=False, use_unicode=True)
-        chart = ASCIIQueryHistogram(data=data, options=opts)
+        opts = ChartOptions(use_color=False, use_unicode=True)
+        chart = Histogram(data=data, options=opts)
         chart.render()
 
         assert ("DF(sql)", "Q10") in chart._outlier_bar_keys
@@ -1043,8 +1045,8 @@ class TestSummaryBoxDotLeader:
             total_time_comparison_ms=800.0,
             num_queries=10,
         )
-        opts = ASCIIChartOptions(use_color=False, use_unicode=True)
-        chart = ASCIISummaryBox(stats=stats, options=opts)
+        opts = ChartOptions(use_color=False, use_unicode=True)
+        chart = SummaryBox(stats=stats, options=opts)
         result = chart.render()
         # Should contain middle dots for dot-leader
         assert "·" in result
@@ -1056,8 +1058,8 @@ class TestSummaryBoxDotLeader:
             geo_mean_baseline_ms=100.0,
             geo_mean_comparison_ms=80.0,
         )
-        opts = ASCIIChartOptions(use_color=False, use_unicode=False)
-        chart = ASCIISummaryBox(stats=stats, options=opts)
+        opts = ChartOptions(use_color=False, use_unicode=False)
+        chart = SummaryBox(stats=stats, options=opts)
         result = chart.render()
         # Should contain periods for dot-leader
         assert ".." in result
@@ -1070,8 +1072,8 @@ class TestSummaryBoxDotLeader:
             geo_mean_comparison_ms=61.3,
             num_queries=22,
         )
-        opts = ASCIIChartOptions(width=100, use_color=False, use_unicode=True)
-        chart = ASCIISummaryBox(stats=stats, options=opts)
+        opts = ChartOptions(width=100, use_color=False, use_unicode=True)
+        chart = SummaryBox(stats=stats, options=opts)
         result = chart.render()
         # Find the Geo Mean line and check for no wide blank gap
         for line in result.split("\n"):
@@ -1083,8 +1085,8 @@ class TestSummaryBoxDotLeader:
         """Single-run summary box has no dot-leader (no percentage to trace to)."""
 
         stats = SummaryStats(geo_mean_ms=100.0, total_time_ms=500.0, num_queries=5)
-        opts = ASCIIChartOptions(use_color=False)
-        chart = ASCIISummaryBox(stats=stats, options=opts)
+        opts = ChartOptions(use_color=False)
+        chart = SummaryBox(stats=stats, options=opts)
         result = chart.render()
         # Single-run metrics don't have percentage, so no dot-leader needed
         assert "·" not in result or ".." not in result
@@ -1101,8 +1103,8 @@ class TestSummaryBoxDotLeader:
             total_time_comparison_ms=4831.0,  # -1.4% (no arrow threshold)
             num_queries=22,
         )
-        opts = ASCIIChartOptions(width=width, use_color=False, use_unicode=True)
-        chart = ASCIISummaryBox(stats=stats, options=opts)
+        opts = ChartOptions(width=width, use_color=False, use_unicode=True)
+        chart = SummaryBox(stats=stats, options=opts)
         result = chart.render()
 
         for line in result.splitlines():
@@ -1116,8 +1118,8 @@ class TestEdgeCases:
         """Names longer than 30 chars are truncated in all chart types."""
         long_name = "A" * 40
         data = [BarData(label=long_name, value=100)]
-        opts = ASCIIChartOptions(width=100, use_color=False)
-        chart = ASCIIBarChart(data=data, options=opts)
+        opts = ChartOptions(width=100, use_color=False)
+        chart = BarChart(data=data, options=opts)
         result = chart.render()
         assert long_name not in result
         assert ".." in result
@@ -1125,8 +1127,8 @@ class TestEdgeCases:
     def test_subtitle_truncated_to_width(self):
         """Subtitle is truncated if it exceeds chart width."""
         data = [BarData(label="Q1", value=100)]
-        opts = ASCIIChartOptions(width=40, use_color=False)
-        chart = ASCIIBarChart(data=data, options=opts, subtitle="V" * 100)
+        opts = ChartOptions(width=40, use_color=False)
+        chart = BarChart(data=data, options=opts, subtitle="V" * 100)
         result = chart.render()
         # Should render without error and within width bounds
         for line in result.split("\n"):
@@ -1136,8 +1138,8 @@ class TestEdgeCases:
     def test_axis_label_renders_in_line_chart(self):
         """Line chart axis labels use styled rendering."""
         points = [LinePoint(series="A", x=1, y=10), LinePoint(series="A", x=2, y=20)]
-        opts = ASCIIChartOptions(use_color=False, use_unicode=True)
-        chart = ASCIILineChart(points=points, y_label="Time (ms)", options=opts)
+        opts = ChartOptions(use_color=False, use_unicode=True)
+        chart = LineChart(points=points, y_label="Time (ms)", options=opts)
         result = chart.render()
         assert "Time (ms)" in result
         # Should have arrow indicator

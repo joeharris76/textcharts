@@ -1,30 +1,33 @@
-"""Tests for textcharts rendering (migrated from BenchBox)."""
+"""Tests for textcharts rendering."""
 
 from __future__ import annotations
 
-from textcharts.base import ASCIIChartOptions
-from textcharts.cdf_chart import ASCIICDFChart, CDFSeriesData
-from textcharts.cdf_chart import from_query_results as cdf_from_query_results
-from textcharts.normalized_speedup import ASCIINormalizedSpeedup, SpeedupData, from_normalized_results
-from textcharts.percentile_ladder import ASCIIPercentileLadder, PercentileData, compute_percentile, from_query_results
-from textcharts.rank_table import ASCIIRankTable, RankTableData, from_heatmap_data
-from textcharts.sparkline_table import ASCIISparklineTable, SparklineColumn, SparklineTableData
-from textcharts.stacked_bar import ASCIIStackedBar, StackedBarData, StackedBarSegment
+from textcharts.base import ChartOptions
+from textcharts.cdf_chart import CDFChart, CDFSeriesData
+from textcharts.cdf_chart import from_series as cdf_from_series
+from textcharts.normalized_speedup import NormalizedSpeedup, SpeedupData
+from textcharts.normalized_speedup import from_ratios as speedup_from_ratios
+from textcharts.percentile_ladder import PercentileLadder, PercentileData, compute_percentile
+from textcharts.percentile_ladder import from_series as percentile_from_series
+from textcharts.rank_table import RankTable, RankTableData
+from textcharts.rank_table import from_matrix
+from textcharts.sparkline_table import SparklineTable, SparklineColumn, SparklineTableData
+from textcharts.stacked_bar import StackedBar, StackedBarData, StackedBarSegment
 
 
-class TestASCIIPercentileLadder:
+class TestPercentileLadder:
     """Tests for percentile ladder chart rendering."""
 
     def test_empty_data(self):
         """Empty data returns message."""
-        chart = ASCIIPercentileLadder(data=[])
+        chart = PercentileLadder(data=[])
         result = chart.render()
         assert "No data" in result
 
     def test_single_platform(self):
         """Single platform renders correctly."""
         data = [PercentileData("DuckDB", 12, 45, 78, 120)]
-        chart = ASCIIPercentileLadder(data=data)
+        chart = PercentileLadder(data=data)
         result = chart.render()
         assert "DuckDB" in result
         assert "12" in result
@@ -39,7 +42,7 @@ class TestASCIIPercentileLadder:
             PercentileData("Polars", 15, 52, 95, 310),
             PercentileData("Pandas", 25, 85, 140, 280),
         ]
-        chart = ASCIIPercentileLadder(data=data)
+        chart = PercentileLadder(data=data)
         result = chart.render()
         assert "DuckDB" in result
         assert "Polars" in result
@@ -48,8 +51,8 @@ class TestASCIIPercentileLadder:
     def test_band_fill_chars_unicode(self):
         """Unicode mode uses ░▒▓█ fill characters."""
         data = [PercentileData("Test", 10, 20, 30, 40)]
-        opts = ASCIIChartOptions(use_color=False, use_unicode=True)
-        chart = ASCIIPercentileLadder(data=data, options=opts)
+        opts = ChartOptions(use_color=False, use_unicode=True)
+        chart = PercentileLadder(data=data, options=opts)
         result = chart.render()
         assert "░" in result
         assert "█" in result
@@ -57,8 +60,8 @@ class TestASCIIPercentileLadder:
     def test_band_fill_chars_ascii(self):
         """ASCII mode uses .=#@ fill characters."""
         data = [PercentileData("Test", 10, 20, 30, 40)]
-        opts = ASCIIChartOptions(use_color=False, use_unicode=False)
-        chart = ASCIIPercentileLadder(data=data, options=opts)
+        opts = ChartOptions(use_color=False, use_unicode=False)
+        chart = PercentileLadder(data=data, options=opts)
         result = chart.render()
         assert "░" not in result
         assert "." in result or "=" in result or "#" in result or "@" in result
@@ -66,16 +69,16 @@ class TestASCIIPercentileLadder:
     def test_no_color_output(self):
         """Chart renders without ANSI codes when color disabled."""
         data = [PercentileData("Test", 10, 20, 30, 40)]
-        opts = ASCIIChartOptions(use_color=False)
-        chart = ASCIIPercentileLadder(data=data, options=opts)
+        opts = ChartOptions(use_color=False)
+        chart = PercentileLadder(data=data, options=opts)
         result = chart.render()
         assert "\033[" not in result
 
     def test_legend_shows_all_bands(self):
         """Legend shows all four percentile bands."""
         data = [PercentileData("Test", 10, 20, 30, 40)]
-        opts = ASCIIChartOptions(use_color=False)
-        chart = ASCIIPercentileLadder(data=data, options=opts)
+        opts = ChartOptions(use_color=False)
+        chart = PercentileLadder(data=data, options=opts)
         result = chart.render()
         assert "P50" in result
         assert "P90" in result
@@ -85,8 +88,8 @@ class TestASCIIPercentileLadder:
     def test_annotation_shows_pipe_separated_values(self):
         """Annotation shows values separated by pipes."""
         data = [PercentileData("Test", 10, 20, 30, 40)]
-        opts = ASCIIChartOptions(use_color=False)
-        chart = ASCIIPercentileLadder(data=data, options=opts)
+        opts = ChartOptions(use_color=False)
+        chart = PercentileLadder(data=data, options=opts)
         result = chart.render()
         # Should contain pipe-separated values
         assert "10.0 | 20.0 | 30.0 | 40.0" in result
@@ -97,8 +100,8 @@ class TestASCIIPercentileLadder:
             PercentileData("DataFusion (df)", 66.5, 123.9, 165.9, 217.1),
             PercentileData("DataFusion (sql)", 62, 120.7, 146.2, 237.1),
         ]
-        opts = ASCIIChartOptions(use_color=False, width=120)
-        chart = ASCIIPercentileLadder(data=data, options=opts)
+        opts = ChartOptions(use_color=False, width=120)
+        chart = PercentileLadder(data=data, options=opts)
         result = chart.render()
 
         assert " 66.5 | 123.9 | 165.9 | 217.1" in result
@@ -107,24 +110,24 @@ class TestASCIIPercentileLadder:
     def test_identical_percentiles(self):
         """Identical percentile values render without crash."""
         data = [PercentileData("Flat", 50, 50, 50, 50)]
-        opts = ASCIIChartOptions(use_color=False)
-        chart = ASCIIPercentileLadder(data=data, options=opts)
+        opts = ChartOptions(use_color=False)
+        chart = PercentileLadder(data=data, options=opts)
         result = chart.render()
         assert "Flat" in result
 
     def test_zero_percentiles(self):
         """Zero percentile values render without crash."""
         data = [PercentileData("Zero", 0, 0, 0, 0)]
-        opts = ASCIIChartOptions(use_color=False)
-        chart = ASCIIPercentileLadder(data=data, options=opts)
+        opts = ChartOptions(use_color=False)
+        chart = PercentileLadder(data=data, options=opts)
         result = chart.render()
         assert "Zero" in result
 
     def test_narrow_width(self):
         """Chart renders at minimum width."""
         data = [PercentileData("VeryLongPlatformName", 10, 50, 80, 200)]
-        opts = ASCIIChartOptions(width=40, use_color=False)
-        chart = ASCIIPercentileLadder(data=data, options=opts)
+        opts = ChartOptions(width=40, use_color=False)
+        chart = PercentileLadder(data=data, options=opts)
         result = chart.render()
         assert len(result) > 0
 
@@ -166,20 +169,20 @@ class TestComputePercentile:
         assert result == 30.0
 
 
-class TestASCIINormalizedSpeedup:
+class TestNormalizedSpeedup:
     """Tests for normalized speedup chart rendering."""
 
     def test_empty_data(self):
         """Empty data returns message."""
-        chart = ASCIINormalizedSpeedup(data=[])
+        chart = NormalizedSpeedup(data=[])
         result = chart.render()
         assert "No data" in result
 
     def test_single_platform_baseline(self):
         """Single platform at baseline renders."""
         data = [SpeedupData("SQLite", 1.0, True)]
-        opts = ASCIIChartOptions(use_color=False)
-        chart = ASCIINormalizedSpeedup(data=data, options=opts)
+        opts = ChartOptions(use_color=False)
+        chart = NormalizedSpeedup(data=data, options=opts)
         result = chart.render()
         assert "SQLite" in result
         assert "1.00x" in result
@@ -191,8 +194,8 @@ class TestASCIINormalizedSpeedup:
             SpeedupData("DuckDB", 8.2, False),
             SpeedupData("Pandas", 0.4, False),
         ]
-        opts = ASCIIChartOptions(use_color=False)
-        chart = ASCIINormalizedSpeedup(data=data, options=opts)
+        opts = ChartOptions(use_color=False)
+        chart = NormalizedSpeedup(data=data, options=opts)
         result = chart.render()
         assert "SQLite" in result
         assert "DuckDB" in result
@@ -207,8 +210,8 @@ class TestASCIINormalizedSpeedup:
             SpeedupData("Fast", 2.0, False),
             SpeedupData("Slow", 0.5, False),
         ]
-        opts = ASCIIChartOptions(use_color=False, width=80)
-        chart = ASCIINormalizedSpeedup(data=data, options=opts)
+        opts = ChartOptions(use_color=False, width=80)
+        chart = NormalizedSpeedup(data=data, options=opts)
         result = chart.render()
         # Both should appear in the output
         assert "2.00x" in result
@@ -217,35 +220,35 @@ class TestASCIINormalizedSpeedup:
     def test_no_color_output(self):
         """Chart renders without ANSI codes when color disabled."""
         data = [SpeedupData("Test", 1.5, False)]
-        opts = ASCIIChartOptions(use_color=False)
-        chart = ASCIINormalizedSpeedup(data=data, options=opts)
+        opts = ChartOptions(use_color=False)
+        chart = NormalizedSpeedup(data=data, options=opts)
         result = chart.render()
         assert "\033[" not in result
 
     def test_direction_labels(self):
         """Chart shows Slower/Faster direction labels."""
         data = [SpeedupData("Test", 2.0, False)]
-        opts = ASCIIChartOptions(use_color=False)
-        chart = ASCIINormalizedSpeedup(data=data, options=opts)
+        opts = ChartOptions(use_color=False)
+        chart = NormalizedSpeedup(data=data, options=opts)
         result = chart.render()
         assert "Slower" in result
         assert "Faster" in result
 
 
-class TestASCIIStackedBar:
+class TestStackedBar:
     """Tests for stacked bar chart rendering."""
 
     def test_empty_data(self):
         """Empty data returns message."""
-        chart = ASCIIStackedBar(data=[])
+        chart = StackedBar(data=[])
         result = chart.render()
         assert "No data" in result
 
     def test_single_platform_single_phase(self):
         """Single platform with one phase renders."""
         data = [StackedBarData("DuckDB", [StackedBarSegment("Power", 8000)])]
-        opts = ASCIIChartOptions(use_color=False)
-        chart = ASCIIStackedBar(data=data, options=opts)
+        opts = ChartOptions(use_color=False)
+        chart = StackedBar(data=data, options=opts)
         result = chart.render()
         assert "DuckDB" in result
         assert "Power" in result
@@ -268,8 +271,8 @@ class TestASCIIStackedBar:
                 ],
             ),
         ]
-        opts = ASCIIChartOptions(use_color=False)
-        chart = ASCIIStackedBar(data=data, options=opts)
+        opts = ChartOptions(use_color=False)
+        chart = StackedBar(data=data, options=opts)
         result = chart.render()
         assert "DuckDB" in result
         assert "SQLite" in result
@@ -293,8 +296,8 @@ class TestASCIIStackedBar:
                 ],
             )
         ]
-        opts = ASCIIChartOptions(use_color=False)
-        chart = ASCIIStackedBar(data=data, options=opts)
+        opts = ChartOptions(use_color=False)
+        chart = StackedBar(data=data, options=opts)
         result = chart.render()
         assert "Test" in result
 
@@ -305,8 +308,8 @@ class TestASCIIStackedBar:
             StackedBarData("Med", [StackedBarSegment("Run", 5000)], total=5000),
             StackedBarData("Slow", [StackedBarSegment("Run", 120000)], total=120000),
         ]
-        opts = ASCIIChartOptions(use_color=False)
-        chart = ASCIIStackedBar(data=data, options=opts, metric_label="ms")
+        opts = ChartOptions(use_color=False)
+        chart = StackedBar(data=data, options=opts, metric_label="ms")
         result = chart.render()
         assert "500ms" in result
         assert "5.0s" in result
@@ -323,8 +326,8 @@ class TestASCIIStackedBar:
                 ],
             )
         ]
-        opts = ASCIIChartOptions(use_color=False)
-        chart = ASCIIStackedBar(data=data, options=opts)
+        opts = ChartOptions(use_color=False)
+        chart = StackedBar(data=data, options=opts)
         result = chart.render()
         assert "DataGen" in result
         assert "Load" in result
@@ -332,21 +335,21 @@ class TestASCIIStackedBar:
     def test_no_color_output(self):
         """Chart renders without ANSI codes when color disabled."""
         data = [StackedBarData("Test", [StackedBarSegment("A", 100)])]
-        opts = ASCIIChartOptions(use_color=False)
-        chart = ASCIIStackedBar(data=data, options=opts)
+        opts = ChartOptions(use_color=False)
+        chart = StackedBar(data=data, options=opts)
         result = chart.render()
         assert "\033[" not in result
 
 # ── Sparkline Table Tests ────────────────────────────────
 
 
-class TestASCIISparklineTable:
+class TestSparklineTable:
     """Tests for sparkline table chart rendering."""
 
     def test_empty_data(self):
         """Empty data returns message."""
         data = SparklineTableData([], [])
-        chart = ASCIISparklineTable(data=data)
+        chart = SparklineTable(data=data)
         result = chart.render()
         assert "No data" in result
 
@@ -354,8 +357,8 @@ class TestASCIISparklineTable:
         """Single metric column renders."""
         cols = [SparklineColumn("Total", {"DuckDB": 1240, "Polars": 1580}, False)]
         data = SparklineTableData(["DuckDB", "Polars"], cols)
-        opts = ASCIIChartOptions(use_color=False)
-        chart = ASCIISparklineTable(data=data, options=opts)
+        opts = ChartOptions(use_color=False)
+        chart = SparklineTable(data=data, options=opts)
         result = chart.render()
         assert "DuckDB" in result
         assert "Polars" in result
@@ -365,8 +368,8 @@ class TestASCIISparklineTable:
         """Higher-is-better columns show highest value with tallest bar."""
         cols = [SparklineColumn("Success", {"A": 100, "B": 50}, True)]
         data = SparklineTableData(["A", "B"], cols)
-        opts = ASCIIChartOptions(use_color=False)
-        chart = ASCIISparklineTable(data=data, options=opts)
+        opts = ChartOptions(use_color=False)
+        chart = SparklineTable(data=data, options=opts)
         result = chart.render()
         assert "A" in result
         assert "B" in result
@@ -378,8 +381,8 @@ class TestASCIISparklineTable:
             SparklineColumn("Success", {"DuckDB": 100, "Polars": 100}, True),
         ]
         data = SparklineTableData(["DuckDB", "Polars"], cols)
-        opts = ASCIIChartOptions(use_color=False)
-        chart = ASCIISparklineTable(data=data, options=opts)
+        opts = ChartOptions(use_color=False)
+        chart = SparklineTable(data=data, options=opts)
         result = chart.render()
         assert "Latency" in result
         assert "Success" in result
@@ -388,8 +391,8 @@ class TestASCIISparklineTable:
         """Legend shows best/worst indicator."""
         cols = [SparklineColumn("Test", {"A": 1, "B": 2}, False)]
         data = SparklineTableData(["A", "B"], cols)
-        opts = ASCIIChartOptions(use_color=False)
-        chart = ASCIISparklineTable(data=data, options=opts)
+        opts = ChartOptions(use_color=False)
+        chart = SparklineTable(data=data, options=opts)
         result = chart.render()
         assert "best" in result
         assert "worst" in result
@@ -398,8 +401,8 @@ class TestASCIISparklineTable:
         """Chart renders without ANSI codes when color disabled."""
         cols = [SparklineColumn("Test", {"A": 1}, False)]
         data = SparklineTableData(["A"], cols)
-        opts = ASCIIChartOptions(use_color=False)
-        chart = ASCIISparklineTable(data=data, options=opts)
+        opts = ChartOptions(use_color=False)
+        chart = SparklineTable(data=data, options=opts)
         result = chart.render()
         assert "\033[" not in result
 
@@ -407,8 +410,8 @@ class TestASCIISparklineTable:
         """Long platform names remain fully visible when chart width allows it."""
         cols = [SparklineColumn("Total(ms)", {"DataFusion (df)": 100, "DataFusion (sql)": 110}, False)]
         data = SparklineTableData(["DataFusion (df)", "DataFusion (sql)"], cols)
-        opts = ASCIIChartOptions(use_color=False, width=120)
-        chart = ASCIISparklineTable(data=data, options=opts)
+        opts = ChartOptions(use_color=False, width=120)
+        chart = SparklineTable(data=data, options=opts)
         result = chart.render()
         assert "DataFusion (df)" in result
         assert "DataFusion (sql)" in result
@@ -420,8 +423,8 @@ class TestASCIISparklineTable:
         p2 = "VeryLongPlatformNameSharedPrefix-DataFusion-ModeB"
         cols = [SparklineColumn("Total(ms)", {p1: 100, p2: 110}, False)]
         data = SparklineTableData([p1, p2], cols)
-        opts = ASCIIChartOptions(use_color=False, width=40)
-        chart = ASCIISparklineTable(data=data, options=opts)
+        opts = ChartOptions(use_color=False, width=40)
+        chart = SparklineTable(data=data, options=opts)
         result = chart.render()
         assert "~1" in result
         assert "~2" in result
@@ -429,27 +432,27 @@ class TestASCIISparklineTable:
 # ── CDF Chart Tests ────────────────────────────────
 
 
-class TestASCIICDFChart:
+class TestCDFChart:
     """Tests for CDF chart rendering."""
 
     def test_empty_data(self):
         """Empty data returns message."""
-        chart = ASCIICDFChart(data=[])
+        chart = CDFChart(data=[])
         result = chart.render()
         assert "No data" in result
 
     def test_empty_values(self):
         """Series with empty values returns message."""
         data = [CDFSeriesData("Empty", [])]
-        chart = ASCIICDFChart(data=data)
+        chart = CDFChart(data=data)
         result = chart.render()
         assert "No data" in result
 
     def test_single_series(self):
         """Single series renders with markers."""
         data = [CDFSeriesData("DuckDB", [10, 20, 30, 50, 120])]
-        opts = ASCIIChartOptions(use_color=False)
-        chart = ASCIICDFChart(data=data, options=opts)
+        opts = ChartOptions(use_color=False)
+        chart = CDFChart(data=data, options=opts)
         result = chart.render()
         assert "DuckDB" in result
         assert "100%" in result
@@ -461,8 +464,8 @@ class TestASCIICDFChart:
             CDFSeriesData("DuckDB", [10, 20, 30, 50, 120]),
             CDFSeriesData("Polars", [15, 25, 45, 80, 310]),
         ]
-        opts = ASCIIChartOptions(use_color=False)
-        chart = ASCIICDFChart(data=data, options=opts)
+        opts = ChartOptions(use_color=False)
+        chart = CDFChart(data=data, options=opts)
         result = chart.render()
         assert "DuckDB" in result
         assert "Polars" in result
@@ -472,24 +475,24 @@ class TestASCIICDFChart:
     def test_identical_values(self):
         """Identical values render without crash."""
         data = [CDFSeriesData("Flat", [50, 50, 50, 50, 50])]
-        opts = ASCIIChartOptions(use_color=False)
-        chart = ASCIICDFChart(data=data, options=opts)
+        opts = ChartOptions(use_color=False)
+        chart = CDFChart(data=data, options=opts)
         result = chart.render()
         assert "Flat" in result
 
     def test_single_value(self):
         """Single value renders without crash."""
         data = [CDFSeriesData("Solo", [42])]
-        opts = ASCIIChartOptions(use_color=False)
-        chart = ASCIICDFChart(data=data, options=opts)
+        opts = ChartOptions(use_color=False)
+        chart = CDFChart(data=data, options=opts)
         result = chart.render()
         assert "Solo" in result
 
     def test_y_axis_fixed_0_100(self):
         """Y-axis is fixed at 0-100% range."""
         data = [CDFSeriesData("Test", [10, 20, 30])]
-        opts = ASCIIChartOptions(use_color=False)
-        chart = ASCIICDFChart(data=data, options=opts)
+        opts = ChartOptions(use_color=False)
+        chart = CDFChart(data=data, options=opts)
         result = chart.render()
         assert "100%" in result
         assert "0%" in result
@@ -497,16 +500,16 @@ class TestASCIICDFChart:
     def test_no_color_output(self):
         """Chart renders without ANSI codes when color disabled."""
         data = [CDFSeriesData("Test", [10, 20, 30])]
-        opts = ASCIIChartOptions(use_color=False)
-        chart = ASCIICDFChart(data=data, options=opts)
+        opts = ChartOptions(use_color=False)
+        chart = CDFChart(data=data, options=opts)
         result = chart.render()
         assert "\033[" not in result
 
     def test_factory_function(self):
-        """from_query_results factory creates CDF chart."""
-        chart = cdf_from_query_results(
+        """from_series factory creates CDF chart."""
+        chart = cdf_from_series(
             [("DuckDB", [10, 20, 30])],
-            options=ASCIIChartOptions(use_color=False),
+            options=ChartOptions(use_color=False),
         )
         result = chart.render()
         assert "DuckDB" in result
@@ -514,13 +517,13 @@ class TestASCIICDFChart:
 # ── Rank Table Tests ────────────────────────────────
 
 
-class TestASCIIRankTable:
+class TestRankTable:
     """Tests for rank table chart rendering."""
 
     def test_empty_data(self):
         """Empty data returns message."""
         data = RankTableData([], [], {})
-        chart = ASCIIRankTable(data=data)
+        chart = RankTable(data=data)
         result = chart.render()
         assert "No data" in result
 
@@ -536,8 +539,8 @@ class TestASCIIRankTable:
                 ("Polars", "Q2"): 15,
             },
         )
-        opts = ASCIIChartOptions(use_color=False)
-        chart = ASCIIRankTable(data=data, options=opts)
+        opts = ChartOptions(use_color=False)
+        chart = RankTable(data=data, options=opts)
         result = chart.render()
         assert "DuckDB" in result
         assert "Polars" in result
@@ -552,8 +555,8 @@ class TestASCIIRankTable:
             ["A", "B", "C"],
             {("A", "Q1"): 10, ("B", "Q1"): 10, ("C", "Q1"): 20},
         )
-        opts = ASCIIChartOptions(use_color=False)
-        chart = ASCIIRankTable(data=data, options=opts)
+        opts = ChartOptions(use_color=False)
+        chart = RankTable(data=data, options=opts)
         result = chart.render()
         # A and B should both be 1st, C should be 3rd (not 2nd)
         assert "1st" in result
@@ -566,8 +569,8 @@ class TestASCIIRankTable:
             ["A", "B"],
             {("A", "Q1"): 10, ("B", "Q1"): 20, ("A", "Q2"): 30, ("B", "Q2"): 15},
         )
-        opts = ASCIIChartOptions(use_color=False)
-        chart = ASCIIRankTable(data=data, options=opts)
+        opts = ChartOptions(use_color=False)
+        chart = RankTable(data=data, options=opts)
         result = chart.render()
         assert "GeoRank" in result
 
@@ -585,8 +588,8 @@ class TestASCIIRankTable:
                 ("B", "Q10"): 20,
             },
         )
-        opts = ASCIIChartOptions(use_color=False)
-        chart = ASCIIRankTable(data=data, options=opts)
+        opts = ChartOptions(use_color=False)
+        chart = RankTable(data=data, options=opts)
         result = chart.render()
         lines = result.split("\n")
         # Find data rows that start with Q and a digit (not header "Query", title, or separator)
@@ -613,8 +616,8 @@ class TestASCIIRankTable:
                 ("B", "Q3"): 20,
             },
         )
-        opts = ASCIIChartOptions(use_color=False)
-        chart = ASCIIRankTable(data=data, options=opts)
+        opts = ChartOptions(use_color=False)
+        chart = RankTable(data=data, options=opts)
         result = chart.render()
         # A wins 2 queries, B wins 1
         lines = [line for line in result.split("\n") if "Wins" in line]
@@ -629,18 +632,18 @@ class TestASCIIRankTable:
             ["A", "B"],
             {("A", "Q1"): 10, ("B", "Q1"): 20},
         )
-        opts = ASCIIChartOptions(use_color=False)
-        chart = ASCIIRankTable(data=data, options=opts)
+        opts = ChartOptions(use_color=False)
+        chart = RankTable(data=data, options=opts)
         result = chart.render()
         assert "\033[" not in result
 
-    def test_from_heatmap_data_factory(self):
-        """from_heatmap_data creates rank table from matrix format."""
-        chart = from_heatmap_data(
+    def test_from_matrix_factory(self):
+        """from_matrix creates rank table from matrix format."""
+        chart = from_matrix(
             [[10, 20], [30, 15]],
             ["Q1", "Q2"],
             ["DuckDB", "Polars"],
-            options=ASCIIChartOptions(use_color=False),
+            options=ChartOptions(use_color=False),
         )
         result = chart.render()
         assert "DuckDB" in result
@@ -650,34 +653,34 @@ class TestASCIIRankTable:
 
 
 class TestFromQueryResults:
-    """Tests for from_query_results factory function."""
+    """Tests for percentile_from_series factory function."""
 
     def test_basic_factory(self):
         """Factory creates chart from raw query times."""
-        chart = from_query_results(
+        chart = percentile_from_series(
             [("DuckDB", [10, 20, 30, 50, 120])],
-            options=ASCIIChartOptions(use_color=False),
+            options=ChartOptions(use_color=False),
         )
         result = chart.render()
         assert "DuckDB" in result
 
     def test_empty_values(self):
         """Factory handles platform with no query times."""
-        chart = from_query_results(
+        chart = percentile_from_series(
             [("Empty", [])],
-            options=ASCIIChartOptions(use_color=False),
+            options=ChartOptions(use_color=False),
         )
         result = chart.render()
         assert "Empty" in result
 
     def test_multi_platform_factory(self):
         """Factory handles multiple platforms."""
-        chart = from_query_results(
+        chart = percentile_from_series(
             [
                 ("DuckDB", [10, 20, 30, 50, 120]),
                 ("Polars", [15, 25, 45, 80, 310]),
             ],
-            options=ASCIIChartOptions(use_color=False),
+            options=ChartOptions(use_color=False),
         )
         result = chart.render()
         assert "DuckDB" in result
@@ -687,14 +690,14 @@ class TestFromQueryResults:
 
 
 class TestFromNormalizedResults:
-    """Tests for from_normalized_results factory."""
+    """Tests for speedup_from_ratios factory."""
 
     def test_basic_factory(self):
         """Factory creates chart from timing data."""
-        chart = from_normalized_results(
+        chart = speedup_from_ratios(
             [("SQLite", 5000), ("DuckDB", 610)],
             baseline="SQLite",
-            options=ASCIIChartOptions(use_color=False),
+            options=ChartOptions(use_color=False),
         )
         result = chart.render()
         assert "SQLite" in result
@@ -702,27 +705,27 @@ class TestFromNormalizedResults:
 
     def test_slowest_baseline(self):
         """'slowest' auto-selects the slowest platform."""
-        chart = from_normalized_results(
+        chart = speedup_from_ratios(
             [("A", 100), ("B", 500), ("C", 200)],
             baseline="slowest",
-            options=ASCIIChartOptions(use_color=False),
+            options=ChartOptions(use_color=False),
         )
         result = chart.render()
         assert "1.00x" in result  # B should be 1.0x
 
     def test_fastest_baseline(self):
         """'fastest' auto-selects the fastest platform."""
-        chart = from_normalized_results(
+        chart = speedup_from_ratios(
             [("A", 100), ("B", 500), ("C", 200)],
             baseline="fastest",
-            options=ASCIIChartOptions(use_color=False),
+            options=ChartOptions(use_color=False),
         )
         result = chart.render()
         assert "1.00x" in result
 
     def test_empty_input(self):
         """Empty input renders no data."""
-        chart = from_normalized_results([], options=ASCIIChartOptions(use_color=False))
+        chart = speedup_from_ratios([], options=ChartOptions(use_color=False))
         result = chart.render()
         assert "No data" in result
 
@@ -734,42 +737,42 @@ class TestSubjectParameter:
 
     def test_subject_composes_with_default_title(self):
         """subject='Query Latency' + default 'Histogram' → 'Query Latency Histogram'."""
-        from textcharts.histogram import ASCIIQueryHistogram, HistogramBar
+        from textcharts.histogram import Histogram, HistogramBar
 
-        h = ASCIIQueryHistogram([HistogramBar("q1", 10)], subject="Query Latency")
+        h = Histogram([HistogramBar("q1", 10)], subject="Query Latency")
         assert h.title == "Query Latency Histogram"
 
     def test_explicit_title_wins_over_subject(self):
         """When both title and subject are provided, explicit title wins."""
-        from textcharts.histogram import ASCIIQueryHistogram, HistogramBar
+        from textcharts.histogram import Histogram, HistogramBar
 
-        h = ASCIIQueryHistogram([HistogramBar("q1", 10)], title="Custom", subject="Ignored")
+        h = Histogram([HistogramBar("q1", 10)], title="Custom", subject="Ignored")
         assert h.title == "Custom"
 
     def test_neither_title_nor_subject_uses_default(self):
         """When neither is provided, generic default is used."""
-        from textcharts.histogram import ASCIIQueryHistogram, HistogramBar
+        from textcharts.histogram import Histogram, HistogramBar
 
-        h = ASCIIQueryHistogram([HistogramBar("q1", 10)])
+        h = Histogram([HistogramBar("q1", 10)])
         assert h.title == "Histogram"
 
     def test_subject_on_multiple_chart_types(self):
         """subject works on different chart types."""
-        from textcharts.bar_chart import ASCIIBarChart, BarData
-        from textcharts.cdf_chart import ASCIICDFChart, CDFSeriesData
+        from textcharts.bar_chart import BarChart, BarData
+        from textcharts.cdf_chart import CDFChart, CDFSeriesData
 
-        bar = ASCIIBarChart([BarData("a", 1)], subject="Sales")
+        bar = BarChart([BarData("a", 1)], subject="Sales")
         assert bar.title == "Sales Bar Chart"
 
-        cdf = ASCIICDFChart([CDFSeriesData("s1", [1, 2, 3])], subject="Latency")
+        cdf = CDFChart([CDFSeriesData("s1", [1, 2, 3])], subject="Latency")
         assert cdf.title == "Latency Cumulative Distribution"
 
     def test_subject_via_factory_function(self):
         """subject passes through factory functions."""
         data = [StackedBarData("P1", [StackedBarSegment("Load", 100)])]
-        from textcharts.stacked_bar import from_phase_data
+        from textcharts.stacked_bar import from_data as stacked_from_data
 
-        chart = from_phase_data(data, subject="Phase")
+        chart = stacked_from_data(data, subject="Phase")
         assert chart.title == "Phase Stacked Breakdown"
 
     def test_subject_via_executor(self):
@@ -781,9 +784,9 @@ class TestSubjectParameter:
 
     def test_subject_renders_in_output(self):
         """Subject-composed title appears in rendered output."""
-        opts = ASCIIChartOptions(use_color=False, width=60)
+        opts = ChartOptions(use_color=False, width=60)
         data = [StackedBarData("P1", [StackedBarSegment("Load", 100)])]
-        chart = ASCIIStackedBar(data=data, options=opts, subject="Phase")
+        chart = StackedBar(data=data, options=opts, subject="Phase")
         result = chart.render()
         assert "Phase Stacked Breakdown" in result
 

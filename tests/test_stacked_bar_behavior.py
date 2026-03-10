@@ -1,15 +1,15 @@
 from __future__ import annotations
 
-from textcharts import ASCIIChartOptions, ASCIIStackedBar, StackedBarData, StackedBarSegment
-from textcharts.stacked_bar import from_phase_data
+from textcharts import ChartOptions, StackedBar, StackedBarData, StackedBarSegment
+from textcharts.stacked_bar import from_data as stacked_from_data
 
 
 def _opts(**kw):
-    return ASCIIChartOptions(use_color=False, width=80, **kw)
+    return ChartOptions(use_color=False, width=80, **kw)
 
 
 def test_empty_data():
-    assert "No data" in ASCIIStackedBar(data=[]).render()
+    assert "No data" in StackedBar(data=[]).render()
 
 
 def test_segments_and_total_rendered():
@@ -20,7 +20,7 @@ def test_segments_and_total_rendered():
             StackedBarSegment("Cleanup", 50.0),
         ]),
     ]
-    result = ASCIIStackedBar(data=data, options=_opts()).render()
+    result = StackedBar(data=data, options=_opts()).render()
     assert "Platform1" in result
     assert "Load" in result
     assert "Run" in result
@@ -34,9 +34,9 @@ def test_auto_total_computation():
 
 
 def test_format_time_units():
-    assert ASCIIStackedBar._format_time(500.0) == "500ms"
-    assert ASCIIStackedBar._format_time(1500.0) == "1.5s"
-    assert ASCIIStackedBar._format_time(90_000.0) == "1.5min"
+    assert StackedBar._format_time(500.0) == "500ms"
+    assert StackedBar._format_time(1500.0) == "1.5s"
+    assert StackedBar._format_time(90_000.0) == "1.5min"
 
 
 def test_multi_platform_rendering():
@@ -44,7 +44,7 @@ def test_multi_platform_rendering():
         StackedBarData("Fast", [StackedBarSegment("Load", 100), StackedBarSegment("Run", 200)]),
         StackedBarData("Slow", [StackedBarSegment("Load", 300), StackedBarSegment("Run", 1200)]),
     ]
-    result = ASCIIStackedBar(data=data, options=_opts()).render()
+    result = StackedBar(data=data, options=_opts()).render()
     assert "Fast" in result
     assert "Slow" in result
 
@@ -56,7 +56,7 @@ def test_legend_shows_phase_names():
             StackedBarSegment("Query", 90),
         ]),
     ]
-    result = ASCIIStackedBar(data=data, options=_opts()).render()
+    result = StackedBar(data=data, options=_opts()).render()
     # Legend line should list phase names
     assert "DataGen" in result
     assert "Query" in result
@@ -69,21 +69,21 @@ def test_zero_segment_skipped():
             StackedBarSegment("B", 100.0),
         ]),
     ]
-    result = ASCIIStackedBar(data=data, options=_opts()).render()
+    result = StackedBar(data=data, options=_opts()).render()
     assert "P1" in result  # renders without error
 
 
-def test_from_phase_data_factory():
+def test_stacked_from_data_factory():
     data = [StackedBarData("P1", [StackedBarSegment("Load", 100)])]
-    chart = from_phase_data(data, title="Factory Test", options=_opts())
+    chart = stacked_from_data(data, title="Factory Test", options=_opts())
     result = chart.render()
-    assert isinstance(chart, ASCIIStackedBar)
+    assert isinstance(chart, StackedBar)
     assert "Factory Test" in result
 
 
 def test_value_formatter_callback():
     data = [StackedBarData("P1", [StackedBarSegment("Load", 1500)])]
-    chart = ASCIIStackedBar(
+    chart = StackedBar(
         data=data,
         options=_opts(),
         value_formatter=lambda v: f"{v / 1000:.1f} KB",
@@ -95,7 +95,7 @@ def test_value_formatter_callback():
 
 def test_value_formatter_overrides_metric_label():
     data = [StackedBarData("P1", [StackedBarSegment("Load", 2000)])]
-    chart = ASCIIStackedBar(
+    chart = StackedBar(
         data=data,
         options=_opts(),
         metric_label="ms",
@@ -108,6 +108,6 @@ def test_value_formatter_overrides_metric_label():
 
 def test_default_ms_formatting_unchanged():
     data = [StackedBarData("P1", [StackedBarSegment("Load", 1500)])]
-    chart = ASCIIStackedBar(data=data, options=_opts(), metric_label="ms")
+    chart = StackedBar(data=data, options=_opts(), metric_label="ms")
     result = chart.render()
     assert "1.5s" in result

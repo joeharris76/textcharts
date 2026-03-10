@@ -7,22 +7,22 @@ from pathlib import Path
 import pytest
 
 from textcharts import (
-    ASCIIBarChart,
-    ASCIIBoxPlot,
-    ASCIICDFChart,
-    ASCIIChartOptions,
-    ASCIIComparisonBar,
-    ASCIIDivergingBar,
-    ASCIIHeatmap,
-    ASCIIHistogram,
-    ASCIILineChart,
-    ASCIINormalizedSpeedup,
-    ASCIIPercentileLadder,
-    ASCIIRankTable,
-    ASCIIScatterPlot,
-    ASCIISparklineTable,
-    ASCIIStackedBar,
-    ASCIISummaryBox,
+    BarChart,
+    BoxPlot,
+    CDFChart,
+    ChartOptions,
+    ComparisonBar,
+    DivergingBar,
+    Heatmap,
+    Histogram,
+    LineChart,
+    NormalizedSpeedup,
+    PercentileLadder,
+    RankTable,
+    ScatterPlot,
+    SparklineTable,
+    StackedBar,
+    SummaryBox,
     BarData,
     BoxPlotSeries,
     CDFSeriesData,
@@ -42,7 +42,7 @@ from textcharts import (
 )
 
 GOLDEN_DIR = Path(__file__).resolve().parent / "fixtures" / "golden" / "ascii"
-OPTS = ASCIIChartOptions(use_color=False, use_unicode=True, width=80)
+OPTS = ChartOptions(use_color=False, use_unicode=True, width=80)
 
 
 @pytest.fixture
@@ -56,7 +56,7 @@ def _bar_chart() -> tuple[str, str]:
         BarData(label="SQLite", value=3456.7, is_worst=True),
         BarData(label="Polars", value=2100.0),
     ]
-    chart = ASCIIBarChart(data=data, title="Total Runtime", metric_label="ms", options=OPTS)
+    chart = BarChart(data=data, title="Total Runtime", metric_label="ms", options=OPTS)
     return "bar_chart", chart.render()
 
 
@@ -69,7 +69,7 @@ def _histogram() -> tuple[str, str]:
         HistogramBar(query_id="Q5", latency_ms=210.0),
         HistogramBar(query_id="Q6", latency_ms=150.3),
     ]
-    chart = ASCIIHistogram(data=bars, title="Query Latency", options=OPTS)
+    chart = Histogram(data=bars, title="Query Latency", options=OPTS)
     return "histogram", chart.render()
 
 
@@ -80,7 +80,7 @@ def _heatmap() -> tuple[str, str]:
         [89.0, 95.0, 110.0],
         [560.0, 480.0, 520.0],
     ]
-    chart = ASCIIHeatmap(
+    chart = Heatmap(
         matrix=matrix,
         row_labels=["Q1", "Q2", "Q3", "Q4"],
         col_labels=["DuckDB", "SQLite", "Polars"],
@@ -96,7 +96,7 @@ def _box_plot() -> tuple[str, str]:
         BoxPlotSeries(name="SQLite", values=[200, 250, 300, 350, 400, 450, 500, 600, 800]),
         BoxPlotSeries(name="Polars", values=[100, 120, 140, 160, 180, 200, 220, 280, 350]),
     ]
-    chart = ASCIIBoxPlot(series=series, title="Query Time Distribution", options=OPTS)
+    chart = BoxPlot(series=series, title="Query Time Distribution", options=OPTS)
     return "box_plot", chart.render()
 
 
@@ -109,7 +109,7 @@ def _line_chart() -> tuple[str, str]:
         LinePoint(series="SQLite", x=2, y=320.0, label="Run 2"),
         LinePoint(series="SQLite", x=3, y=310.0, label="Run 3"),
     ]
-    chart = ASCIILineChart(points=points, title="Performance Trend", options=OPTS)
+    chart = LineChart(points=points, title="Performance Trend", options=OPTS)
     return "line_chart", chart.render()
 
 
@@ -120,7 +120,7 @@ def _scatter_plot() -> tuple[str, str]:
         ScatterPoint(name="Snowflake", x=2.50, y=890.0),
         ScatterPoint(name="Databricks", x=5.00, y=650.0),
     ]
-    chart = ASCIIScatterPlot(points=points, title="Cost vs Performance", options=OPTS)
+    chart = ScatterPlot(points=points, title="Cost vs Performance", options=OPTS)
     return "scatter_plot", chart.render()
 
 
@@ -139,7 +139,7 @@ def _comparison_bar() -> tuple[str, str]:
             label="Q4", baseline_value=560.0, comparison_value=540.0, baseline_name="v1.0", comparison_name="v1.1"
         ),
     ]
-    chart = ASCIIComparisonBar(data=data, title="Version Comparison", options=OPTS)
+    chart = ComparisonBar(data=data, title="Version Comparison", options=OPTS)
     return "comparison_bar", chart.render()
 
 
@@ -151,7 +151,7 @@ def _diverging_bar() -> tuple[str, str]:
         DivergingBarData(label="Q4", pct_change=-3.6),
         DivergingBarData(label="Q5", pct_change=45.2),
     ]
-    chart = ASCIIDivergingBar(data=data, title="Regression Analysis", options=OPTS)
+    chart = DivergingBar(data=data, title="Regression Analysis", options=OPTS)
     return "diverging_bar", chart.render()
 
 
@@ -167,7 +167,7 @@ def _summary_box() -> tuple[str, str]:
         environment={"OS": "macOS 15.3", "CPUs": "12 (arm64)", "Memory": "36 GB"},
         platform_config={"Driver": "DuckDB 1.2.0", "Tuning": "Tuned"},
     )
-    chart = ASCIISummaryBox(stats=stats, options=OPTS)
+    chart = SummaryBox(stats=stats, options=OPTS)
     return "summary_box", chart.render()
 
 
@@ -177,7 +177,7 @@ def _percentile_ladder() -> tuple[str, str]:
         PercentileData(name="SQLite", p50=280.0, p90=520.0, p95=650.0, p99=1200.0),
         PercentileData(name="Polars", p50=150.0, p90=310.0, p95=420.0, p99=700.0),
     ]
-    chart = ASCIIPercentileLadder(data=data, title="Tail Latency", options=OPTS)
+    chart = PercentileLadder(data=data, title="Tail Latency", options=OPTS)
     return "percentile_ladder", chart.render()
 
 
@@ -188,7 +188,7 @@ def _normalized_speedup() -> tuple[str, str]:
         SpeedupData(name="Polars", ratio=0.85),
         SpeedupData(name="Snowflake", ratio=1.42),
     ]
-    chart = ASCIINormalizedSpeedup(data=data, title="Relative Speedup", options=OPTS)
+    chart = NormalizedSpeedup(data=data, title="Relative Speedup", options=OPTS)
     return "normalized_speedup", chart.render()
 
 
@@ -211,7 +211,7 @@ def _stacked_bar() -> tuple[str, str]:
             ],
         ),
     ]
-    chart = ASCIIStackedBar(data=data, title="Phase Breakdown", options=OPTS)
+    chart = StackedBar(data=data, title="Phase Breakdown", options=OPTS)
     return "stacked_bar", chart.render()
 
 
@@ -224,7 +224,7 @@ def _sparkline_table() -> tuple[str, str]:
             SparklineColumn(name="P99 (ms)", values={"DuckDB": 890.0, "SQLite": 1200.0, "Polars": 700.0}),
         ],
     )
-    chart = ASCIISparklineTable(data=data, title="Platform Overview", options=OPTS)
+    chart = SparklineTable(data=data, title="Platform Overview", options=OPTS)
     return "sparkline_table", chart.render()
 
 
@@ -233,7 +233,7 @@ def _cdf_chart() -> tuple[str, str]:
         CDFSeriesData(name="DuckDB", values=[80, 95, 110, 130, 150, 200, 250, 300, 500]),
         CDFSeriesData(name="SQLite", values=[200, 250, 300, 350, 400, 450, 500, 600, 800]),
     ]
-    chart = ASCIICDFChart(data=data, title="Cumulative Distribution", options=OPTS)
+    chart = CDFChart(data=data, title="Cumulative Distribution", options=OPTS)
     return "cdf_chart", chart.render()
 
 
@@ -256,7 +256,7 @@ def _rank_table() -> tuple[str, str]:
             ("Polars", "Q4"): 520.0,
         },
     )
-    chart = ASCIIRankTable(data=data, title="Platform Rankings", options=OPTS)
+    chart = RankTable(data=data, title="Platform Rankings", options=OPTS)
     return "rank_table", chart.render()
 
 

@@ -8,7 +8,7 @@ import pytest
 
 import textcharts.base as base
 from textcharts import (
-    ASCIIChartOptions,
+    ChartOptions,
     BarChart,
     BarData,
     Heatmap,
@@ -54,30 +54,30 @@ def _make_scatter_data():
 
 def test_bar_chart_color_output_contains_ansi(monkeypatch: pytest.MonkeyPatch):
     monkeypatch.setattr(base, "detect_terminal_capabilities", lambda: _caps(ColorMode.TRUECOLOR))
-    result = BarChart(data=_make_bar_data(), options=ASCIIChartOptions(width=80)).render()
+    result = BarChart(data=_make_bar_data(), options=ChartOptions(width=80)).render()
     assert ANSI_RE.search(result), "Expected ANSI escape sequences in color output"
 
 
 def test_heatmap_color_output_contains_ansi(monkeypatch: pytest.MonkeyPatch):
     monkeypatch.setattr(base, "detect_terminal_capabilities", lambda: _caps(ColorMode.TRUECOLOR))
-    result = Heatmap(**_make_heatmap_args(), options=ASCIIChartOptions(width=80)).render()
+    result = Heatmap(**_make_heatmap_args(), options=ChartOptions(width=80)).render()
     assert ANSI_RE.search(result), "Expected ANSI escape sequences in color output"
 
 
 def test_histogram_color_output_contains_ansi(monkeypatch: pytest.MonkeyPatch):
     monkeypatch.setattr(base, "detect_terminal_capabilities", lambda: _caps(ColorMode.TRUECOLOR))
-    result = Histogram(data=_make_histogram_data(), options=ASCIIChartOptions(width=80)).render()
+    result = Histogram(data=_make_histogram_data(), options=ChartOptions(width=80)).render()
     assert ANSI_RE.search(result), "Expected ANSI escape sequences in color output"
 
 
 def test_scatter_color_output_contains_ansi(monkeypatch: pytest.MonkeyPatch):
     monkeypatch.setattr(base, "detect_terminal_capabilities", lambda: _caps(ColorMode.TRUECOLOR))
-    result = ScatterPlot(points=_make_scatter_data(), options=ASCIIChartOptions(width=80)).render()
+    result = ScatterPlot(points=_make_scatter_data(), options=ChartOptions(width=80)).render()
     assert ANSI_RE.search(result), "Expected ANSI escape sequences in color output"
 
 
 def test_no_color_mode_produces_no_ansi():
-    result = BarChart(data=_make_bar_data(), options=ASCIIChartOptions(use_color=False, width=80)).render()
+    result = BarChart(data=_make_bar_data(), options=ChartOptions(use_color=False, width=80)).render()
     assert not ANSI_RE.search(result), "Expected no ANSI escape sequences in no-color output"
 
 
@@ -89,7 +89,7 @@ def test_no_color_mode_produces_no_ansi():
 def test_bar_chart_ascii_fallback():
     result = BarChart(
         data=_make_bar_data(),
-        options=ASCIIChartOptions(use_color=False, use_unicode=False, width=80),
+        options=ChartOptions(use_color=False, use_unicode=False, width=80),
     ).render()
     assert not UNICODE_BLOCKS_RE.search(result), "Expected no Unicode block chars in ASCII mode"
 
@@ -97,7 +97,7 @@ def test_bar_chart_ascii_fallback():
 def test_heatmap_ascii_fallback():
     result = Heatmap(
         **_make_heatmap_args(),
-        options=ASCIIChartOptions(use_color=False, use_unicode=False, width=80),
+        options=ChartOptions(use_color=False, use_unicode=False, width=80),
     ).render()
     assert not UNICODE_BLOCKS_RE.search(result), "Expected no Unicode block chars in ASCII mode"
 
@@ -105,7 +105,7 @@ def test_heatmap_ascii_fallback():
 def test_histogram_ascii_fallback():
     result = Histogram(
         data=_make_histogram_data(),
-        options=ASCIIChartOptions(use_color=False, use_unicode=False, width=80),
+        options=ChartOptions(use_color=False, use_unicode=False, width=80),
     ).render()
     assert not UNICODE_BLOCKS_RE.search(result), "Expected no Unicode block chars in ASCII mode"
 
@@ -113,7 +113,7 @@ def test_histogram_ascii_fallback():
 def test_unicode_mode_uses_block_or_box_chars():
     result = BarChart(
         data=_make_bar_data(),
-        options=ASCIIChartOptions(use_color=False, use_unicode=True, width=80),
+        options=ChartOptions(use_color=False, use_unicode=True, width=80),
     ).render()
     # Should use Unicode block elements (U+2580-U+259F) or box-drawing (U+2500-U+257F)
     has_blocks = UNICODE_BLOCKS_RE.search(result)
@@ -130,11 +130,11 @@ def test_dark_vs_light_theme_differ(monkeypatch: pytest.MonkeyPatch):
     monkeypatch.setattr(base, "detect_terminal_capabilities", lambda: _caps(ColorMode.TRUECOLOR))
     dark = BarChart(
         data=_make_bar_data(),
-        options=ASCIIChartOptions(theme="dark", width=80),
+        options=ChartOptions(theme="dark", width=80),
     ).render()
     light = BarChart(
         data=_make_bar_data(),
-        options=ASCIIChartOptions(theme="light", width=80),
+        options=ChartOptions(theme="light", width=80),
     ).render()
     assert ANSI_RE.search(dark)
     assert ANSI_RE.search(light)
