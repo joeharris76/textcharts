@@ -358,7 +358,3 @@ def from_points(
         options=options,
         subject=subject,
     )
-
-
-# Backward-compat aliases — remove after all consumers are updated
-ASCIILineChart = LineChart

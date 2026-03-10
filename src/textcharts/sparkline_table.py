@@ -284,7 +284,3 @@ def from_data(
     columns = [SparklineColumn(name=name, values=values, higher_is_better=hib) for name, values, hib in metrics]
     data = SparklineTableData(platforms=platforms, columns=columns)
     return SparklineTable(data=data, title=title, options=options, subject=subject)
-
-
-# Backward-compat aliases — remove after all consumers are updated
-ASCIISparklineTable = SparklineTable

@@ -635,8 +635,3 @@ class ChartBase(ABC):
         if current_line:
             lines.append("  " + "   ".join(current_line))
         return lines
-
-
-# Backward-compat aliases — remove after all consumers are updated
-ASCIIChartOptions = ChartOptions
-ASCIIChartBase = ChartBase

@@ -72,9 +72,8 @@ Most charts have a dedicated data model:
 - :class:`textcharts.SpeedupData`
 - :class:`textcharts.SummaryStats`
 
-Use those models directly for new code. Compatibility factory helpers are still
-available when migrating from BenchBox, but they are secondary to the clean
-class-based API.
+Use those models directly. Convenience factory helpers are also available for
+one-shot chart creation — see :doc:`../reference/factories`.
 
 Next steps
 ----------

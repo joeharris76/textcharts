@@ -201,7 +201,7 @@ def from_matrix(
     options: ChartOptions | None = None,
     subject: str | None = None,
 ) -> RankTable:
-    """Create RankTable from the same matrix format as ASCIIHeatmap.
+    """Create RankTable from the same matrix format as Heatmap.
 
     Args:
         matrix: 2D matrix of execution times [query_idx][platform_idx].
@@ -234,7 +234,3 @@ def from_matrix(
         times=times,
     )
     return RankTable(data=data, title=title, options=options, subject=subject)
-
-
-# Backward-compat aliases — remove after all consumers are updated
-ASCIIRankTable = RankTable

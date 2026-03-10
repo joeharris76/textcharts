@@ -234,7 +234,3 @@ def from_ratios(
         options=options,
         subject=subject,
     )
-
-
-# Backward-compat aliases — remove after all consumers are updated
-ASCIINormalizedSpeedup = NormalizedSpeedup

@@ -65,14 +65,10 @@ For new code, use the clean exported names and their data models:
 - ``LineChart`` with ``LinePoint``
 - ``SummaryBox`` with ``SummaryStats``
 
-The ``ASCII*`` aliases are retained for BenchBox migration compatibility, but
-they are not the preferred surface for new integrations.
-
 Performance-specific note
 -------------------------
 
 ``NormalizedSpeedup`` is the chart type most closely tied to benchmark and
 performance-analysis workflows. ``ComparisonBar``, ``DivergingBar``,
 ``PercentileLadder``, ``RankTable``, and ``SummaryBox`` are still general
-purpose charts, but they also map naturally to performance reporting and
-compatibility helpers inherited from BenchBox.
+purpose charts, but they also map naturally to performance reporting.

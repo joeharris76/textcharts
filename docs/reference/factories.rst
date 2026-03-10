@@ -1,59 +1,46 @@
 Factory helpers
 ===============
 
-The preferred API is class-based, but the package also exports convenience
-helpers used during BenchBox migrations and for compact one-shot conversions.
+Convenience helpers for one-shot chart creation from raw data.
 
-Generic convenience helpers
----------------------------
-
-These helpers stay close to the preferred public API and are useful outside any
-performance-analysis workflow.
-
-.. autofunction:: textcharts.bar_chart.from_bar_data
+.. autofunction:: textcharts.bar_chart.from_data
    :no-index:
 
-.. autofunction:: textcharts.box_plot.from_distribution_series
+.. autofunction:: textcharts.box_plot.from_series
    :no-index:
 
-.. autofunction:: textcharts.comparison_bar.from_comparison_data
+.. autofunction:: textcharts.cdf_chart.from_series
+   :no-index:
+
+.. autofunction:: textcharts.comparison_bar.from_data
+   :no-index:
+
+.. autofunction:: textcharts.diverging_bar.from_data
    :no-index:
 
 .. autofunction:: textcharts.heatmap.from_matrix
    :no-index:
 
-.. autofunction:: textcharts.line_chart.from_time_series_points
+.. autofunction:: textcharts.histogram.from_data
    :no-index:
 
-.. autofunction:: textcharts.rank_table.from_heatmap_data
+.. autofunction:: textcharts.line_chart.from_points
    :no-index:
 
-.. autofunction:: textcharts.sparkline_table.from_metrics
+.. autofunction:: textcharts.normalized_speedup.from_ratios
    :no-index:
 
-BenchBox-derived and performance-oriented helpers
--------------------------------------------------
-
-These functions remain public for compatibility and migration scenarios. New
-code should prefer constructing chart classes from their data models directly.
-
-.. autofunction:: textcharts.cdf_chart.from_query_results
+.. autofunction:: textcharts.percentile_ladder.from_series
    :no-index:
 
-.. autofunction:: textcharts.diverging_bar.from_regression_data
+.. autofunction:: textcharts.rank_table.from_matrix
    :no-index:
 
-.. autofunction:: textcharts.histogram.from_query_latency_data
+.. autofunction:: textcharts.scatter_plot.from_points
    :no-index:
 
-.. autofunction:: textcharts.normalized_speedup.from_normalized_results
+.. autofunction:: textcharts.sparkline_table.from_data
    :no-index:
 
-.. autofunction:: textcharts.percentile_ladder.from_query_results
-   :no-index:
-
-.. autofunction:: textcharts.scatter_plot.from_cost_performance_points
-   :no-index:
-
-.. autofunction:: textcharts.stacked_bar.from_phase_data
+.. autofunction:: textcharts.stacked_bar.from_data
    :no-index:

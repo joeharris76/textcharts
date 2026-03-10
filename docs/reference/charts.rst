@@ -8,55 +8,55 @@ Bar and comparison charts
 -------------------------
 
 .. automodule:: textcharts.bar_chart
-   :members: ASCIIBarChart, BarData
+   :members: BarChart, BarData
 
 .. automodule:: textcharts.comparison_bar
-   :members: ASCIIComparisonBar, ComparisonBarData
+   :members: ComparisonBar, ComparisonBarData
 
 .. automodule:: textcharts.diverging_bar
-   :members: ASCIIDivergingBar, DivergingBarData
+   :members: DivergingBar, DivergingBarData
 
 .. automodule:: textcharts.stacked_bar
-   :members: ASCIIStackedBar, StackedBarData, StackedBarSegment
+   :members: StackedBar, StackedBarData, StackedBarSegment
 
 Distribution charts
 -------------------
 
 .. automodule:: textcharts.histogram
-   :members: ASCIIHistogram, ASCIIQueryHistogram, HistogramBar
+   :members: Histogram, HistogramBar
 
 .. automodule:: textcharts.box_plot
-   :members: ASCIIBoxPlot, BoxPlotSeries, BoxPlotStats
+   :members: BoxPlot, BoxPlotSeries, BoxPlotStats
 
 .. automodule:: textcharts.percentile_ladder
-   :members: ASCIIPercentileLadder, PercentileData
+   :members: PercentileLadder, PercentileData
 
 .. automodule:: textcharts.cdf_chart
-   :members: ASCIICDFChart, CDFSeriesData
+   :members: CDFChart, CDFSeriesData
 
 Trend and relationship charts
 -----------------------------
 
 .. automodule:: textcharts.line_chart
-   :members: ASCIILineChart, LinePoint
+   :members: LineChart, LinePoint
 
 .. automodule:: textcharts.scatter_plot
-   :members: ASCIIScatterPlot, ScatterPoint
+   :members: ScatterPlot, ScatterPoint
 
 .. automodule:: textcharts.normalized_speedup
-   :members: ASCIINormalizedSpeedup, SpeedupData
+   :members: NormalizedSpeedup, SpeedupData
 
 Tabular and matrix charts
 -------------------------
 
 .. automodule:: textcharts.heatmap
-   :members: ASCIIHeatmap
+   :members: Heatmap
 
 .. automodule:: textcharts.rank_table
-   :members: ASCIIRankTable, RankTableData
+   :members: RankTable, RankTableData
 
 .. automodule:: textcharts.sparkline_table
-   :members: ASCIISparklineTable, SparklineColumn, SparklineTableData
+   :members: SparklineTable, SparklineColumn, SparklineTableData
 
 .. automodule:: textcharts.summary_box
-   :members: ASCIISummaryBox, SummaryStats
+   :members: SummaryBox, SummaryStats

@@ -20,7 +20,7 @@ if TYPE_CHECKING:
 
 logger = logging.getLogger(__name__)
 
-# Markers for each series (matching ASCIILineChart convention)
+# Markers for each series (matching LineChart convention)
 _MARKERS = ("*", "+", "o", "x", "^", "v", "#", "@")
 
 
@@ -240,7 +240,3 @@ def from_series(
     """
     data = [CDFSeriesData(name=name, values=list(values)) for name, values in platform_queries]
     return CDFChart(data=data, title=title, x_label=x_label, y_label=y_label, options=options, subject=subject)
-
-
-# Backward-compat aliases — remove after all consumers are updated
-ASCIICDFChart = CDFChart

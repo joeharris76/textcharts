@@ -550,7 +550,3 @@ class SummaryBox(ChartBase):
         if ms >= 1_000:
             return f"{ms / 1_000:.1f}s"
         return f"{ms:.1f}ms"
-
-
-# Backward-compat aliases — remove after all consumers are updated
-ASCIISummaryBox = SummaryBox

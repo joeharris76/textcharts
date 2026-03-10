@@ -271,7 +271,3 @@ def from_data(
         Configured StackedBar instance.
     """
     return StackedBar(data=data, title=title, options=options, subject=subject)
-
-
-# Backward-compat aliases — remove after all consumers are updated
-ASCIIStackedBar = StackedBar

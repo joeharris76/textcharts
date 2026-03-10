@@ -399,7 +399,3 @@ def from_matrix(
         options=options,
         subject=subject,
     )
-
-
-# Backward-compat aliases — remove after all consumers are updated
-ASCIIHeatmap = Heatmap

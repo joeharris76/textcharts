@@ -80,15 +80,15 @@ html_js_files = [
 ]
 
 _MARKDOWN_CLASS_DOCS = {
-    "textcharts.box_plot.ASCIIBoxPlot",
-    "textcharts.cdf_chart.ASCIICDFChart",
-    "textcharts.comparison_bar.ASCIIComparisonBar",
-    "textcharts.diverging_bar.ASCIIDivergingBar",
-    "textcharts.heatmap.ASCIIHeatmap",
-    "textcharts.histogram.ASCIIQueryHistogram",
-    "textcharts.line_chart.ASCIILineChart",
-    "textcharts.normalized_speedup.ASCIINormalizedSpeedup",
-    "textcharts.scatter_plot.ASCIIScatterPlot",
+    "textcharts.box_plot.BoxPlot",
+    "textcharts.cdf_chart.CDFChart",
+    "textcharts.comparison_bar.ComparisonBar",
+    "textcharts.diverging_bar.DivergingBar",
+    "textcharts.heatmap.Heatmap",
+    "textcharts.histogram.Histogram",
+    "textcharts.line_chart.LineChart",
+    "textcharts.normalized_speedup.NormalizedSpeedup",
+    "textcharts.scatter_plot.ScatterPlot",
 }
 
 

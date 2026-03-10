@@ -405,7 +405,3 @@ def from_series(
         options=options,
         subject=subject,
     )
-
-
-# Backward-compat aliases — remove after all consumers are updated
-ASCIIBoxPlot = BoxPlot
