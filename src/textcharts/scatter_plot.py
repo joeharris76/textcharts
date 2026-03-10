@@ -1,4 +1,4 @@
-"""ASCII scatter plot for cost vs performance analysis."""
+"""ASCII scatter plot for two-dimensional data."""
 
 from __future__ import annotations
 
@@ -19,13 +19,13 @@ class ScatterPoint:
     """Data point for scatter plot."""
 
     name: str
-    x: float  # Cost
-    y: float  # Performance
+    x: float
+    y: float
     is_pareto: bool = False
 
 
 class ScatterPlot(ChartBase):
-    """ASCII scatter plot for cost vs performance trade-off visualization.
+    """ASCII scatter plot for two-dimensional data visualization.
 
     Example output:
     ```
@@ -316,8 +316,8 @@ def from_points(
             converted.append(
                 ScatterPoint(
                     name=getattr(item, "name", str(item)),
-                    x=getattr(item, "x", getattr(item, "cost", 0)),
-                    y=getattr(item, "y", getattr(item, "performance", 0)),
+                    x=getattr(item, "x", 0),
+                    y=getattr(item, "y", 0),
                 )
             )
 

@@ -233,15 +233,15 @@ def parse_summary(data: Any) -> Any:
         kwargs["title"] = str(d["title"])
 
     float_fields = [
-        "geo_mean_ms", "median_ms", "total_time_ms",
-        "geo_mean_baseline_ms", "geo_mean_comparison_ms",
-        "total_time_baseline_ms", "total_time_comparison_ms",
+        "primary_value", "secondary_value", "total_value",
+        "primary_baseline", "primary_comparison",
+        "total_baseline", "total_comparison",
     ]
     for field_name in float_fields:
         if field_name in d and d[field_name] is not None:
             kwargs[field_name] = _coerce_float(d[field_name], field_name, "summary")
 
-    int_fields = ["num_queries", "num_improved", "num_stable", "num_regressed"]
+    int_fields = ["num_items", "num_improved", "num_stable", "num_regressed"]
     for field_name in int_fields:
         if field_name in d:
             kwargs[field_name] = _coerce_int(d[field_name], field_name, "summary")
@@ -251,10 +251,10 @@ def parse_summary(data: Any) -> Any:
         if field_name in d:
             kwargs[field_name] = str(d[field_name])
 
-    if "best_queries" in d and d["best_queries"] is not None:
-        kwargs["best_queries"] = [(str(q[0]), float(q[1])) for q in d["best_queries"]]
-    if "worst_queries" in d and d["worst_queries"] is not None:
-        kwargs["worst_queries"] = [(str(q[0]), float(q[1])) for q in d["worst_queries"]]
+    if "best_items" in d and d["best_items"] is not None:
+        kwargs["best_items"] = [(str(q[0]), float(q[1])) for q in d["best_items"]]
+    if "worst_items" in d and d["worst_items"] is not None:
+        kwargs["worst_items"] = [(str(q[0]), float(q[1])) for q in d["worst_items"]]
 
     if "environment" in d and d["environment"] is not None:
         kwargs["environment"] = {str(k): str(v) for k, v in d["environment"].items()}
@@ -332,13 +332,13 @@ def parse_stacked(data: Any) -> list:
 
 
 def parse_sparkline(data: Any) -> Any:
-    """Parse sparkline table data: {platforms, columns: [{name, values, higher_is_better?}]}."""
+    """Parse sparkline table data: {rows, columns: [{name, values, higher_is_better?}]}."""
     from textcharts.sparkline_table import SparklineColumn, SparklineTableData
 
     d = _require_dict(data, "sparkline")
-    _require_keys(d, ["platforms", "columns"], "sparkline")
+    _require_keys(d, ["rows", "columns"], "sparkline")
 
-    platforms = [str(p) for p in d["platforms"]]
+    rows = [str(r) for r in d["rows"]]
     columns_raw = d["columns"]
     if not isinstance(columns_raw, list):
         raise ParseError("sparkline: 'columns' must be an array")
@@ -351,14 +351,14 @@ def parse_sparkline(data: Any) -> Any:
         _require_keys(col, ["name", "values"], ctx)
         values = col["values"]
         if not isinstance(values, dict):
-            raise ParseError(f"{ctx}: 'values' must be an object mapping platform names to numbers")
+            raise ParseError(f"{ctx}: 'values' must be an object mapping row names to numbers")
         columns.append(SparklineColumn(
             name=str(col["name"]),
             values={str(k): _coerce_float(v, f"values.{k}", ctx) for k, v in values.items()},
             higher_is_better=bool(col.get("higher_is_better", False)),
         ))
 
-    return SparklineTableData(platforms=platforms, columns=columns)
+    return SparklineTableData(rows=rows, columns=columns)
 
 
 def parse_cdf(data: Any) -> list:
@@ -381,29 +381,29 @@ def parse_cdf(data: Any) -> list:
 
 
 def parse_rank(data: Any) -> Any:
-    """Parse rank table data: {queries, platforms, times}.
+    """Parse rank table data: {items, groups, values}.
 
-    Times is a dict with "platform,query" string keys mapping to float values.
+    Values is a dict with "group,item" string keys mapping to float values.
     """
     from textcharts.rank_table import RankTableData
 
     d = _require_dict(data, "rank")
-    _require_keys(d, ["queries", "platforms", "times"], "rank")
+    _require_keys(d, ["items", "groups", "values"], "rank")
 
-    queries = [str(q) for q in d["queries"]]
-    platforms = [str(p) for p in d["platforms"]]
-    times_raw = d["times"]
-    if not isinstance(times_raw, dict):
-        raise ParseError("rank: 'times' must be an object mapping 'platform,query' keys to numbers")
+    items = [str(q) for q in d["items"]]
+    groups = [str(p) for p in d["groups"]]
+    values_raw = d["values"]
+    if not isinstance(values_raw, dict):
+        raise ParseError("rank: 'values' must be an object mapping 'group,item' keys to numbers")
 
-    times: dict[tuple[str, str], float] = {}
-    for key, value in times_raw.items():
+    values: dict[tuple[str, str], float] = {}
+    for key, value in values_raw.items():
         parts = str(key).split(",", 1)
         if len(parts) != 2:
-            raise ParseError(f"rank: times key {key!r} must be 'platform,query' format")
-        times[(parts[0].strip(), parts[1].strip())] = _coerce_float(value, f"times[{key}]", "rank")
+            raise ParseError(f"rank: values key {key!r} must be 'group,item' format")
+        values[(parts[0].strip(), parts[1].strip())] = _coerce_float(value, f"values[{key}]", "rank")
 
-    return RankTableData(queries=queries, platforms=platforms, times=times)
+    return RankTableData(items=items, groups=groups, values=values)
 
 
 # Parser dispatch table: command name -> parser function

@@ -104,7 +104,7 @@ def _build_registry() -> dict[str, CommandInfo]:
             ],
             extra_data_params=["row_labels", "col_labels"],
             chart_params=[
-                ParamInfo("value_label", "string", "Unit label for values", "ms"),
+                ParamInfo("value_label", "string", "Unit label for values", ""),
                 ParamInfo("x_label", "string", "Label for column axis", "Columns"),
                 ParamInfo("show_values", "boolean", "Display numeric values in cells", True),
                 ParamInfo("color_scheme", "string", "Color scheme", "diverging", enum=["diverging", "sequential"]),
@@ -146,19 +146,19 @@ def _build_registry() -> dict[str, CommandInfo]:
         ),
         "scatter": CommandInfo(
             name="scatter",
-            description="Scatter plot for cost vs. performance with optional Pareto frontier",
+            description="Scatter plot for visualizing X/Y relationships with optional Pareto frontier",
             chart_module="textcharts.scatter_plot",
             chart_class="ScatterPlot",
             data_param_name="points",
             data_fields=[
                 DataFieldInfo("name", "string", "Point label"),
-                DataFieldInfo("x", "number", "X-axis value (e.g., cost)"),
-                DataFieldInfo("y", "number", "Y-axis value (e.g., performance)"),
+                DataFieldInfo("x", "number", "X-axis value"),
+                DataFieldInfo("y", "number", "Y-axis value"),
                 DataFieldInfo("is_pareto", "boolean", "Mark as Pareto-optimal", required=False, default=False),
             ],
             chart_params=[
-                ParamInfo("x_label", "string", "Label for X axis", "Cost (USD)"),
-                ParamInfo("y_label", "string", "Label for Y axis", "Performance"),
+                ParamInfo("x_label", "string", "Label for X axis", "X"),
+                ParamInfo("y_label", "string", "Label for Y axis", "Y"),
                 ParamInfo("show_pareto", "boolean", "Show Pareto frontier", True),
             ],
         ),
@@ -180,12 +180,12 @@ def _build_registry() -> dict[str, CommandInfo]:
                 ),
             ],
             chart_params=[
-                ParamInfo("metric_label", "string", "Label for the value axis", "Execution Time (ms)"),
+                ParamInfo("metric_label", "string", "Label for the value axis", "Value"),
             ],
         ),
         "diverging": CommandInfo(
             name="diverging",
-            description="Centered diverging bar chart showing improvement/regression as percentage change",
+            description="Centered diverging bar chart showing positive/negative change as percentage change",
             chart_module="textcharts.diverging_bar",
             chart_class="DivergingBar",
             data_param_name="data",
@@ -205,23 +205,25 @@ def _build_registry() -> dict[str, CommandInfo]:
             data_param_name="stats",
             input_is_list=False,
             data_fields=[
-                DataFieldInfo("title", "string", "Summary box title", required=False, default="Benchmark Summary"),
-                DataFieldInfo("geo_mean_ms", "number", "Geometric mean in ms", required=False),
-                DataFieldInfo("median_ms", "number", "Median in ms", required=False),
-                DataFieldInfo("total_time_ms", "number", "Total time in ms", required=False),
-                DataFieldInfo("geo_mean_baseline_ms", "number", "Baseline geometric mean", required=False),
-                DataFieldInfo("geo_mean_comparison_ms", "number", "Comparison geometric mean", required=False),
-                DataFieldInfo("total_time_baseline_ms", "number", "Baseline total time", required=False),
-                DataFieldInfo("total_time_comparison_ms", "number", "Comparison total time", required=False),
+                DataFieldInfo("title", "string", "Summary box title", required=False, default="Summary"),
+                DataFieldInfo(
+                    "primary_value", "number", "Primary aggregate value (e.g. geometric mean)", required=False
+                ),
+                DataFieldInfo("secondary_value", "number", "Secondary aggregate value (e.g. median)", required=False),
+                DataFieldInfo("total_value", "number", "Total aggregate value", required=False),
+                DataFieldInfo("primary_baseline", "number", "Baseline primary value", required=False),
+                DataFieldInfo("primary_comparison", "number", "Comparison primary value", required=False),
+                DataFieldInfo("total_baseline", "number", "Baseline total value", required=False),
+                DataFieldInfo("total_comparison", "number", "Comparison total value", required=False),
                 DataFieldInfo("baseline_name", "string", "Baseline label", required=False, default="Baseline"),
                 DataFieldInfo("comparison_name", "string", "Comparison label", required=False, default="Comparison"),
-                DataFieldInfo("num_queries", "integer", "Number of queries", required=False, default=0),
-                DataFieldInfo("num_improved", "integer", "Count of improved queries", required=False, default=0),
-                DataFieldInfo("num_stable", "integer", "Count of stable queries", required=False, default=0),
-                DataFieldInfo("num_regressed", "integer", "Count of regressed queries", required=False, default=0),
-                DataFieldInfo("best_queries", "array", "List of [name, value] pairs for best queries", required=False),
+                DataFieldInfo("num_items", "integer", "Number of items", required=False, default=0),
+                DataFieldInfo("num_improved", "integer", "Count of improved items", required=False, default=0),
+                DataFieldInfo("num_stable", "integer", "Count of stable items", required=False, default=0),
+                DataFieldInfo("num_regressed", "integer", "Count of regressed items", required=False, default=0),
+                DataFieldInfo("best_items", "array", "List of [name, value] pairs for best items", required=False),
                 DataFieldInfo(
-                    "worst_queries", "array", "List of [name, value] pairs for worst queries", required=False
+                    "worst_items", "array", "List of [name, value] pairs for worst items", required=False
                 ),
                 DataFieldInfo("environment", "object", "Environment info dict (OS, Python, etc.)", required=False),
                 DataFieldInfo("platform_config", "object", "Platform config dict", required=False),
@@ -246,7 +248,7 @@ def _build_registry() -> dict[str, CommandInfo]:
                 DataFieldInfo("p99", "number", "99th percentile value"),
             ],
             chart_params=[
-                ParamInfo("metric_label", "string", "Unit label for values", "ms"),
+                ParamInfo("metric_label", "string", "Unit label for values", ""),
             ],
         ),
         "speedup": CommandInfo(
@@ -280,7 +282,7 @@ def _build_registry() -> dict[str, CommandInfo]:
                 DataFieldInfo("total", "number", "Override total (auto-computed if omitted)", required=False),
             ],
             chart_params=[
-                ParamInfo("metric_label", "string", "Unit label for values", "ms"),
+                ParamInfo("metric_label", "string", "Unit label for values", ""),
             ],
         ),
         "sparkline": CommandInfo(
@@ -291,11 +293,11 @@ def _build_registry() -> dict[str, CommandInfo]:
             data_param_name="data",
             input_is_list=False,
             data_fields=[
-                DataFieldInfo("platforms", "array", "List of platform/row names"),
+                DataFieldInfo("rows", "array", "List of row names"),
                 DataFieldInfo(
                     "columns",
                     "array",
-                    "List of {name, values: {platform: number}, higher_is_better?} column definitions",
+                    "List of {name, values: {row: number}, higher_is_better?} column definitions",
                 ),
             ],
         ),
@@ -317,15 +319,15 @@ def _build_registry() -> dict[str, CommandInfo]:
         ),
         "rank": CommandInfo(
             name="rank",
-            description="Competitive ranking table with win counts across queries",
+            description="Competitive ranking table with win counts across items",
             chart_module="textcharts.rank_table",
             chart_class="RankTable",
             data_param_name="data",
             input_is_list=False,
             data_fields=[
-                DataFieldInfo("queries", "array", "List of query names"),
-                DataFieldInfo("platforms", "array", "List of platform names"),
-                DataFieldInfo("times", "object", "Mapping of 'platform,query' keys to time values"),
+                DataFieldInfo("items", "array", "List of item names"),
+                DataFieldInfo("groups", "array", "List of group names"),
+                DataFieldInfo("values", "object", "Mapping of 'group,item' keys to numeric values"),
             ],
         ),
     }
