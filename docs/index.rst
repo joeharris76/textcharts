@@ -7,27 +7,23 @@ Beautiful text-based charts for your terminal — zero dependencies.
 width detection. Pure Python, no external dependencies, Python 3.10+.
 
 
-.. image:: /_static/screenshots/histogram/color.png
-   :alt: Histogram chart rendered in the terminal
+.. image:: /_static/screenshots/box_plot/color.png
+   :alt: Box plot chart rendered in the terminal
    :width: 100%
 
 .. code-block:: python
 
-   from textcharts import Histogram, HistogramBar
+   from textcharts import BoxPlot, BoxPlotSeries
 
-   data = [
-       HistogramBar(query_id="Route 1", latency_ms=12.0, is_best=True),
-       HistogramBar(query_id="Route 2", latency_ms=28.0),
-       HistogramBar(query_id="Route 3", latency_ms=9.0),
-       HistogramBar(query_id="Route 4", latency_ms=45.0, is_worst=True),
-       HistogramBar(query_id="Route 5", latency_ms=19.0),
-       HistogramBar(query_id="Route 6", latency_ms=14.0),
+   series = [
+       BoxPlotSeries(name="Downtown", values=[1825, 1900, 1980, 2100, 2250, 2400, 2550, 2710, 2980]),
+       BoxPlotSeries(name="Riverside", values=[1450, 1525, 1600, 1680, 1750, 1820, 1950, 2080, 2220]),
+       BoxPlotSeries(name="Midtown", values=[1650, 1710, 1780, 1840, 1920, 2010, 2140, 2280, 2450]),
    ]
-   chart = Histogram(
-       data=data,
-       title="Delivery Delays",
-       y_label="Delay (min)",
-       subtitle="Six routes measured over the past week",
+   chart = BoxPlot(
+       series=series,
+       title="Apartment Rents",
+       subtitle="Monthly rent distribution by neighborhood",
    )
    print(chart.render())
 
