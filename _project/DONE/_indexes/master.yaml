@@ -1,5 +1,5 @@
-generated_at: '2026-03-10T11:45:14.379250'
-total_items: 21
+generated_at: '2026-03-10T14:03:15.483188'
+total_items: 22
 items:
 - id: shared-command-layer
   file: DONE/main/active/shared-command-layer.yaml
@@ -127,6 +127,23 @@ items:
   completed_date: '2026-03-06'
   work_total: 3
   work_done: 3
+  work_ready: 0
+- id: generalize-benchbox-field-names
+  file: DONE/dev-012/active/generalize-benchbox-field-names.yaml
+  title: Generalize BenchBox-specific field names across all chart types
+  worktree: dev-012
+  category: Core Functionality
+  priority: High
+  status: Completed
+  tags:
+  - breaking-change
+  - api-cleanup
+  - mcp
+  - cli
+  estimated_effort: 2-3 days
+  completed_date: '2026-03-10'
+  work_total: 12
+  work_done: 12
   work_ready: 0
 - id: cli-interface
   file: DONE/main/active/cli-interface.yaml

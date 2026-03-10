@@ -2,7 +2,8 @@ id: generalize-benchbox-field-names
 title: "Generalize BenchBox-specific field names across all chart types"
 worktree: dev-012
 priority: High
-status: Not Started
+status: Completed
+completed_date: "2026-03-10"
 category: Core Functionality
 description: |
   The MCP server tool schemas and CLI parameters use BenchBox-specific field names
@@ -33,7 +34,7 @@ description: |
 work:
   - id: w1
     summary: "Rename histogram HistogramBar fields: query_id->label, latency_ms->value"
-    status: pending
+    status: done
     notes: |
       Files: src/textcharts/histogram.py (~30 locations),
              src/textcharts/commands/registry.py (histogram entry),
@@ -51,7 +52,7 @@ work:
 
   - id: w2
     summary: "Rename SummaryStats dataclass fields from benchmark-specific to generic"
-    status: pending
+    status: done
     notes: |
       Files: src/textcharts/summary_box.py (dataclass + ~20 field references),
              src/textcharts/commands/registry.py (summary entry),
@@ -73,7 +74,7 @@ work:
   - id: w3
     summary: "Add configurable rendered labels to SummaryStats, replace hardcoded strings"
     needs: [w2]
-    status: pending
+    status: done
     notes: |
       Files: src/textcharts/summary_box.py (rendering methods only),
              src/textcharts/commands/registry.py (add new data fields)
@@ -92,7 +93,7 @@ work:
 
   - id: w4
     summary: "Rename RankTableData fields: queries->items, platforms->groups, times->values"
-    status: pending
+    status: done
     notes: |
       Files: src/textcharts/rank_table.py (~15 locations),
              src/textcharts/commands/registry.py (rank entry),
@@ -106,7 +107,7 @@ work:
 
   - id: w5
     summary: "Rename SparklineTableData.platforms -> rows"
-    status: pending
+    status: done
     notes: |
       Files: src/textcharts/sparkline_table.py (~8 locations),
              src/textcharts/commands/registry.py (sparkline entry),
@@ -118,7 +119,7 @@ work:
 
   - id: w6
     summary: "Clean up scatter plot + fix all remaining registry defaults"
-    status: pending
+    status: done
     notes: |
       Files: src/textcharts/scatter_plot.py (5 locations),
              src/textcharts/commands/registry.py (scatter, comparison, heatmap, stacked, percentile entries)
@@ -136,7 +137,7 @@ work:
   - id: w7
     summary: "Update documentation (input-formats.md, base.py docstring)"
     needs: [w1, w3, w4, w5, w6]
-    status: pending
+    status: done
     notes: |
       Files: docs/input-formats.md (histogram, summary, rank, sparkline sections),
              src/textcharts/base.py (1 docstring referencing "Query ID")
@@ -147,7 +148,7 @@ work:
   - id: w8
     summary: "Update histogram test files"
     needs: [w1]
-    status: pending
+    status: done
     notes: |
       All HistogramBar(query_id=..., latency_ms=...) -> HistogramBar(label=..., value=...)
       All sort_by="query_id" -> sort_by="label"
@@ -162,7 +163,7 @@ work:
   - id: w9
     summary: "Update summary box test files"
     needs: [w3]
-    status: pending
+    status: done
     notes: |
       All SummaryStats field renames: geo_mean_ms->primary_value, etc.
       All num_queries->num_items, best_queries->best_items, worst_queries->worst_items
@@ -174,7 +175,7 @@ work:
   - id: w10
     summary: "Update rank table and sparkline test files"
     needs: [w4, w5]
-    status: pending
+    status: done
     notes: |
       Rank: RankTableData(queries=..., platforms=..., times=...) -> (items=..., groups=..., values=...)
              from_matrix() param renames
@@ -189,7 +190,7 @@ work:
   - id: w11
     summary: "Update shared SAMPLE_DATA in CLI, commands, MCP, golden, and other test files"
     needs: [w1, w3, w4, w5, w6]
-    status: pending
+    status: done
     notes: |
       SAMPLE_DATA dicts contain field names for ALL chart types — must update all at once.
 
@@ -205,7 +206,7 @@ work:
   - id: w12
     summary: "Regenerate golden snapshots and run full verification"
     needs: [w7, w8, w9, w10, w11]
-    status: pending
+    status: done
     notes: |
       uv run pytest tests/test_golden_output.py --update-golden
       uv run pytest tests/ -x -q

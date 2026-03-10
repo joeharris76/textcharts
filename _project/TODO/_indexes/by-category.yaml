@@ -1,11 +1,3 @@
-generated_at: '2026-03-10T11:57:11.311269'
-total_categories: 1
-categories:
-  Core Functionality:
-    count: 1
-    items:
-    - id: generalize-benchbox-field-names
-      file: TODO/dev-012/planning/generalize-benchbox-field-names.yaml
-      title: Generalize BenchBox-specific field names across all chart types
-      priority: High
-      status: Not Started
+generated_at: '2026-03-10T14:03:15.437217'
+total_categories: 0
+categories: {}
