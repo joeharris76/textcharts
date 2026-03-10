@@ -1,8 +1,8 @@
-generated_at: '2026-03-09T09:24:47.817441'
-total_items: 20
+generated_at: '2026-03-10T08:01:47.066188'
+total_items: 21
 statuses:
   Completed:
-    count: 20
+    count: 21
     items:
     - id: behavioral-tests-for-minimal-coverage-charts
       file: DONE/main/active/behavioral-tests-for-minimal-coverage-charts.yaml
@@ -92,6 +92,11 @@ statuses:
     - id: neutralize-default-labels-and-titles
       file: DONE/main/active/neutralize-default-labels-and-titles.yaml
       title: Neutralize domain-specific default labels, titles, and comments
+      priority: High
+      category: Core Functionality
+    - id: remove-benchbox-compat-and-ascii-prefixes
+      file: DONE/main/active/remove-benchbox-compat-and-ascii-prefixes.yaml
+      title: Remove all BenchBox backward compatibility stubs and ASCII* class prefixes
       priority: High
       category: Core Functionality
     - id: rename-benchmark-specific-identifiers

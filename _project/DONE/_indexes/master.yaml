@@ -1,5 +1,5 @@
-generated_at: '2026-03-09T09:24:47.817392'
-total_items: 20
+generated_at: '2026-03-10T08:01:47.066145'
+total_items: 21
 items:
 - id: shared-command-layer
   file: DONE/main/active/shared-command-layer.yaml
@@ -202,6 +202,28 @@ items:
   work_total: 5
   work_done: 5
   work_ready: 0
+- id: remove-benchbox-compat-and-ascii-prefixes
+  file: DONE/main/active/remove-benchbox-compat-and-ascii-prefixes.yaml
+  title: Remove all BenchBox backward compatibility stubs and ASCII* class prefixes
+  worktree: main
+  category: Core Functionality
+  priority: High
+  status: Completed
+  tags:
+  - api
+  - de-benchbox
+  - cleanup
+  owners:
+  - joe
+  estimated_effort: Large
+  completed_date: '2026-03-10'
+  work_total: 7
+  work_done: 7
+  work_ready: 0
+  deferred_count: 1
+  needs:
+  - rename-benchmark-specific-identifiers
+  - configurable-outlier-cap
 - id: restore-standalone-renderer-regression-coverage
   file: DONE/main/planning/restore-standalone-renderer-regression-coverage.yaml
   title: Restore standalone renderer regression coverage

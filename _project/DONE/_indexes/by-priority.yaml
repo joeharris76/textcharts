@@ -1,5 +1,5 @@
-generated_at: '2026-03-09T09:24:47.817432'
-total_items: 20
+generated_at: '2026-03-10T08:01:47.066180'
+total_items: 21
 priorities:
   Critical:
     count: 1
@@ -10,7 +10,7 @@ priorities:
       category: Core Functionality
       status: Completed
   High:
-    count: 11
+    count: 12
     items:
     - id: behavioral-tests-for-minimal-coverage-charts
       file: DONE/main/active/behavioral-tests-for-minimal-coverage-charts.yaml
@@ -60,6 +60,11 @@ priorities:
     - id: neutralize-default-labels-and-titles
       file: DONE/main/active/neutralize-default-labels-and-titles.yaml
       title: Neutralize domain-specific default labels, titles, and comments
+      category: Core Functionality
+      status: Completed
+    - id: remove-benchbox-compat-and-ascii-prefixes
+      file: DONE/main/active/remove-benchbox-compat-and-ascii-prefixes.yaml
+      title: Remove all BenchBox backward compatibility stubs and ASCII* class prefixes
       category: Core Functionality
       status: Completed
     - id: restore-standalone-renderer-regression-coverage
