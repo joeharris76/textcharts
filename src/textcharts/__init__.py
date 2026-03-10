@@ -28,6 +28,11 @@ __version__ = "0.1.0"
 # ---------------------------------------------------------------------------
 # Base classes and configuration
 # ---------------------------------------------------------------------------
+# ---------------------------------------------------------------------------
+# Chart classes and data models
+# ---------------------------------------------------------------------------
+from textcharts.bar_chart import BarChart, BarData
+from textcharts.bar_chart import from_data as bar_from_data
 from textcharts.base import (
     ChartBase,
     ChartOptions,
@@ -39,12 +44,6 @@ from textcharts.base import (
     outlier_severity_markers,
     robust_p95,
 )
-
-# ---------------------------------------------------------------------------
-# Chart classes and data models
-# ---------------------------------------------------------------------------
-from textcharts.bar_chart import BarChart, BarData
-from textcharts.bar_chart import from_data as bar_from_data
 from textcharts.box_plot import BoxPlot, BoxPlotSeries, BoxPlotStats
 from textcharts.box_plot import from_series as box_from_series
 from textcharts.cdf_chart import CDFChart, CDFSeriesData
@@ -60,7 +59,7 @@ from textcharts.line_chart import LineChart, LinePoint
 from textcharts.line_chart import from_points as line_from_points
 from textcharts.normalized_speedup import NormalizedSpeedup, SpeedupData
 from textcharts.normalized_speedup import from_ratios as speedup_from_ratios
-from textcharts.percentile_ladder import PercentileLadder, PercentileData
+from textcharts.percentile_ladder import PercentileData, PercentileLadder
 from textcharts.percentile_ladder import from_series as percentile_from_series
 from textcharts.rank_table import RankTable, RankTableData
 from textcharts.rank_table import from_matrix as rank_from_matrix
