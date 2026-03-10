@@ -147,3 +147,4 @@ type in color, greyscale, and monochrome modes.
    :hidden:
 
    project/development
+   project/releasing

@@ -1,6 +1,10 @@
 Development
 ===========
 
+See `CONTRIBUTING.md <https://github.com/joeharris76/textcharts/blob/dev-0.1.0/CONTRIBUTING.md>`_
+at the repository root for the full contribution guide, including branching model,
+PR workflow, and commit conventions.
+
 Environment setup
 -----------------
 
@@ -38,15 +42,15 @@ The chart gallery screenshots are generated from the library itself:
 
    uv run --group dev python scripts/generate_doc_screenshots.py
 
-Release-oriented checks
------------------------
+Testing guidelines
+------------------
 
-The project already includes release-readiness tests for:
+When changing rendering behavior, update tests before changing documentation so
+the documented contract stays anchored to executable behavior.
+
+The project enforces 85% code coverage via pytest-cov. The test suite includes:
 
 - terminal color contract behavior
 - matrix validation behavior
 - standalone renderer parity
 - curated edge-case regression coverage
-
-When changing rendering behavior, update tests before changing documentation so
-the documented contract stays anchored to executable behavior.
