@@ -3,13 +3,14 @@
 from __future__ import annotations
 
 import logging
+from collections.abc import Callable
 from dataclasses import dataclass, field
 from typing import TYPE_CHECKING
 
 from textcharts.base import (
     DEFAULT_PALETTE,
-    ASCIIChartBase,
-    ASCIIChartOptions,
+    ChartBase,
+    ChartOptions,
     TerminalColors,
     outlier_severity_markers,
     robust_p95,
@@ -48,7 +49,7 @@ _SEGMENT_FILLS_UNICODE = ("░", "▒", "▓", "█", "▚", "▞", "▖", "▗"
 _SEGMENT_FILLS_ASCII = (".", "-", "=", "#", "+", "*", "~", "^")
 
 
-class ASCIIStackedBar(ASCIIChartBase):
+class StackedBar(ChartBase):
     """Stacked horizontal bar chart showing phase-level time decomposition.
 
     Each bar represents a platform and the segments show time spent in each
@@ -70,12 +71,17 @@ class ASCIIStackedBar(ASCIIChartBase):
         self,
         data: Sequence[StackedBarData],
         title: str | None = None,
-        options: ASCIIChartOptions | None = None,
-        metadata: dict | None = None,
+        options: ChartOptions | None = None,
+        subtitle: str | None = None,
+        metric_label: str = "",
+        value_formatter: Callable[[float], str] | None = None,
+        subject: str | None = None,
     ):
-        super().__init__(options, metadata=metadata)
+        super().__init__(options, subtitle=subtitle, title=title, subject=subject)
         self.data = list(data)
-        self.title = title or "Phase Breakdown by Platform"
+        self.title = self._compose_title("Stacked Breakdown")
+        self.metric_label = metric_label
+        self.value_formatter = value_formatter
 
     def render(self) -> str:
         """Render the stacked bar chart as a string."""
@@ -111,14 +117,18 @@ class ASCIIStackedBar(ASCIIChartBase):
 
         # Outlier truncation: cap scale so extreme bars don't compress others
         scale_max = max_total
-        totals = sorted(d.total or 0 for d in self.data)
-        if len(totals) > 5:
-            p95 = robust_p95(totals)
-            median_val = totals[len(totals) // 2]
-            median_gate = median_val > 0 and max_total > median_val * 10
-            zero_heavy_gate = median_val <= 0
-            if p95 > 0 and max_total > p95 * 3 and (median_gate or zero_heavy_gate):
-                scale_max = p95 * 2
+        explicit = self._resolve_outlier_cap(max_total)
+        if explicit is not None:
+            scale_max, _ = explicit
+        else:
+            totals = sorted(d.total or 0 for d in self.data)
+            if len(totals) > 5:
+                p95 = robust_p95(totals)
+                median_val = totals[len(totals) // 2]
+                median_gate = median_val > 0 and max_total > median_val * 10
+                zero_heavy_gate = median_val <= 0
+                if p95 > 0 and max_total > p95 * 3 and (median_gate or zero_heavy_gate):
+                    scale_max = p95 * 2
 
         lines: list[str] = []
 
@@ -138,9 +148,9 @@ class ASCIIStackedBar(ASCIIChartBase):
             is_truncated = (datum.total or 0) > scale_max
             bar = self._render_stacked_bar(datum, bar_width, scale_max, fills, phase_names, colors, is_truncated)
 
-            # Format total time annotation
+            # Format total annotation
             total = datum.total or 0
-            total_str = self._format_time(total).rjust(total_annotation_width)
+            total_str = self._format_total(total).rjust(total_annotation_width)
 
             # Colorize label
             colored_label = colors.colorize(label_padded, fg_color=DEFAULT_PALETTE[0])
@@ -225,6 +235,14 @@ class ASCIIStackedBar(ASCIIChartBase):
 
         return "".join(bar_chars)
 
+    def _format_total(self, value: float) -> str:
+        """Format a total value with the appropriate unit label."""
+        if self.value_formatter is not None:
+            return self.value_formatter(value)
+        if self.metric_label.strip().lower() == "ms":
+            return self._format_time(value)
+        return f"{self._format_value(value)}{self.metric_label}"
+
     @staticmethod
     def _format_time(ms: float) -> str:
         """Format milliseconds as a human-readable time string."""
@@ -235,19 +253,21 @@ class ASCIIStackedBar(ASCIIChartBase):
         return f"{ms:.0f}ms"
 
 
-def from_phase_data(
+def from_data(
     data: Sequence[StackedBarData],
     title: str | None = None,
-    options: ASCIIChartOptions | None = None,
-) -> ASCIIStackedBar:
-    """Create ASCIIStackedBar from phase breakdown data.
+    options: ChartOptions | None = None,
+    subject: str | None = None,
+) -> StackedBar:
+    """Create StackedBar from phase breakdown data.
 
     Args:
         data: Sequence of StackedBarData instances.
         title: Optional chart title.
         options: Chart rendering options.
+        subject: Domain noun phrase prepended to default title.
 
     Returns:
-        Configured ASCIIStackedBar instance.
+        Configured StackedBar instance.
     """
-    return ASCIIStackedBar(data=data, title=title, options=options)
+    return StackedBar(data=data, title=title, options=options, subject=subject)

@@ -12,8 +12,8 @@ logger = logging.getLogger(__name__)
 from textcharts.base import (
     DEFAULT_PALETTE,
     TRUNCATION_MARKER,
-    ASCIIChartBase,
-    ASCIIChartOptions,
+    ChartBase,
+    ChartOptions,
     ColorMode,
     robust_p95,
 )
@@ -32,7 +32,7 @@ class LinePoint:
     label: str | None = None
 
 
-class ASCIILineChart(ASCIIChartBase):
+class LineChart(ChartBase):
     """ASCII line chart for time series and trend visualization.
 
     Example output:
@@ -66,12 +66,13 @@ class ASCIILineChart(ASCIIChartBase):
         x_label: str = "X",
         y_label: str = "Y",
         show_trend: bool = False,
-        options: ASCIIChartOptions | None = None,
-        metadata: dict | None = None,
+        options: ChartOptions | None = None,
+        subtitle: str | None = None,
+        subject: str | None = None,
     ):
-        super().__init__(options, metadata=metadata)
+        super().__init__(options, subtitle=subtitle, title=title, subject=subject)
         self.points = list(points)
-        self.title = title or "Line Chart"
+        self.title = self._compose_title("Line Chart")
         self.x_label = x_label
         self.y_label = y_label
         self.show_trend = show_trend
@@ -110,7 +111,10 @@ class ASCIILineChart(ASCIIChartBase):
         y_min, y_max = min(all_y), max(all_y)
 
         # Cap y_max at P95×2 so one spike doesn't compress all series
-        if len(all_y) >= 5:
+        explicit = self._resolve_outlier_cap(y_max)
+        if explicit is not None:
+            y_max, self._y_capped = explicit
+        elif len(all_y) >= 5:
             p95_y = robust_p95(all_y)
             if p95_y > 0 and y_max > p95_y * 3:
                 y_max = p95_y * 2
@@ -283,7 +287,7 @@ class ASCIILineChart(ASCIIChartBase):
 
         # Axis labels
         lines.append("")
-        lines.append(self._render_axis_label(self.y_label, width, axis="y"))
+        lines.append(self._render_compact_axis_labels(self.y_label, self.x_label, width))
 
         # Legend
         if len(series_map) > 1 or self.options.show_legend:
@@ -321,15 +325,16 @@ class ASCIILineChart(ASCIIChartBase):
         return [intercept + slope * x for x in x_vals]
 
 
-def from_time_series_points(
+def from_points(
     points: Sequence,
     title: str | None = None,
     x_label: str = "Run",
-    y_label: str = "Execution Time (ms)",
+    y_label: str = "Y",
     show_trend: bool = False,
-    options: ASCIIChartOptions | None = None,
-) -> ASCIILineChart:
-    """Create ASCIILineChart from objects with series/x/y attributes."""
+    options: ChartOptions | None = None,
+    subject: str | None = None,
+) -> LineChart:
+    """Create LineChart from objects with series/x/y attributes."""
     converted: list[LinePoint] = []
     for item in points:
         if isinstance(item, LinePoint):
@@ -344,11 +349,12 @@ def from_time_series_points(
                 )
             )
 
-    return ASCIILineChart(
+    return LineChart(
         points=converted,
         title=title,
         x_label=x_label,
         y_label=y_label,
         show_trend=show_trend,
         options=options,
+        subject=subject,
     )

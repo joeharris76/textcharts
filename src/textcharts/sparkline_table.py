@@ -6,7 +6,7 @@ import logging
 import math
 from dataclasses import dataclass, field
 
-from textcharts.base import ASCIIChartBase, ASCIIChartOptions
+from textcharts.base import ChartBase, ChartOptions, ColorMode
 
 logger = logging.getLogger(__name__)
 
@@ -32,7 +32,7 @@ class SparklineTableData:
     columns: list[SparklineColumn] = field(default_factory=list)
 
 
-class ASCIISparklineTable(ASCIIChartBase):
+class SparklineTable(ChartBase):
     """Sparkline table showing compact multi-metric platform comparison.
 
     Each row is a platform, each column is a metric with an inline sparkline
@@ -53,12 +53,13 @@ class ASCIISparklineTable(ASCIIChartBase):
         self,
         data: SparklineTableData,
         title: str | None = None,
-        options: ASCIIChartOptions | None = None,
-        metadata: dict | None = None,
+        options: ChartOptions | None = None,
+        subtitle: str | None = None,
+        subject: str | None = None,
     ):
-        super().__init__(options, metadata=metadata)
+        super().__init__(options, subtitle=subtitle, title=title, subject=subject)
         self.data = data
-        self.title = title or "Platform Comparison Overview"
+        self.title = self._compose_title("Platform Comparison Overview")
 
     def render(self) -> str:
         """Render the sparkline table as a string."""
@@ -125,6 +126,9 @@ class ASCIISparklineTable(ASCIIChartBase):
 
         best_block = blocks[-1] if blocks else "#"
         worst_block = blocks[1] if len(blocks) > 1 else "."
+        if colors.color_mode != ColorMode.NONE:
+            best_block = colors.colorize(best_block, fg_color="#1b9e77")
+            worst_block = colors.colorize(worst_block, fg_color="#d95f02")
         lines.append(f"{best_block}=best  {worst_block}=worst  (bars scaled per column)")
 
         return "\n".join(lines)
@@ -259,13 +263,14 @@ class ASCIISparklineTable(ASCIIChartBase):
         return f"{val:.3f}"
 
 
-def from_metrics(
+def from_data(
     platforms: list[str],
     metrics: list[tuple[str, dict[str, float], bool]],
     title: str | None = None,
-    options: ASCIIChartOptions | None = None,
-) -> ASCIISparklineTable:
-    """Create ASCIISparklineTable from metric data.
+    options: ChartOptions | None = None,
+    subject: str | None = None,
+) -> SparklineTable:
+    """Create SparklineTable from metric data.
 
     Args:
         platforms: List of platform names.
@@ -274,8 +279,8 @@ def from_metrics(
         options: Chart rendering options.
 
     Returns:
-        Configured ASCIISparklineTable instance.
+        Configured SparklineTable instance.
     """
     columns = [SparklineColumn(name=name, values=values, higher_is_better=hib) for name, values, hib in metrics]
     data = SparklineTableData(platforms=platforms, columns=columns)
-    return ASCIISparklineTable(data=data, title=title, options=options)
+    return SparklineTable(data=data, title=title, options=options, subject=subject)

@@ -6,7 +6,7 @@ import logging
 from dataclasses import dataclass
 from typing import TYPE_CHECKING
 
-from textcharts.base import ASCIIChartBase, ASCIIChartOptions
+from textcharts.base import ChartBase, ChartOptions
 
 if TYPE_CHECKING:
     from collections.abc import Sequence
@@ -22,7 +22,7 @@ class DivergingBarData:
     pct_change: float  # Negative = improvement, positive = regression
 
 
-class ASCIIDivergingBar(ASCIIChartBase):
+class DivergingBar(ChartBase):
     """Diverging bar chart showing percentage changes centered on zero.
 
     Left side = improvements (faster), right side = regressions (slower).
@@ -53,13 +53,16 @@ class ASCIIDivergingBar(ASCIIChartBase):
         data: Sequence[DivergingBarData],
         title: str | None = None,
         clip_pct: float = DEFAULT_CLIP_PCT,
-        options: ASCIIChartOptions | None = None,
-        metadata: dict | None = None,
+        options: ChartOptions | None = None,
+        subtitle: str | None = None,
+        subject: str | None = None,
+        lower_is_better: bool = True,
     ):
-        super().__init__(options, metadata=metadata)
+        super().__init__(options, subtitle=subtitle, title=title, subject=subject)
         self.data = list(data)
-        self.title = title or "Regression / Improvement Distribution"
+        self.title = self._compose_title("Change Distribution")
         self.clip_pct = clip_pct
+        self.lower_is_better = lower_is_better
 
     def render(self) -> str:
         """Render the diverging bar chart as a string."""
@@ -192,16 +195,23 @@ class ASCIIDivergingBar(ASCIIChartBase):
 
     def _colorize_sides(self, pct_change: float, left_side: str, right_side: str, colors: object) -> tuple[str, str]:
         """Colorize left and right bar sides based on change direction."""
+        neg_color = "#66a61e" if self.lower_is_better else "#d95f02"
+        pos_color = "#d95f02" if self.lower_is_better else "#66a61e"
         if pct_change < 0:
-            return colors.colorize(left_side, fg_color="#66a61e"), right_side
+            return colors.colorize(left_side, fg_color=neg_color), right_side
         if pct_change > 0:
-            return left_side, colors.colorize(right_side, fg_color="#d95f02")
+            return left_side, colors.colorize(right_side, fg_color=pos_color)
         return left_side, right_side
 
     def _render_summary_counts(self, colors: object) -> str:
         """Render the summary counts line (improved/stable/regressed)."""
-        n_improved = sum(1 for d in self.data if d.pct_change < -self._stable_threshold())
-        n_regressed = sum(1 for d in self.data if d.pct_change > self._stable_threshold())
+        threshold = self._stable_threshold()
+        if self.lower_is_better:
+            n_improved = sum(1 for d in self.data if d.pct_change < -threshold)
+            n_regressed = sum(1 for d in self.data if d.pct_change > threshold)
+        else:
+            n_improved = sum(1 for d in self.data if d.pct_change > threshold)
+            n_regressed = sum(1 for d in self.data if d.pct_change < -threshold)
         n_stable = len(self.data) - n_improved - n_regressed
         no_color = not self.options.use_color
         if no_color:
@@ -210,8 +220,10 @@ class ASCIIDivergingBar(ASCIIChartBase):
             improved_text = f"{down}{n_improved} improved"
             regressed_text = f"{up}{n_regressed} regressed"
         else:
-            improved_text = colors.colorize(f"{n_improved} improved", fg_color="#66a61e")
-            regressed_text = colors.colorize(f"{n_regressed} regressed", fg_color="#d95f02")
+            imp_color = "#66a61e" if self.lower_is_better else "#d95f02"
+            reg_color = "#d95f02" if self.lower_is_better else "#66a61e"
+            improved_text = colors.colorize(f"{n_improved} improved", fg_color=imp_color)
+            regressed_text = colors.colorize(f"{n_regressed} regressed", fg_color=reg_color)
         return f"  {improved_text}  {n_stable} stable  {regressed_text}"
 
     def _overflow_arrow_left(self) -> str:
@@ -231,12 +243,13 @@ class ASCIIDivergingBar(ASCIIChartBase):
         return 2.0
 
 
-def from_regression_data(
+def from_data(
     data: Sequence,
     title: str | None = None,
-    options: ASCIIChartOptions | None = None,
-) -> ASCIIDivergingBar:
-    """Create ASCIIDivergingBar from regression data.
+    options: ChartOptions | None = None,
+    subject: str | None = None,
+) -> DivergingBar:
+    """Create DivergingBar from regression data.
 
     Accepts DivergingBarData objects or dicts with compatible keys.
     """
@@ -246,7 +259,7 @@ def from_regression_data(
             converted.append(item)
         else:
             logger.warning(
-                "from_regression_data: unexpected type %s, using getattr fallback",
+                "from_data: unexpected type %s, using getattr fallback",
                 type(item).__name__,
             )
             converted.append(
@@ -256,8 +269,9 @@ def from_regression_data(
                 )
             )
 
-    return ASCIIDivergingBar(
+    return DivergingBar(
         data=converted,
         title=title,
         options=options,
+        subject=subject,
     )

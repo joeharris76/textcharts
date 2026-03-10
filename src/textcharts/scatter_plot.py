@@ -8,14 +8,7 @@ from typing import TYPE_CHECKING
 
 logger = logging.getLogger(__name__)
 
-from textcharts.base import (
-    DEFAULT_PALETTE,
-    TRUNCATION_MARKER,
-    ASCIIChartBase,
-    ASCIIChartOptions,
-    ColorMode,
-    robust_p95,
-)
+from textcharts.base import DEFAULT_PALETTE, TRUNCATION_MARKER, ChartBase, ChartOptions, ColorMode, robust_p95
 
 if TYPE_CHECKING:
     from collections.abc import Sequence
@@ -31,7 +24,7 @@ class ScatterPoint:
     is_pareto: bool = False
 
 
-class ASCIIScatterPlot(ASCIIChartBase):
+class ScatterPlot(ChartBase):
     """ASCII scatter plot for cost vs performance trade-off visualization.
 
     Example output:
@@ -54,24 +47,24 @@ class ASCIIScatterPlot(ASCIIChartBase):
     ```
     """
 
-    # Markers for different purposes
-    MARKER_NORMAL = "*"
-    MARKER_PARETO = "◆"
+    # Point markers follow the same rotating pattern used by CDF/Line charts.
+    MARKERS = ("*", "+", "o", "x", "^", "v", "#", "@")
     MARKER_FRONTIER = "─"
 
     def __init__(
         self,
         points: Sequence[ScatterPoint],
         title: str | None = None,
-        x_label: str = "Cost (USD)",
-        y_label: str = "Performance",
+        x_label: str = "X",
+        y_label: str = "Y",
         show_pareto: bool = True,
-        options: ASCIIChartOptions | None = None,
-        metadata: dict | None = None,
+        options: ChartOptions | None = None,
+        subtitle: str | None = None,
+        subject: str | None = None,
     ):
-        super().__init__(options, metadata=metadata)
+        super().__init__(options, subtitle=subtitle, title=title, subject=subject)
         self.points = list(points)
-        self.title = title or "Scatter Plot"
+        self.title = self._compose_title("Scatter Plot")
         self.x_label = x_label
         self.y_label = y_label
         self.show_pareto = show_pareto
@@ -109,13 +102,26 @@ class ASCIIScatterPlot(ASCIIChartBase):
         self._truncation_active = False
         self._x_cap = float("inf")
         self._y_cap = float("inf")
-        if len(self.points) >= 5:
+        explicit_x = self._resolve_outlier_cap(x_max)
+        explicit_y = self._resolve_outlier_cap(y_max)
+        if explicit_x is not None:
+            x_max, x_truncated = explicit_x
+            if x_truncated:
+                self._x_cap = x_max
+                self._truncation_active = True
+        elif len(self.points) >= 5:
             p95_x = robust_p95(x_values)
-            p95_y = robust_p95(y_values)
             if p95_x > 0 and x_max > p95_x * 3:
                 x_max = p95_x * 2
                 self._x_cap = x_max
                 self._truncation_active = True
+        if explicit_y is not None:
+            y_max, y_truncated = explicit_y
+            if y_truncated:
+                self._y_cap = y_max
+                self._truncation_active = True
+        elif len(self.points) >= 5:
+            p95_y = robust_p95(y_values)
             if p95_y > 0 and y_max > p95_y * 3:
                 y_max = p95_y * 2
                 self._y_cap = y_max
@@ -159,6 +165,13 @@ class ASCIIScatterPlot(ASCIIChartBase):
             return max(0, min(plot_width - 1, gx)), max(0, min(plot_height - 1, gy))
 
         palette = list(DEFAULT_PALETTE)
+        point_styles = {
+            point.name: (
+                self.MARKERS[i % len(self.MARKERS)],
+                palette[i % len(palette)],
+            )
+            for i, point in enumerate(self.points)
+        }
 
         # Plot Pareto frontier line first (so points overlay it)
         if self.show_pareto and len(pareto_points) >= 2:
@@ -190,7 +203,7 @@ class ASCIIScatterPlot(ASCIIChartBase):
 
         for (gx, gy), pts in point_positions.items():
             # Use first point's properties for marker
-            marker = self.MARKER_PARETO if pts[0].is_pareto else self.MARKER_NORMAL
+            marker, _ = point_styles[pts[0].name]
             grid[gy][gx] = marker
 
         # Build output with y-axis
@@ -211,8 +224,10 @@ class ASCIIScatterPlot(ASCIIChartBase):
             if colors.color_mode != ColorMode.NONE:
                 colored_cells = []
                 for cell in row:
-                    if cell == self.MARKER_PARETO:
-                        colored_cells.append(colors.colorize(cell, fg_color="#1b9e77"))
+                    marker_match = next((style for style in point_styles.values() if style[0] == cell), None)
+                    if marker_match is not None:
+                        _, color = marker_match
+                        colored_cells.append(colors.colorize(cell, fg_color=color))
                     elif cell == self.MARKER_FRONTIER:
                         colored_cells.append(colors.colorize(cell, fg_color="#666666"))
                     else:
@@ -249,15 +264,13 @@ class ASCIIScatterPlot(ASCIIChartBase):
 
         # Axis labels
         lines.append("")
-        lines.append(self._render_axis_label(self.y_label, width, axis="y"))
-        lines.append(self._render_axis_label(self.x_label, width, axis="x"))
+        lines.append(self._render_compact_axis_labels(self.y_label, self.x_label, width))
 
         # Legend with point names
         lines.append("")
         lines.append("Points:")
-        for i, point in enumerate(self.points):
-            marker = self.MARKER_PARETO if point.is_pareto else self.MARKER_NORMAL
-            color = "#1b9e77" if point.is_pareto else palette[i % len(palette)]
+        for point in self.points:
+            marker, color = point_styles[point.name]
             if colors.color_mode != ColorMode.NONE:
                 marker_colored = colors.colorize(marker, fg_color=color)
             else:
@@ -285,15 +298,16 @@ class ASCIIScatterPlot(ASCIIChartBase):
         return frontier
 
 
-def from_cost_performance_points(
+def from_points(
     points: Sequence,
     title: str | None = None,
-    cost_label: str = "Cost (USD)",
-    performance_label: str = "Queries per Hour",
+    x_label: str = "X",
+    y_label: str = "Y",
     show_pareto: bool = True,
-    options: ASCIIChartOptions | None = None,
-) -> ASCIIScatterPlot:
-    """Create ASCIIScatterPlot from objects with name/cost/performance attributes."""
+    options: ChartOptions | None = None,
+    subject: str | None = None,
+) -> ScatterPlot:
+    """Create ScatterPlot from objects with name/x/y attributes."""
     converted: list[ScatterPoint] = []
     for item in points:
         if isinstance(item, ScatterPoint):
@@ -302,16 +316,17 @@ def from_cost_performance_points(
             converted.append(
                 ScatterPoint(
                     name=getattr(item, "name", str(item)),
-                    x=getattr(item, "cost", getattr(item, "x", 0)),
-                    y=getattr(item, "performance", getattr(item, "y", 0)),
+                    x=getattr(item, "x", getattr(item, "cost", 0)),
+                    y=getattr(item, "y", getattr(item, "performance", 0)),
                 )
             )
 
-    return ASCIIScatterPlot(
+    return ScatterPlot(
         points=converted,
         title=title,
-        x_label=cost_label,
-        y_label=performance_label,
+        x_label=x_label,
+        y_label=y_label,
         show_pareto=show_pareto,
         options=options,
+        subject=subject,
     )

@@ -11,8 +11,8 @@ logger = logging.getLogger(__name__)
 
 from textcharts.base import (
     DEFAULT_PALETTE,
-    ASCIIChartBase,
-    ASCIIChartOptions,
+    ChartBase,
+    ChartOptions,
     outlier_severity_markers,
 )
 
@@ -90,7 +90,7 @@ class BoxPlotSeries:
     values: Sequence[float]
 
 
-class ASCIIBoxPlot(ASCIIChartBase):
+class BoxPlot(ChartBase):
     """ASCII box plot for showing distributions.
 
     Example output:
@@ -130,12 +130,13 @@ class ASCIIBoxPlot(ASCIIChartBase):
         y_label: str = "Value",
         show_stats: bool = True,
         show_mean: bool = True,
-        options: ASCIIChartOptions | None = None,
-        metadata: dict | None = None,
+        options: ChartOptions | None = None,
+        subtitle: str | None = None,
+        subject: str | None = None,
     ):
-        super().__init__(options, metadata=metadata)
+        super().__init__(options, subtitle=subtitle, title=title, subject=subject)
         self.series = list(series)
-        self.title = title or "Box Plot"
+        self.title = self._compose_title("Box Plot")
         self.y_label = y_label
         self.show_stats = show_stats
         self.show_mean = show_mean
@@ -373,15 +374,16 @@ class ASCIIBoxPlot(ASCIIChartBase):
         return "\n".join(lines)
 
 
-def from_distribution_series(
+def from_series(
     series: Sequence,
     title: str | None = None,
-    y_label: str = "Execution Time (ms)",
+    y_label: str = "Value",
     show_stats: bool = True,
     show_mean: bool = True,
-    options: ASCIIChartOptions | None = None,
-) -> ASCIIBoxPlot:
-    """Create ASCIIBoxPlot from objects with name/values attributes."""
+    options: ChartOptions | None = None,
+    subject: str | None = None,
+) -> BoxPlot:
+    """Create BoxPlot from objects with name/values attributes."""
     converted: list[BoxPlotSeries] = []
     for item in series:
         if isinstance(item, BoxPlotSeries):
@@ -394,11 +396,12 @@ def from_distribution_series(
                 )
             )
 
-    return ASCIIBoxPlot(
+    return BoxPlot(
         series=converted,
         title=title,
         y_label=y_label,
         show_stats=show_stats,
         show_mean=show_mean,
         options=options,
+        subject=subject,
     )

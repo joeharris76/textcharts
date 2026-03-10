@@ -10,8 +10,8 @@ from typing import TYPE_CHECKING
 from textcharts.base import (
     DEFAULT_PALETTE,
     TRUNCATION_MARKER,
-    ASCIIChartBase,
-    ASCIIChartOptions,
+    ChartBase,
+    ChartOptions,
     robust_p95,
 )
 
@@ -20,7 +20,7 @@ if TYPE_CHECKING:
 
 logger = logging.getLogger(__name__)
 
-# Markers for each series (matching ASCIILineChart convention)
+# Markers for each series (matching LineChart convention)
 _MARKERS = ("*", "+", "o", "x", "^", "v", "#", "@")
 
 
@@ -32,7 +32,7 @@ class CDFSeriesData:
     values: list[float]
 
 
-class ASCIICDFChart(ASCIIChartBase):
+class CDFChart(ChartBase):
     """CDF chart showing cumulative distribution of query latency.
 
     The X-axis is execution time, the Y-axis is the cumulative proportion
@@ -62,13 +62,18 @@ class ASCIICDFChart(ASCIIChartBase):
         self,
         data: Sequence[CDFSeriesData],
         title: str | None = None,
+        x_label: str = "Value",
+        y_label: str = "Cumulative Share",
         height: int = PLOT_HEIGHT,
-        options: ASCIIChartOptions | None = None,
-        metadata: dict | None = None,
+        options: ChartOptions | None = None,
+        subtitle: str | None = None,
+        subject: str | None = None,
     ):
-        super().__init__(options, metadata=metadata)
+        super().__init__(options, subtitle=subtitle, title=title, subject=subject)
         self.data = list(data)
-        self.title = title or "Cumulative Distribution of Query Latency"
+        self.title = self._compose_title("Cumulative Distribution")
+        self.x_label = x_label
+        self.y_label = y_label
         self.height = max(5, height)
         self._x_capped = False
 
@@ -102,7 +107,10 @@ class ASCIICDFChart(ASCIIChartBase):
             x_max = x_min + 1  # Avoid division by zero
 
         # Cap x_max at P95×2 so one extreme tail doesn't bunch all data left
-        if len(all_values) >= 5:
+        explicit = self._resolve_outlier_cap(x_max)
+        if explicit is not None:
+            x_max, self._x_capped = explicit
+        elif len(all_values) >= 5:
             p95 = robust_p95(all_values)
             if p95 > 0 and x_max > p95 * 3:
                 x_max = p95 * 2
@@ -194,6 +202,8 @@ class ASCIICDFChart(ASCIIChartBase):
             x_label_parts[0] = x_label_parts[0][: start + 1] + label + x_label_parts[0][start + 1 + len(label) :]
 
         lines.append(f"{x_label_line}{x_label_parts[0].rstrip()}")
+        lines.append("")
+        lines.append(self._render_compact_axis_labels(self.y_label, self.x_label, width))
 
         # Legend
         legend_parts: list[str] = []
@@ -210,12 +220,15 @@ class ASCIICDFChart(ASCIIChartBase):
         return "\n".join(lines)
 
 
-def from_query_results(
+def from_series(
     platform_queries: Sequence[tuple[str, Sequence[float]]],
     title: str | None = None,
-    options: ASCIIChartOptions | None = None,
-) -> ASCIICDFChart:
-    """Create ASCIICDFChart from raw query timing data.
+    x_label: str = "Value",
+    y_label: str = "Cumulative Share",
+    options: ChartOptions | None = None,
+    subject: str | None = None,
+) -> CDFChart:
+    """Create CDFChart from raw query timing data.
 
     Args:
         platform_queries: Sequence of (platform_name, query_times) tuples.
@@ -223,7 +236,7 @@ def from_query_results(
         options: Chart rendering options.
 
     Returns:
-        Configured ASCIICDFChart instance.
+        Configured CDFChart instance.
     """
     data = [CDFSeriesData(name=name, values=list(values)) for name, values in platform_queries]
-    return ASCIICDFChart(data=data, title=title, options=options)
+    return CDFChart(data=data, title=title, x_label=x_label, y_label=y_label, options=options, subject=subject)

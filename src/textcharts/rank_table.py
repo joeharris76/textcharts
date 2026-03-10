@@ -7,7 +7,7 @@ import math
 from dataclasses import dataclass
 from typing import TYPE_CHECKING
 
-from textcharts.base import ASCIIChartBase, ASCIIChartOptions
+from textcharts.base import ChartBase, ChartOptions
 
 if TYPE_CHECKING:
     from collections.abc import Sequence
@@ -24,7 +24,7 @@ class RankTableData:
     times: dict[tuple[str, str], float]  # (platform, query) -> execution time
 
 
-class ASCIIRankTable(ASCIIChartBase):
+class RankTable(ChartBase):
     """Rank table showing per-query competitive rankings across platforms.
 
     Each cell shows the ordinal rank (1st, 2nd, 3rd...) of each platform
@@ -47,12 +47,13 @@ class ASCIIRankTable(ASCIIChartBase):
         self,
         data: RankTableData,
         title: str | None = None,
-        options: ASCIIChartOptions | None = None,
-        metadata: dict | None = None,
+        options: ChartOptions | None = None,
+        subtitle: str | None = None,
+        subject: str | None = None,
     ):
-        super().__init__(options, metadata=metadata)
+        super().__init__(options, subtitle=subtitle, title=title, subject=subject)
         self.data = data
-        self.title = title or "Query Rankings (1st = fastest)"
+        self.title = self._compose_title("Rankings (1st = best)")
 
     def render(self) -> str:
         """Render the rank table as a string."""
@@ -192,14 +193,15 @@ class ASCIIRankTable(ASCIIChartBase):
         return [int(c) if c.isdigit() else c.lower() for c in re.split(r"(\d+)", s)]
 
 
-def from_heatmap_data(
+def from_matrix(
     matrix: Sequence[Sequence[float]],
     queries: Sequence[str],
     platforms: Sequence[str],
     title: str | None = None,
-    options: ASCIIChartOptions | None = None,
-) -> ASCIIRankTable:
-    """Create ASCIIRankTable from the same matrix format as ASCIIHeatmap.
+    options: ChartOptions | None = None,
+    subject: str | None = None,
+) -> RankTable:
+    """Create RankTable from the same matrix format as Heatmap.
 
     Args:
         matrix: 2D matrix of execution times [query_idx][platform_idx].
@@ -209,17 +211,26 @@ def from_heatmap_data(
         options: Chart rendering options.
 
     Returns:
-        Configured ASCIIRankTable instance.
+        Configured RankTable instance.
     """
+    if len(matrix) != len(queries):
+        raise ValueError("queries length must match the number of matrix rows")
+
+    expected_cols = len(platforms)
+    for row_idx, row in enumerate(matrix, start=1):
+        if len(row) != expected_cols:
+            raise ValueError(
+                f"matrix row {row_idx} has {len(row)} columns but expected {expected_cols} to match platforms"
+            )
+
     times: dict[tuple[str, str], float] = {}
     for qi, query in enumerate(queries):
         for pi, platform in enumerate(platforms):
-            if qi < len(matrix) and pi < len(matrix[qi]):
-                times[(platform, query)] = matrix[qi][pi]
+            times[(platform, query)] = matrix[qi][pi]
 
     data = RankTableData(
         queries=list(queries),
         platforms=list(platforms),
         times=times,
     )
-    return ASCIIRankTable(data=data, title=title, options=options)
+    return RankTable(data=data, title=title, options=options, subject=subject)

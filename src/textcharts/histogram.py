@@ -13,8 +13,8 @@ logger = logging.getLogger(__name__)
 from textcharts.base import (
     DEFAULT_PALETTE,
     TRUNCATION_MARKER,
-    ASCIIChartBase,
-    ASCIIChartOptions,
+    ChartBase,
+    ChartOptions,
     outlier_severity_markers,
     robust_p95,
 )
@@ -35,7 +35,7 @@ class HistogramBar:
     is_worst: bool = False
 
 
-class ASCIIQueryHistogram(ASCIIChartBase):
+class Histogram(ChartBase):
     """Vertical bar histogram showing per-query latency in ASCII.
 
     Renders vertical bars with query IDs below, suitable for terminal display.
@@ -56,18 +56,19 @@ class ASCIIQueryHistogram(ASCIIChartBase):
     ```
     """
 
-    DEFAULT_MAX_QUERIES = 33
+    DEFAULT_MAX_BARS = 33
 
     def __init__(
         self,
         data: Sequence[HistogramBar],
         title: str | None = None,
-        y_label: str = "Execution Time (ms)",
+        y_label: str = "Value",
         sort_by: str = "query_id",
-        max_per_chart: int = DEFAULT_MAX_QUERIES,
+        max_per_chart: int = DEFAULT_MAX_BARS,
         show_mean_line: bool = True,
-        options: ASCIIChartOptions | None = None,
-        metadata: dict | None = None,
+        options: ChartOptions | None = None,
+        subtitle: str | None = None,
+        subject: str | None = None,
     ):
         """Initialize the histogram.
 
@@ -79,11 +80,12 @@ class ASCIIQueryHistogram(ASCIIChartBase):
             max_per_chart: Maximum queries per chart before splitting.
             show_mean_line: Whether to show a horizontal mean line.
             options: Chart rendering options.
-            metadata: Optional chart metadata (scale_factor, platform_version, tuning).
+            subtitle: Optional subtitle line displayed below the title.
+            subject: Domain noun phrase prepended to default title (e.g. "Query Latency").
         """
-        super().__init__(options, metadata=metadata)
+        super().__init__(options, subtitle=subtitle, title=title, subject=subject)
         self.data = list(data)
-        self.title = title or "Query Latency Histogram"
+        self.title = self._compose_title("Histogram")
         self.y_label = y_label
         self.sort_by = sort_by
         self.max_per_chart = max(5, max_per_chart)
@@ -126,7 +128,10 @@ class ASCIIQueryHistogram(ASCIIChartBase):
         self._outlier_ids: set[str] = set()
         self._outlier_bar_keys: set[tuple[str | None, str]] = set()
         scale_max = global_max
-        if len(all_latencies) >= 4:
+        explicit = self._resolve_outlier_cap(global_max)
+        if explicit is not None:
+            scale_max, _ = explicit
+        elif len(all_latencies) >= 4:
             s = sorted(all_latencies)
             n = len(s)
             q1 = s[n // 4]
@@ -286,8 +291,7 @@ class ASCIIQueryHistogram(ASCIIChartBase):
 
         lines: list[str] = []
 
-        title_text = f"{title} ({self.y_label})"
-        lines.append(self._render_title(title_text, width))
+        lines.append(self._render_title(title, width))
         subtitle = self._render_subtitle(width)
         if subtitle:
             lines.append(subtitle)
@@ -460,8 +464,10 @@ class ASCIIQueryHistogram(ASCIIChartBase):
     ) -> str:
         """Build the footer line with mean and legend markers."""
         footer_parts: list[str] = []
+        bar_glyph = "█" if self.options.use_unicode else "#"
+        footer_parts.append(f"{colors.colorize(bar_glyph, fg_color='#1b9e77')} {self.y_label}")
         if self.show_mean_line and global_mean > 0:
-            mean_text = f"····· Mean: {self._format_value(global_mean)} ms"
+            mean_text = f"····· Mean: {self._format_value(global_mean)}"
             footer_parts.append(colors.colorize(mean_text, fg_color="#6b7075"))
 
         has_best = any(d.is_best for d in chunk)
@@ -503,8 +509,7 @@ class ASCIIQueryHistogram(ASCIIChartBase):
 
         lines: list[str] = []
 
-        title_text = f"{title} ({self.y_label})"
-        lines.append(self._render_title(title_text, width))
+        lines.append(self._render_title(title, width))
         subtitle = self._render_subtitle(width)
         if subtitle:
             lines.append(subtitle)
@@ -691,7 +696,7 @@ class ASCIIQueryHistogram(ASCIIChartBase):
         """
         footer_parts: list[str] = []
         if self.show_mean_line and global_mean > 0:
-            mean_text = f"····· Mean: {self._format_value(global_mean)} ms"
+            mean_text = f"····· Mean: {self._format_value(global_mean)}"
             footer_parts.append(colors.colorize(mean_text, fg_color="#6b7075"))
 
         for i, platform in enumerate(self._platforms):
@@ -731,16 +736,17 @@ class ASCIIQueryHistogram(ASCIIChartBase):
         return "\n".join(lines)
 
 
-def from_query_latency_data(
+def from_data(
     data: Sequence,
     title: str | None = None,
-    y_label: str = "Execution Time (ms)",
+    y_label: str = "Value",
     sort_by: str = "query_id",
-    max_per_chart: int = ASCIIQueryHistogram.DEFAULT_MAX_QUERIES,
+    max_per_chart: int = Histogram.DEFAULT_MAX_BARS,
     show_mean_line: bool = True,
-    options: ASCIIChartOptions | None = None,
-) -> ASCIIQueryHistogram:
-    """Create ASCIIQueryHistogram from objects with query_id/latency_ms attributes."""
+    options: ChartOptions | None = None,
+    subject: str | None = None,
+) -> Histogram:
+    """Create Histogram from objects with query_id/latency_ms attributes."""
     converted: list[HistogramBar] = []
     for item in data:
         if isinstance(item, HistogramBar):
@@ -757,7 +763,7 @@ def from_query_latency_data(
                 )
             )
 
-    return ASCIIQueryHistogram(
+    return Histogram(
         data=converted,
         title=title,
         y_label=y_label,
@@ -765,8 +771,5 @@ def from_query_latency_data(
         max_per_chart=max_per_chart,
         show_mean_line=show_mean_line,
         options=options,
+        subject=subject,
     )
-
-
-# Standalone alias — consistent with other chart types (ASCIIBarChart, ASCIIBoxPlot, etc.)
-ASCIIHistogram = ASCIIQueryHistogram

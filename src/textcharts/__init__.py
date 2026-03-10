@@ -1,9 +1,14 @@
-"""textcharts — Beautiful ASCII charts for your terminal.
+"""textcharts — Beautiful text-based charts for your terminal.
 
 Zero-dependency library providing 15 chart types for terminal visualization:
 bar, histogram, heatmap, box plot, line, scatter, comparison bar, diverging bar,
 summary box, percentile ladder, normalized speedup, stacked bar, sparkline table,
 CDF chart, and rank table.
+
+Public API:
+    - Chart classes such as ``BarChart`` and ``Heatmap``
+    - Data models such as ``BarData`` and ``LinePoint``
+    - Shared configuration via ``ChartOptions`` and ``ColorMode``
 
 Basic usage::
 
@@ -21,15 +26,16 @@ Basic usage::
 __version__ = "0.1.0"
 
 # ---------------------------------------------------------------------------
-# Base class and configuration
+# Base classes and configuration
 # ---------------------------------------------------------------------------
 # ---------------------------------------------------------------------------
-# Chart classes
+# Chart classes and data models
 # ---------------------------------------------------------------------------
-from textcharts.bar_chart import ASCIIBarChart, BarData, from_bar_data
+from textcharts.bar_chart import BarChart, BarData
+from textcharts.bar_chart import from_data as bar_from_data
 from textcharts.base import (
-    ASCIIChartBase,
-    ASCIIChartOptions,
+    ChartBase,
+    ChartOptions,
     ColorMode,
     TerminalCapabilities,
     TerminalColors,
@@ -38,47 +44,36 @@ from textcharts.base import (
     outlier_severity_markers,
     robust_p95,
 )
-from textcharts.box_plot import ASCIIBoxPlot, BoxPlotSeries, BoxPlotStats, from_distribution_series
-from textcharts.cdf_chart import ASCIICDFChart, CDFSeriesData
-from textcharts.cdf_chart import from_query_results as cdf_from_query_results
-from textcharts.comparison_bar import ASCIIComparisonBar, ComparisonBarData, from_comparison_data
-from textcharts.diverging_bar import ASCIIDivergingBar, DivergingBarData, from_regression_data
-from textcharts.heatmap import ASCIIHeatmap, from_matrix
-from textcharts.histogram import ASCIIHistogram, ASCIIQueryHistogram, HistogramBar, from_query_latency_data
-from textcharts.line_chart import ASCIILineChart, LinePoint, from_time_series_points
-from textcharts.normalized_speedup import ASCIINormalizedSpeedup, SpeedupData, from_normalized_results
-from textcharts.percentile_ladder import ASCIIPercentileLadder, PercentileData
-from textcharts.percentile_ladder import from_query_results as percentile_from_query_results
-from textcharts.rank_table import ASCIIRankTable, RankTableData, from_heatmap_data
-from textcharts.scatter_plot import ASCIIScatterPlot, ScatterPoint, from_cost_performance_points
-from textcharts.sparkline_table import ASCIISparklineTable, SparklineColumn, SparklineTableData, from_metrics
-from textcharts.stacked_bar import ASCIIStackedBar, StackedBarData, StackedBarSegment, from_phase_data
-from textcharts.summary_box import ASCIISummaryBox, SummaryStats
-
-# ---------------------------------------------------------------------------
-# Clean standalone aliases (drop ASCII prefix)
-# ---------------------------------------------------------------------------
-ChartBase = ASCIIChartBase
-ChartOptions = ASCIIChartOptions
-BarChart = ASCIIBarChart
-BoxPlot = ASCIIBoxPlot
-CDFChart = ASCIICDFChart
-ComparisonBar = ASCIIComparisonBar
-DivergingBar = ASCIIDivergingBar
-Heatmap = ASCIIHeatmap
-Histogram = ASCIIHistogram
-LineChart = ASCIILineChart
-NormalizedSpeedup = ASCIINormalizedSpeedup
-PercentileLadder = ASCIIPercentileLadder
-RankTable = ASCIIRankTable
-ScatterPlot = ASCIIScatterPlot
-SparklineTable = ASCIISparklineTable
-StackedBar = ASCIIStackedBar
-SummaryBox = ASCIISummaryBox
+from textcharts.box_plot import BoxPlot, BoxPlotSeries, BoxPlotStats
+from textcharts.box_plot import from_series as box_from_series
+from textcharts.cdf_chart import CDFChart, CDFSeriesData
+from textcharts.cdf_chart import from_series as cdf_from_series
+from textcharts.comparison_bar import ComparisonBar, ComparisonBarData
+from textcharts.comparison_bar import from_data as comparison_from_data
+from textcharts.diverging_bar import DivergingBar, DivergingBarData
+from textcharts.diverging_bar import from_data as diverging_from_data
+from textcharts.heatmap import Heatmap, from_matrix
+from textcharts.histogram import Histogram, HistogramBar
+from textcharts.histogram import from_data as histogram_from_data
+from textcharts.line_chart import LineChart, LinePoint
+from textcharts.line_chart import from_points as line_from_points
+from textcharts.normalized_speedup import NormalizedSpeedup, SpeedupData
+from textcharts.normalized_speedup import from_ratios as speedup_from_ratios
+from textcharts.percentile_ladder import PercentileData, PercentileLadder
+from textcharts.percentile_ladder import from_series as percentile_from_series
+from textcharts.rank_table import RankTable, RankTableData
+from textcharts.rank_table import from_matrix as rank_from_matrix
+from textcharts.scatter_plot import ScatterPlot, ScatterPoint
+from textcharts.scatter_plot import from_points as scatter_from_points
+from textcharts.sparkline_table import SparklineColumn, SparklineTable, SparklineTableData
+from textcharts.sparkline_table import from_data as sparkline_from_data
+from textcharts.stacked_bar import StackedBar, StackedBarData, StackedBarSegment
+from textcharts.stacked_bar import from_data as stacked_from_data
+from textcharts.summary_box import SummaryBox, SummaryStats
 
 __all__ = [
     "__version__",
-    # Clean standalone names (preferred)
+    # Chart classes
     "BarChart",
     "BoxPlot",
     "CDFChart",
@@ -96,25 +91,6 @@ __all__ = [
     "SparklineTable",
     "StackedBar",
     "SummaryBox",
-    # BenchBox-compatible names (aliases)
-    "ASCIIBarChart",
-    "ASCIIBoxPlot",
-    "ASCIICDFChart",
-    "ASCIIChartBase",
-    "ASCIIChartOptions",
-    "ASCIIComparisonBar",
-    "ASCIIDivergingBar",
-    "ASCIIHeatmap",
-    "ASCIIHistogram",
-    "ASCIILineChart",
-    "ASCIINormalizedSpeedup",
-    "ASCIIPercentileLadder",
-    "ASCIIQueryHistogram",
-    "ASCIIRankTable",
-    "ASCIIScatterPlot",
-    "ASCIISparklineTable",
-    "ASCIIStackedBar",
-    "ASCIISummaryBox",
     # Configuration and utilities
     "ColorMode",
     "TerminalCapabilities",
@@ -142,18 +118,18 @@ __all__ = [
     "StackedBarSegment",
     "SummaryStats",
     # Factory functions
-    "cdf_from_query_results",
-    "from_bar_data",
-    "from_comparison_data",
-    "from_cost_performance_points",
-    "from_distribution_series",
-    "from_heatmap_data",
+    "bar_from_data",
+    "box_from_series",
+    "cdf_from_series",
+    "comparison_from_data",
+    "diverging_from_data",
     "from_matrix",
-    "from_metrics",
-    "from_normalized_results",
-    "from_phase_data",
-    "from_query_latency_data",
-    "from_regression_data",
-    "from_time_series_points",
-    "percentile_from_query_results",
+    "histogram_from_data",
+    "line_from_points",
+    "percentile_from_series",
+    "rank_from_matrix",
+    "scatter_from_points",
+    "sparkline_from_data",
+    "speedup_from_ratios",
+    "stacked_from_data",
 ]

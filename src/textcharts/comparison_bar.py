@@ -9,8 +9,8 @@ from typing import TYPE_CHECKING
 
 from textcharts.base import (
     DEFAULT_PALETTE,
-    ASCIIChartBase,
-    ASCIIChartOptions,
+    ChartBase,
+    ChartOptions,
     TerminalColors,
     outlier_severity_markers,
 )
@@ -32,7 +32,7 @@ class ComparisonBarData:
     comparison_name: str = "Comparison"
 
 
-class ASCIIComparisonBar(ASCIIChartBase):
+class ComparisonBar(ChartBase):
     """Paired comparison bar chart showing side-by-side bars per query.
 
     Each query shows two horizontal bars (e.g., SQL and DataFrame) with
@@ -59,14 +59,17 @@ class ASCIIComparisonBar(ASCIIChartBase):
         self,
         data: Sequence[ComparisonBarData],
         title: str | None = None,
-        metric_label: str = "Execution Time (ms)",
-        options: ASCIIChartOptions | None = None,
-        metadata: dict | None = None,
+        metric_label: str = "Value",
+        options: ChartOptions | None = None,
+        subtitle: str | None = None,
+        subject: str | None = None,
+        lower_is_better: bool = True,
     ):
-        super().__init__(options, metadata=metadata)
+        super().__init__(options, subtitle=subtitle, title=title, subject=subject)
         self.data = list(data)
-        self.title = title or "Comparison"
+        self.title = self._compose_title("Comparison")
         self.metric_label = metric_label
+        self.lower_is_better = lower_is_better
 
     def render(self) -> str:
         """Render the paired comparison bar chart as a string."""
@@ -188,16 +191,20 @@ class ASCIIComparisonBar(ASCIIChartBase):
         c_marker_char = self.options.get_series_marker(1)
         b_marker = colors.colorize(b_marker_char, fg_color=baseline_color)
         c_marker = colors.colorize(c_marker_char, fg_color=comparison_color)
+        neg_label = "improvement" if self.lower_is_better else "regression"
+        pos_label = "regression" if self.lower_is_better else "improvement"
         if no_color:
             down_arrow = "\u2193" if self.options.use_unicode else "v"
             up_arrow = "\u2191" if self.options.use_unicode else "^"
             lines.append(f"  {b_marker} {baseline_short}  {c_marker} {comparison_short}")
-            lines.append(f"  {down_arrow} improvement (negative %)  {up_arrow} regression (positive %)")
+            lines.append(f"  {down_arrow} {neg_label} (negative %)  {up_arrow} {pos_label} (positive %)")
         else:
-            green = colors.colorize("improvement", fg_color="#66a61e")
-            red = colors.colorize("regression", fg_color="#d95f02")
+            neg_color = "#66a61e" if self.lower_is_better else "#d95f02"
+            pos_color = "#d95f02" if self.lower_is_better else "#66a61e"
+            green_text = colors.colorize(neg_label, fg_color=neg_color)
+            red_text = colors.colorize(pos_label, fg_color=pos_color)
             lines.append(f"  {b_marker} {baseline_short}  {c_marker} {comparison_short}")
-            lines.append(f"  {green} (negative %)  {red} (positive %)")
+            lines.append(f"  {green_text} (negative %)  {red_text} (positive %)")
 
         return "\n".join(lines)
 
@@ -250,20 +257,17 @@ class ASCIIComparisonBar(ASCIIChartBase):
             return ""
 
         no_color = not self.options.use_color
+        is_regression = pct_change > 0 if self.lower_is_better else pct_change < 0
         if pct_change > 0:
-            # Regression (slower)
             arrow = "\u2191" if self.options.use_unicode else "^"
             text = f"  +{pct_change:.1f}%"
-            if no_color:
-                return f"{text} {arrow}"
-            return colors.colorize(text, fg_color="#d95f02")
         else:
-            # Improvement (faster)
             arrow = "\u2193" if self.options.use_unicode else "v"
             text = f"  {pct_change:.1f}%"
-            if no_color:
-                return f"{text} {arrow}"
-            return colors.colorize(text, fg_color="#66a61e")
+        if no_color:
+            return f"{text} {arrow}"
+        color = "#d95f02" if is_regression else "#66a61e"
+        return colors.colorize(text, fg_color=color)
 
     @staticmethod
     def _extract_unit(metric_label: str) -> str:
@@ -281,13 +285,14 @@ class ASCIIComparisonBar(ASCIIChartBase):
         return "~"
 
 
-def from_comparison_data(
+def from_data(
     data: Sequence,
     title: str | None = None,
-    metric_label: str = "Execution Time (ms)",
-    options: ASCIIChartOptions | None = None,
-) -> ASCIIComparisonBar:
-    """Create ASCIIComparisonBar from comparison data.
+    metric_label: str = "Value",
+    options: ChartOptions | None = None,
+    subject: str | None = None,
+) -> ComparisonBar:
+    """Create ComparisonBar from comparison data.
 
     Accepts ComparisonBarData objects or dicts with compatible keys.
     """
@@ -297,7 +302,7 @@ def from_comparison_data(
             converted.append(item)
         else:
             logger.warning(
-                "from_comparison_data: unexpected type %s, using getattr fallback",
+                "from_data: unexpected type %s, using getattr fallback",
                 type(item).__name__,
             )
             converted.append(
@@ -310,9 +315,10 @@ def from_comparison_data(
                 )
             )
 
-    return ASCIIComparisonBar(
+    return ComparisonBar(
         data=converted,
         title=title,
         metric_label=metric_label,
         options=options,
+        subject=subject,
     )

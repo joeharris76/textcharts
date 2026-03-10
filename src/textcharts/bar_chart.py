@@ -8,13 +8,7 @@ from typing import TYPE_CHECKING
 
 logger = logging.getLogger(__name__)
 
-from textcharts.base import (
-    DEFAULT_PALETTE,
-    ASCIIChartBase,
-    ASCIIChartOptions,
-    outlier_severity_markers,
-    robust_p95,
-)
+from textcharts.base import ChartBase, ChartOptions, outlier_severity_markers, robust_p95
 
 if TYPE_CHECKING:
     from collections.abc import Sequence
@@ -32,7 +26,7 @@ class BarData:
     is_worst: bool = False
 
 
-class ASCIIBarChart(ASCIIChartBase):
+class BarChart(ChartBase):
     """Horizontal bar chart rendered in ASCII/Unicode.
 
     Example output:
@@ -51,12 +45,13 @@ class ASCIIBarChart(ASCIIChartBase):
         title: str | None = None,
         metric_label: str = "Value",
         sort_by: str = "value",
-        options: ASCIIChartOptions | None = None,
-        metadata: dict | None = None,
+        options: ChartOptions | None = None,
+        subtitle: str | None = None,
+        subject: str | None = None,
     ):
-        super().__init__(options, metadata=metadata)
+        super().__init__(options, subtitle=subtitle, title=title, subject=subject)
         self.data = list(data)
-        self.title = title or "Bar Chart"
+        self.title = self._compose_title("Bar Chart")
         self.metric_label = metric_label
         self.sort_by = sort_by
 
@@ -82,7 +77,10 @@ class ASCIIBarChart(ASCIIChartBase):
         # Outlier truncation: cap the scale so extreme values don't squash all others
         scale_max = max_value
         truncation_active = False
-        if len(sorted_data) > 5:
+        explicit = self._resolve_outlier_cap(max_value)
+        if explicit is not None:
+            scale_max, truncation_active = explicit
+        elif len(sorted_data) > 5:
             values = sorted(d.value for d in sorted_data)
             p95 = robust_p95(values)
             median_val = values[len(values) // 2]
@@ -116,7 +114,7 @@ class ASCIIBarChart(ASCIIChartBase):
         use_groups = len(groups) > 1
 
         # Color palette and fill patterns
-        palette = list(DEFAULT_PALETTE)
+        palette = list(self.options.get_palette())
         group_colors: dict[str, str] = {}
         group_fills: dict[str, str] = {}
         if use_groups:
@@ -189,6 +187,9 @@ class ASCIIBarChart(ASCIIChartBase):
         if use_groups:
             legend_items = [(group, group_colors[group]) for group in groups]
             lines.extend(self._render_legend(legend_items, colors))
+        elif len(sorted_data) > 1 and self.options.show_legend:
+            legend_items = [(datum.label, palette[i % len(palette)]) for i, datum in enumerate(sorted_data)]
+            lines.extend(self._render_legend(legend_items, colors))
 
         return "\n".join(lines)
 
@@ -201,14 +202,15 @@ class ASCIIBarChart(ASCIIChartBase):
         return list(self.data)
 
 
-def from_bar_data(
+def from_data(
     data: Sequence,
     title: str | None = None,
-    metric_label: str = "Execution Time (ms)",
+    metric_label: str = "Value",
     sort_by: str = "value",
-    options: ASCIIChartOptions | None = None,
-) -> ASCIIBarChart:
-    """Create ASCIIBarChart from objects with label/value attributes."""
+    options: ChartOptions | None = None,
+    subject: str | None = None,
+) -> BarChart:
+    """Create BarChart from objects with label/value attributes."""
     converted: list[BarData] = []
     for item in data:
         if isinstance(item, BarData):
@@ -225,10 +227,11 @@ def from_bar_data(
                 )
             )
 
-    return ASCIIBarChart(
+    return BarChart(
         data=converted,
         title=title,
         metric_label=metric_label,
         sort_by=sort_by,
         options=options,
+        subject=subject,
     )

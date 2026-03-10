@@ -10,13 +10,13 @@ import sys
 from abc import ABC, abstractmethod
 from dataclasses import dataclass, field
 from enum import Enum
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
-    from collections.abc import Callable, Sequence
+    from collections.abc import Sequence
 
 # Colorblind-friendly categorical palette (Okabe-Ito inspired)
-DEFAULT_PALETTE: tuple[str, ...] = (
+LIGHT_PALETTE: tuple[str, ...] = (
     "#1b9e77",
     "#d95f02",
     "#7570b3",
@@ -26,6 +26,20 @@ DEFAULT_PALETTE: tuple[str, ...] = (
     "#a6761d",
     "#666666",
 )
+
+# Higher-contrast palette for dark terminal themes.
+DARK_PALETTE: tuple[str, ...] = (
+    "#66d9b3",
+    "#ff9f4a",
+    "#a99cff",
+    "#ff6fb5",
+    "#9be564",
+    "#ffd166",
+    "#d6a56f",
+    "#c7c7c7",
+)
+
+DEFAULT_PALETTE = LIGHT_PALETTE
 
 # Unicode block characters for bar rendering (1/8 increments)
 LEFT_BLOCK_CHARS = " ▏▎▍▌▋▊▉█"
@@ -337,7 +351,7 @@ class TerminalColors:
 
 
 @dataclass
-class ASCIIChartOptions:
+class ChartOptions:
     """Configuration options for ASCII chart rendering."""
 
     width: int | None = None  # None = auto-detect
@@ -348,10 +362,7 @@ class ASCIIChartOptions:
     show_legend: bool = True
     show_values: bool = True
     theme: str = "light"  # "light" or "dark"
-
-    # Optional formatter for scale factor display in subtitles.
-    # When None, uses a generic fallback. BenchBox injects its own formatter.
-    scale_factor_formatter: Callable[[float], str] | None = field(default=None, repr=False)
+    outlier_cap: float | None = None  # None = auto P95×2, 0 = disabled, float = fixed cap
 
     # Computed at render time
     _capabilities: TerminalCapabilities | None = field(default=None, repr=False)
@@ -363,10 +374,6 @@ class ASCIIChartOptions:
         if self._capabilities:
             return min(140, max(40, self._capabilities.width - 2))
         return 78
-
-    def get_block_chars(self) -> str:
-        """Get horizontal block characters. Deprecated: use horizontal/vertical methods."""
-        return self.get_horizontal_block_chars()
 
     def get_horizontal_block_chars(self) -> str:
         """Get appropriate horizontal block characters."""
@@ -396,11 +403,20 @@ class ASCIIChartOptions:
         """Get terminal colors instance based on options."""
         if not self.use_color:
             return TerminalColors(color_mode=ColorMode.NONE)
-        # When use_color=True is explicitly set, force EXTENDED color mode
-        # even if terminal detection says otherwise (e.g., in MCP/subprocess context)
-        if self._capabilities and self._capabilities.color_mode != ColorMode.NONE:
-            return TerminalColors(color_mode=self._capabilities.color_mode)
-        return TerminalColors(color_mode=ColorMode.EXTENDED)
+        if self._capabilities is None:
+            self._capabilities = detect_terminal_capabilities()
+        # When use_color is explicitly True but terminal detection found no color
+        # support (e.g. non-TTY MCP stdio), default to EXTENDED (256-color).
+        color_mode = self._capabilities.color_mode
+        if color_mode == ColorMode.NONE:
+            color_mode = ColorMode.EXTENDED
+        return TerminalColors(color_mode=color_mode)
+
+    def get_palette(self) -> tuple[str, ...]:
+        """Get the categorical palette for the configured theme."""
+        if self.theme == "dark":
+            return DARK_PALETTE
+        return LIGHT_PALETTE
 
     def _has_unicode(self) -> bool:
         """Check if unicode is available."""
@@ -429,13 +445,52 @@ class ASCIIChartOptions:
         return markers[index % len(markers)]
 
 
-class ASCIIChartBase(ABC):
+class ChartBase(ABC):
     """Abstract base class for ASCII chart renderers."""
 
-    def __init__(self, options: ASCIIChartOptions | None = None, metadata: dict[str, Any] | None = None):
-        self.options = options or ASCIIChartOptions()
+    def __init__(
+        self,
+        options: ChartOptions | None = None,
+        subtitle: str | None = None,
+        title: str | None = None,
+        subject: str | None = None,
+    ):
+        self.options = options or ChartOptions()
         self._capabilities: TerminalCapabilities | None = None
-        self.metadata: dict[str, Any] = metadata or {}
+        self.subtitle: str | None = subtitle
+        self._explicit_title: str | None = title
+        self._subject: str | None = subject
+
+    def _compose_title(self, default: str) -> str:
+        """Compose the chart title from explicit title, subject, or default.
+
+        Resolution order:
+        1. Explicit title (passed by caller) wins unconditionally.
+        2. Subject + default: ``f"{subject} {default}"``.
+        3. Default alone.
+        """
+        if self._explicit_title is not None:
+            return self._explicit_title
+        if self._subject is not None:
+            return f"{self._subject} {default}"
+        return default
+
+    def _resolve_outlier_cap(self, current_max: float) -> tuple[float, bool] | None:
+        """Apply explicit ``outlier_cap`` if set on options.
+
+        Returns ``(scale_max, truncated)`` when ``outlier_cap`` is explicitly
+        set (positive float = fixed cap, zero = disabled).  Returns ``None``
+        when ``outlier_cap is None``, signaling the caller to use its own
+        auto-detection logic.
+        """
+        cap = self.options.outlier_cap
+        if cap is None:
+            return None
+        if cap <= 0:
+            return current_max, False
+        if current_max > cap:
+            return cap, True
+        return current_max, False
 
     def _detect_capabilities(self) -> TerminalCapabilities:
         """Detect and cache terminal capabilities."""
@@ -454,7 +509,7 @@ class ASCIIChartBase(ABC):
     @staticmethod
     def _sanitize_text(text: str) -> str:
         """Strip ANSI escape sequences from user-supplied text."""
-        return ASCIIChartBase._ANSI_ESCAPE_RE.sub("", text)
+        return ChartBase._ANSI_ESCAPE_RE.sub("", text)
 
     def _render_title(self, title: str, width: int) -> str:
         """Render a centered title line."""
@@ -465,43 +520,17 @@ class ASCIIChartBase(ABC):
         return colors.bold() + padded + colors.reset()
 
     def _render_subtitle(self, width: int) -> str | None:
-        """Render a metadata subtitle line from chart metadata.
+        """Render a centered, dimmed subtitle line.
 
-        Displays scale factor, platform version, and tuning config
-        as a compact pipe-separated string centered below the title.
-        Returns None if no metadata is available.
+        Returns None if no subtitle is set.
         """
-        if not self.metadata:
-            return None
-
-        parts: list[str] = []
-
-        benchmark = self.metadata.get("benchmark")
-        if benchmark:
-            parts.append(str(benchmark).upper())
-
-        sf = self.metadata.get("scale_factor")
-        if sf is not None:
-            if self.options.scale_factor_formatter is not None:
-                parts.append(f"SF={self.options.scale_factor_formatter(sf)}")
-            else:
-                parts.append(f"SF={sf}")
-
-        version = self.metadata.get("platform_version")
-        if version:
-            parts.append(str(version))
-
-        tuning = self.metadata.get("tuning")
-        if tuning:
-            parts.append(str(tuning))
-
-        if not parts:
+        if not self.subtitle:
             return None
 
         colors = self.options.get_colors()
-        subtitle = " | ".join(parts)
-        subtitle = subtitle[:width] if len(subtitle) > width else subtitle
-        padded = subtitle.center(width)
+        text = self._sanitize_text(self.subtitle)
+        text = text[:width] if len(text) > width else text
+        padded = text.center(width)
         return colors.colorize(padded, fg_color="#666666")
 
     def _render_horizontal_line(self, width: int, char: str = "─") -> str:
@@ -558,6 +587,15 @@ class ASCIIChartBase(ABC):
         text = text[:width] if len(text) > width else text
         padded = text.center(width)
         return colors.colorize(padded, fg_color="#666666")
+
+    def _render_compact_axis_labels(self, y_label: str, x_label: str, width: int) -> str:
+        """Render both axis labels on one compact centered line."""
+        colors = self.options.get_colors()
+        right_arrow = "\u2192" if self.options.use_unicode else "->"
+        up_arrow = "\u2191" if self.options.use_unicode else "^"
+        text = f"{up_arrow} {y_label} / {x_label} {right_arrow}"
+        text = text[:width] if len(text) > width else text
+        return colors.colorize(text.center(width), fg_color="#666666")
 
     def _render_legend(self, items: Sequence[tuple[str, str]], colors: TerminalColors) -> list[str]:
         """Render a compact horizontal legend with colored markers.
