@@ -14,22 +14,22 @@ from ansi2html import Ansi2HTMLConverter
 from PIL import Image
 
 from textcharts import (
-    ASCIIBarChart,
-    ASCIIBoxPlot,
-    ASCIICDFChart,
-    ASCIIChartOptions,
-    ASCIIComparisonBar,
-    ASCIIDivergingBar,
-    ASCIIHeatmap,
-    ASCIIHistogram,
-    ASCIILineChart,
-    ASCIINormalizedSpeedup,
-    ASCIIPercentileLadder,
-    ASCIIRankTable,
-    ASCIIScatterPlot,
-    ASCIISparklineTable,
-    ASCIIStackedBar,
-    ASCIISummaryBox,
+    BarChart,
+    BoxPlot,
+    CDFChart,
+    ChartOptions,
+    ComparisonBar,
+    DivergingBar,
+    Heatmap,
+    Histogram,
+    LineChart,
+    NormalizedSpeedup,
+    PercentileLadder,
+    RankTable,
+    ScatterPlot,
+    SparklineTable,
+    StackedBar,
+    SummaryBox,
     BarData,
     BoxPlotSeries,
     CDFSeriesData,
@@ -155,13 +155,13 @@ def _caps(color_mode: ColorMode, *, unicode_support: bool, interactive: bool) ->
     )
 
 
-def _options(mode: str) -> ASCIIChartOptions:
+def _options(mode: str) -> ChartOptions:
     if mode in {"color", "greyscale"}:
-        opts = ASCIIChartOptions(width=96, use_color=True, use_unicode=True)
+        opts = ChartOptions(width=96, use_color=True, use_unicode=True)
         opts._capabilities = _caps(ColorMode.TRUECOLOR, unicode_support=True, interactive=True)
         return opts
     if mode == "monochrome":
-        opts = ASCIIChartOptions(width=96, use_color=False, use_unicode=False)
+        opts = ChartOptions(width=96, use_color=False, use_unicode=False)
         opts._capabilities = _caps(ColorMode.NONE, unicode_support=False, interactive=False)
         return opts
     raise ValueError(f"unsupported mode: {mode}")
@@ -184,7 +184,7 @@ def _bar_chart(mode: str) -> str:
         BarData(label="Children", value=12650.0),
         BarData(label="Comics", value=9300.0, is_worst=True),
     ]
-    chart = ASCIIBarChart(
+    chart = BarChart(
         data=data, title="April Bookstore Revenue", metric_label="USD",
         subtitle="Top three categories by total sales", options=_options(mode),
     )
@@ -200,7 +200,7 @@ def _histogram(mode: str) -> str:
         HistogramBar(query_id="Route 5", latency_ms=19.0),
         HistogramBar(query_id="Route 6", latency_ms=14.0),
     ]
-    chart = ASCIIHistogram(
+    chart = Histogram(
         data=bars, title="Delivery Delays", y_label="Delay (min)",
         subtitle="Six routes measured over the past week", options=_options(mode),
     )
@@ -214,7 +214,7 @@ def _heatmap(mode: str) -> str:
         [93.0, 89.0, 95.0],
         [81.0, 86.0, 78.0],
     ]
-    chart = ASCIIHeatmap(
+    chart = Heatmap(
         matrix=matrix,
         row_labels=["Class A", "Class B", "Class C", "Class D"],
         col_labels=["Math", "Science", "History"],
@@ -233,7 +233,7 @@ def _box_plot(mode: str) -> str:
         BoxPlotSeries(name="Riverside", values=[1450, 1525, 1600, 1680, 1750, 1820, 1950, 2080, 2220]),
         BoxPlotSeries(name="Midtown", values=[1650, 1710, 1780, 1840, 1920, 2010, 2140, 2280, 2450]),
     ]
-    chart = ASCIIBoxPlot(
+    chart = BoxPlot(
         series=series, title="Apartment Rents",
         subtitle="Monthly rent distribution by neighborhood", options=_options(mode),
     )
@@ -249,7 +249,7 @@ def _line_chart(mode: str) -> str:
         LinePoint(series="Referral", x=2, y=205.0, label="Week 2"),
         LinePoint(series="Referral", x=3, y=260.0, label="Week 3"),
     ]
-    chart = ASCIILineChart(
+    chart = LineChart(
         points=points,
         title="Weekly Signups",
         x_label="Week",
@@ -267,7 +267,7 @@ def _scatter_plot(mode: str) -> str:
         ScatterPoint(name="Video Ads", x=11.0, y=470.0),
         ScatterPoint(name="Newsletter", x=2.0, y=220.0),
     ]
-    chart = ASCIIScatterPlot(
+    chart = ScatterPlot(
         points=points,
         title="Ad Spend vs Conversions",
         x_label="Cost (USD)",
@@ -293,7 +293,7 @@ def _comparison_bar(mode: str) -> str:
             label="Research", baseline_value=95.0, comparison_value=88.0, baseline_name="Planned", comparison_name="Actual"
         ),
     ]
-    chart = ASCIIComparisonBar(
+    chart = ComparisonBar(
         data=data,
         title="Budget vs Actual",
         metric_label="Budget (k USD)",
@@ -311,7 +311,7 @@ def _diverging_bar(mode: str) -> str:
         DivergingBarData(label="Product", pct_change=4.0),
         DivergingBarData(label="Finance", pct_change=-5.0),
     ]
-    chart = ASCIIDivergingBar(
+    chart = DivergingBar(
         data=data, title="Sentiment Change by Team",
         subtitle="Year-over-year employee survey results", options=_options(mode),
     )
@@ -330,7 +330,7 @@ def _summary_box(mode: str) -> str:
         environment={"Venue": "Riverfront Park", "Days": "3", "Volunteers": "48"},
         platform_config={"Ticket Type": "All-access", "Peak Window": "Sat 6-8pm"},
     )
-    chart = ASCIISummaryBox(stats=stats, subtitle="Three-day event summary", options=_options(mode))
+    chart = SummaryBox(stats=stats, subtitle="Three-day event summary", options=_options(mode))
     return _render_chart(chart, mode)
 
 
@@ -340,7 +340,7 @@ def _percentile_ladder(mode: str) -> str:
         PercentileData(name="Biology", p50=76.0, p90=91.0, p95=95.0, p99=99.0),
         PercentileData(name="History", p50=68.0, p90=85.0, p95=90.0, p99=96.0),
     ]
-    chart = ASCIIPercentileLadder(
+    chart = PercentileLadder(
         data=data,
         title="Exam Score Percentiles",
         metric_label="points",
@@ -357,7 +357,7 @@ def _normalized_speedup(mode: str) -> str:
         SpeedupData(name="Workstation GPU", ratio=3.80),
         SpeedupData(name="Small VM", ratio=0.72),
     ]
-    chart = ASCIINormalizedSpeedup(
+    chart = NormalizedSpeedup(
         data=data, title="Inference Speedup vs CPU Baseline",
         subtitle="Image classification model on four hardware targets", options=_options(mode),
     )
@@ -383,7 +383,7 @@ def _stacked_bar(mode: str) -> str:
             ],
         ),
     ]
-    chart = ASCIIStackedBar(
+    chart = StackedBar(
         data=data, title="Cooking Time Breakdown",
         subtitle="Minutes per phase for two meal types", options=_options(mode),
     )
@@ -399,7 +399,7 @@ def _sparkline_table(mode: str) -> str:
             SparklineColumn(name="Returns", values={"North Store": 6.0, "Central Store": 4.0, "South Store": 7.0}),
         ],
     )
-    chart = ASCIISparklineTable(
+    chart = SparklineTable(
         data=data, title="Store KPI Snapshot",
         subtitle="Revenue, orders, and returns across three locations", options=_options(mode),
     )
@@ -411,7 +411,7 @@ def _cdf_chart(mode: str) -> str:
         CDFSeriesData(name="Weekday", values=[2, 3, 4, 5, 6, 8, 10, 12, 15]),
         CDFSeriesData(name="Weekend", values=[3, 4, 5, 7, 9, 11, 14, 18, 24]),
     ]
-    chart = ASCIICDFChart(
+    chart = CDFChart(
         data=data,
         title="Customer Wait Time Distribution",
         x_label="Wait Time (min)",
@@ -441,7 +441,7 @@ def _rank_table(mode: str) -> str:
             ("Vendor C", "Onboarding"): 3.5,
         },
     )
-    chart = ASCIIRankTable(
+    chart = RankTable(
         data=data, title="Vendor Evaluation Rankings",
         subtitle="Scored across four service dimensions", options=_options(mode),
     )
