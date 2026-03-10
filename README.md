@@ -44,6 +44,11 @@ chart = BoxPlot(
 print(chart.render())
 ```
 
+![Box plot rendered in the terminal](docs/_static/screenshots/box_plot/color.png)
+
+<details>
+<summary>Text output (greyscale)</summary>
+
 ```
 Apartment Rents (Value)
                Monthly rent distribution by neighborhood
@@ -67,6 +72,8 @@ Downtown     2.2K  2.3K  392.7
 Riverside    1.8K  1.8K  257.6
 Midtown      1.9K  2.0K  269.8
 ```
+
+</details>
 
 ## Chart Types
 
