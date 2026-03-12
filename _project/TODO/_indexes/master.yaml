@@ -1,5 +1,5 @@
-generated_at: '2026-03-12T09:39:29.353109'
-total_items: 3
+generated_at: '2026-03-12T10:01:06.791678'
+total_items: 2
 items:
 - id: textual-widget-core
   file: TODO/dev-013/planning/textual-widget-core.yaml
@@ -17,21 +17,6 @@ items:
   work_done: 0
   work_ready: 1
   deferred_count: 2
-- id: wrap-xaxis-labels
-  file: TODO/dev-012/planning/wrap-xaxis-labels.yaml
-  title: Wrap long horizontal axis labels onto 2 lines instead of truncating
-  worktree: dev-012
-  category: Core Functionality
-  priority: High
-  status: In Progress
-  tags:
-  - ux
-  - label-rendering
-  - shared-utility
-  estimated_effort: 1-2 days
-  work_total: 5
-  work_done: 0
-  work_ready: 1
 - id: textual-typed-widgets
   file: TODO/dev-013/planning/textual-typed-widgets.yaml
   title: Create typed per-chart Textual widgets with reactive data attributes (Phase 2)
@@ -45,9 +30,9 @@ items:
   - widget
   - reactive
   estimated_effort: 3-5 days
-  work_total: 6
+  work_total: 7
   work_done: 0
   work_ready: 1
-  deferred_count: 3
+  deferred_count: 4
   needs:
   - textual-widget-core

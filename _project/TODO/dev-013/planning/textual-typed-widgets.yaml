@@ -23,28 +23,47 @@ deps:
 
 work:
   - id: w1
-    summary: "Design typed widget API and generate widget classes for all 15 chart types"
+    summary: "Design _ChartWidgetBase and implement 3 representative typed widgets (Bar, Line, Heatmap)"
     status: pending
     notes: |
-      Create src/textcharts/textual/charts.py with one widget class per chart type:
-      BarChartWidget, HistogramWidget, HeatmapWidget, BoxPlotWidget, LineChartWidget,
-      ScatterPlotWidget, ComparisonBarWidget, DivergingBarWidget, SummaryBoxWidget,
-      PercentileWidget, SpeedupWidget, StackedBarWidget, SparklineWidget,
-      CDFChartWidget, RankTableWidget.
+      Create src/textcharts/textual/charts.py with:
+
+      1. _ChartWidgetBase(TextChart) — abstract base that adds:
+         - Abstract _build_chart() -> ChartBase method
+         - Watcher pattern: watch_data() and watch_<param>() call _rebuild()
+         - _rebuild() calls _build_chart(), assigns to self.chart, triggers refresh
+         - Constructor accepts data + chart params directly (no ChartOptions boilerplate)
+
+      2. Three representative typed widgets to validate the pattern:
+         - BarChartWidget: reactive data (list[BarData]), metric_label, sort_by
+         - LineChartWidget: reactive points (list[LinePoint]), show_trend
+         - HeatmapWidget: reactive matrix + row_labels + col_labels + color_scheme
+           (tests the most complex constructor signature)
 
       Each widget:
-      - Inherits from TextChart (the Phase 1 base)
+      - Inherits from _ChartWidgetBase
       - Has a reactive `data` attribute typed to the chart's data model
-        (e.g., list[BarData] for BarChartWidget)
       - Exposes chart-specific params as reactive attributes
-        (e.g., metric_label, sort_by for BarChartWidget)
-      - watch_data() and watch_<param>() reconstruct the internal chart and refresh
-      - Constructor accepts data + chart params directly (no ChartOptions boilerplate)
+      - Implements _build_chart() by constructing the specific chart class
 
-      Use a base class or metaclass/factory to reduce boilerplate across 15 widgets.
-      The registry in commands/registry.py has all the metadata needed to generate these.
+      Reference commands/registry.py for constructor parameter metadata.
 
   - id: w2
+    summary: "Implement remaining 12 typed widgets from the established pattern"
+    needs: [w1]
+    status: pending
+    notes: |
+      Follow the pattern established in w1 to implement:
+      HistogramWidget, BoxPlotWidget, ScatterPlotWidget, ComparisonBarWidget,
+      DivergingBarWidget, SummaryBoxWidget, PercentileWidget, SpeedupWidget,
+      StackedBarWidget, SparklineWidget, CDFChartWidget, RankTableWidget.
+
+      Each is mechanical — implement _build_chart() mapping reactive attributes
+      to the chart class constructor. Pay attention to charts with non-list data
+      models (SummaryBox takes SummaryStats, Heatmap pattern already validated
+      in w1 for complex constructors).
+
+  - id: w3
     summary: "Add data_bind support and demonstrate parent-to-child reactive data flow"
     needs: [w1]
     status: pending
@@ -53,19 +72,19 @@ work:
       binding. A parent screen/widget with a reactive `chart_data` can bind it to
       the chart widget's `data` attribute. Verify this works and document the pattern.
 
-  - id: w3
+  - id: w4
     summary: "Create ChartSwitcher compound widget that wraps a chart + type selector"
-    needs: [w1]
+    needs: [w2]
     status: pending
     notes: |
       src/textcharts/textual/compound.py — a ChartSwitcher widget that compose()s
       a Select dropdown (chart type) + TextChart. Changing the selection swaps the
-      chart type while keeping data. Useful for exploratory data analysis in TUIs.
-      Also add a ChartWithControls variant that adds theme toggle and export button.
+      chart type while keeping data. Emits a ChartSwitcher.Changed message so
+      parent widgets can react. Useful for exploratory data analysis in TUIs.
 
-  - id: w4
+  - id: w5
     summary: "Write tests for typed widgets: reactivity, data_bind, compound widgets"
-    needs: [w1, w2, w3]
+    needs: [w2, w3, w4]
     status: pending
     notes: |
       tests/test_textual_typed_widgets.py — test each typed widget renders with
@@ -73,9 +92,9 @@ work:
       compound widgets compose correctly. Focus on a representative subset (bar,
       line, heatmap, scatter) rather than exhaustively testing all 15.
 
-  - id: w5
+  - id: w6
     summary: "Create live dashboard example showing reactive data updates from a timer"
-    needs: [w1, w2]
+    needs: [w2, w3]
     status: pending
     notes: |
       examples/textual_dashboard.py — a Textual app with 3-4 chart widgets showing
@@ -85,9 +104,9 @@ work:
       - Theme switching affecting all charts
       - Responsive layout that resizes charts with the terminal
 
-  - id: w6
+  - id: w7
     summary: "Update textcharts.textual __init__.py exports and add user-facing docs"
-    needs: [w1, w3]
+    needs: [w2, w4]
     status: pending
     notes: |
       Export all typed widgets and compound widgets from textcharts.textual.
@@ -96,6 +115,8 @@ work:
       examples. Include in Sphinx toctree.
 
 deferred:
+  - summary: "ChartWithControls compound widget (theme toggle, copy-to-clipboard)"
+    reason: "Scope creep risk — export/copy behavior needs design decisions; ship ChartSwitcher first and evaluate demand"
   - summary: "Auto-generate typed widgets from registry metadata at build time"
     reason: "Premature optimization — 15 widgets is manageable by hand, and generated code is harder to customize"
   - summary: "Textual command palette integration for chart type switching"
@@ -165,8 +186,11 @@ verification:
   - description: "Typed widget tests pass"
     command: "uv run pytest tests/test_textual_typed_widgets.py -v"
     expected_output: "all tests pass"
-  - description: "BarChartWidget reactive data update"
-    command: "uv run --extra textual python -c \"from textcharts.textual import BarChartWidget; print('OK')\""
+  - description: "All 15 typed widgets importable"
+    command: "uv run --extra textual python -c \"from textcharts.textual import BarChartWidget, HistogramWidget, HeatmapWidget, BoxPlotWidget, LineChartWidget, ScatterPlotWidget, ComparisonBarWidget, DivergingBarWidget, SummaryBoxWidget, PercentileWidget, SpeedupWidget, StackedBarWidget, SparklineWidget, CDFChartWidget, RankTableWidget; print('OK')\""
+    expected_output: "OK"
+  - description: "BarChartWidget accepts data and can reassign reactively"
+    command: "uv run --extra textual python -c \"from textcharts.textual import BarChartWidget; from textcharts import BarData; w = BarChartWidget(data=[BarData(label='A', value=1.0)]); w.data = [BarData(label='B', value=2.0)]; print('OK')\""
     expected_output: "OK"
   - description: "Dashboard example runs without crash"
     command: "timeout 5 uv run --extra textual python examples/textual_dashboard.py || true"

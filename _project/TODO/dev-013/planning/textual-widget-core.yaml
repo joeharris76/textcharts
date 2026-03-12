@@ -128,8 +128,10 @@ approach: |
 
   For theme: watch app.dark reactive attribute, map to chart options.theme.
 
-  For color mode: bypass detect_terminal_capabilities() by setting
-  options._capabilities directly with forced color mode (TRUECOLOR or EXTENDED).
+  For color mode: prefer injecting capabilities via ChartOptions constructor or
+  a public setter if one exists. If no public API is available, setting
+  options._capabilities directly is acceptable (same project, internal coupling)
+  but consider promoting it to a public parameter on ChartOptions first.
 
 anti_patterns:
   - "DO NOT modify ChartBase or any chart class to support Textual — because the core must remain zero-dep and Textual-unaware — use adapter/wrapper pattern only"
@@ -143,8 +145,8 @@ verification:
   - description: "Textual widget tests pass"
     command: "uv run pytest tests/test_textual_widget.py -v"
     expected_output: "all tests pass"
-  - description: "Import textcharts without textual installed succeeds"
-    command: "uv run python -c 'from textcharts import BarChart; print(\"OK\")'"
+  - description: "Import textcharts without textual installed does not pull in textual"
+    command: "uv run python -c 'from textcharts import BarChart; import sys; assert \"textual\" not in sys.modules; print(\"OK\")'"
     expected_output: "OK"
   - description: "Import textcharts.textual with textual installed succeeds"
     command: "uv run --extra textual python -c 'from textcharts.textual import TextChart; print(\"OK\")'"
