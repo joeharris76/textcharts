@@ -10,7 +10,24 @@ from textual.app import App, ComposeResult
 from textual.reactive import reactive
 from textual.widgets import Select
 
-from textcharts import BarData, LinePoint
+from textcharts import (
+    BarData,
+    BoxPlotSeries,
+    CDFSeriesData,
+    ComparisonBarData,
+    DivergingBarData,
+    HistogramBar,
+    LinePoint,
+    PercentileData,
+    RankTableData,
+    ScatterPoint,
+    SparklineColumn,
+    SparklineTableData,
+    SpeedupData,
+    StackedBarData,
+    StackedBarSegment,
+    SummaryStats,
+)
 from textcharts.textual import (
     BarChartWidget,
     BoxPlotWidget,
@@ -164,3 +181,97 @@ def test_all_typed_widgets_importable():
     ]
     assert len(widgets) == 15
     assert all(widget is not None for widget in widgets)
+
+
+_TYPED_WIDGET_CASES = [
+    (HistogramWidget, {"data": [HistogramBar("Q1", 10.0), HistogramBar("Q2", 14.0)]}),
+    (BoxPlotWidget, {"data": [BoxPlotSeries("North", [1, 2, 3, 4, 5])]}),
+    (ScatterPlotWidget, {"data": [ScatterPoint("A", 1.0, 2.0), ScatterPoint("B", 2.0, 1.0)]}),
+    (ComparisonBarWidget, {"data": [ComparisonBarData("Q1", 10.0, 8.0)]}),
+    (DivergingBarWidget, {"data": [DivergingBarData("Q1", -12.0), DivergingBarData("Q2", 7.5)]}),
+    (SummaryBoxWidget, {"stats": SummaryStats(title="Test", primary_value=12.0, num_items=2)}),
+    (PercentileWidget, {"data": [PercentileData("DuckDB", 10.0, 14.0, 15.0, 20.0)]}),
+    (SpeedupWidget, {"data": [SpeedupData("DuckDB", 1.0, True), SpeedupData("Polars", 0.8, False)]}),
+    (
+        StackedBarWidget,
+        {"data": [StackedBarData("DuckDB", [StackedBarSegment("Scan", 10.0), StackedBarSegment("Join", 5.0)])]},
+    ),
+    (
+        SparklineWidget,
+        {"data": SparklineTableData(rows=["DuckDB"], columns=[SparklineColumn("Latency", {"DuckDB": 10.0})])},
+    ),
+    (CDFChartWidget, {"data": [CDFSeriesData("DuckDB", [1.0, 2.0, 3.0, 4.0])]}),
+    (
+        RankTableWidget,
+        {
+            "data": RankTableData(
+                items=["Q1", "Q2"],
+                groups=["DuckDB", "Polars"],
+                values={("DuckDB", "Q1"): 10.0, ("Polars", "Q1"): 12.0, ("DuckDB", "Q2"): 11.0, ("Polars", "Q2"): 9.0},
+            )
+        },
+    ),
+]
+
+
+@pytest.mark.parametrize("widget_cls,kwargs", _TYPED_WIDGET_CASES, ids=[c[0].__name__ for c in _TYPED_WIDGET_CASES])
+def test_typed_widget_renders_nonempty(widget_cls, kwargs):
+    class SingleApp(App[None]):
+        CSS = "* { height: 1fr; }"
+
+        def compose(self) -> ComposeResult:
+            yield widget_cls(**kwargs)
+
+    async def run() -> None:
+        app = SingleApp()
+        async with app.run_test(size=(100, 30)) as pilot:
+            await pilot.pause()
+            widget = app.query_one(widget_cls)
+            plain = widget.render().plain
+            assert plain.strip(), f"{widget_cls.__name__} rendered empty output"
+
+    asyncio.run(run())
+
+
+def test_cdf_chart_widget_respects_explicit_chart_height():
+    class CDFApp(App[None]):
+        CSS = "CDFChartWidget { height: 30; }"
+
+        def compose(self) -> ComposeResult:
+            yield CDFChartWidget(
+                data=[CDFSeriesData("S", [1, 2, 3, 4, 5])],
+                chart_height=25,
+                title="CDF Explicit Height",
+            )
+
+    async def run() -> None:
+        app = CDFApp()
+        async with app.run_test(size=(80, 40)) as pilot:
+            await pilot.pause()
+            widget = app.query_one(CDFChartWidget)
+            prepared = widget._prepare_chart(widget._resolve_chart())
+            # User set chart_height=25 (differs from CDFChart.PLOT_HEIGHT=15),
+            # so _prepare_chart should preserve it instead of auto-fitting.
+            assert prepared.height == 25
+
+    asyncio.run(run())
+
+
+def test_cdf_chart_widget_autofits_default_height():
+    class CDFDefaultApp(App[None]):
+        CSS = "CDFChartWidget { height: 30; }"
+
+        def compose(self) -> ComposeResult:
+            # No explicit chart_height — uses CDFChart.PLOT_HEIGHT default (15)
+            yield CDFChartWidget(data=[CDFSeriesData("S", [1, 2, 3, 4, 5])], title="CDF Default")
+
+    async def run() -> None:
+        app = CDFDefaultApp()
+        async with app.run_test(size=(80, 40)) as pilot:
+            await pilot.pause()
+            widget = app.query_one(CDFChartWidget)
+            prepared = widget._prepare_chart(widget._resolve_chart())
+            # Default chart_height=15 == CDFChart.PLOT_HEIGHT, so auto-fit applies
+            assert prepared.height == max(5, 30 - 4)
+
+    asyncio.run(run())

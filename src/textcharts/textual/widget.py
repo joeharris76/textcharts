@@ -110,6 +110,9 @@ class TextChart(Static):
             interactive=True,
         )
 
+        # Shallow copy: chart data (lists, dataclasses) is shared with the
+        # original.  Safe because we only mutate options/capabilities/height
+        # on the copy, never the data collections themselves.
         prepared = copy(chart)
         prepared.options = replace(
             chart.options or ChartOptions(),
@@ -119,11 +122,19 @@ class TextChart(Static):
             use_unicode=True,
             theme=theme,
         )
+        # Inject terminal capabilities directly — the chart render path reads
+        # these private attributes to decide color mode, unicode, etc.
         prepared._capabilities = capabilities
         prepared.options._capabilities = capabilities
 
         if hasattr(prepared, "height") and isinstance(getattr(prepared, "height"), int):
-            prepared.height = max(5, height - 4)
+            # Auto-fit the chart's internal plot height to the widget size,
+            # but only when the chart carries the class default.  When a user
+            # has set an explicit height (e.g. CDFChartWidget(chart_height=25)),
+            # preserve their choice.
+            cls_default = getattr(type(chart), "PLOT_HEIGHT", None)
+            if cls_default is None or chart.height == cls_default:
+                prepared.height = max(5, height - 4)
 
         return prepared
 

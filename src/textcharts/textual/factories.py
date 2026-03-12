@@ -213,25 +213,30 @@ def text_comparison(
     *,
     title: str | None = None,
     metric_label: str = "Value",
+    lower_is_better: bool = True,
     options: ChartOptions | None = None,
     subject: str | None = None,
     widget_kwargs: Mapping[str, Any] | None = None,
 ) -> TextChart:
-    return _wrap(
-        comparison_from_data(data, title=title, metric_label=metric_label, options=options, subject=subject),
-        widget_kwargs,
-    )
+    chart = comparison_from_data(data, title=title, metric_label=metric_label, options=options, subject=subject)
+    chart.lower_is_better = lower_is_better
+    return _wrap(chart, widget_kwargs)
 
 
 def text_diverging(
     data: Any,
     *,
     title: str | None = None,
+    clip_pct: float = 200.0,
+    lower_is_better: bool = True,
     options: ChartOptions | None = None,
     subject: str | None = None,
     widget_kwargs: Mapping[str, Any] | None = None,
 ) -> TextChart:
-    return _wrap(diverging_from_data(data, title=title, options=options, subject=subject), widget_kwargs)
+    chart = diverging_from_data(data, title=title, options=options, subject=subject)
+    chart.clip_pct = clip_pct
+    chart.lower_is_better = lower_is_better
+    return _wrap(chart, widget_kwargs)
 
 
 def text_summary(
@@ -390,7 +395,8 @@ def _build_chart_instance(
 
     if title is not None:
         if command == "summary":
-            parsed_data.title = title
+            parsed_data = replace(parsed_data, title=title)
+            ctor_kwargs[cmd_info.data_param_name] = parsed_data
         else:
             ctor_kwargs["title"] = title
     if subtitle is not None:

@@ -119,8 +119,8 @@ __all__ = [
     "text_percentile",
     "text_rank",
     "text_scatter",
-    "text_speedup",
     "text_sparkline",
+    "text_speedup",
     "text_stacked",
     "text_summary",
 ]
