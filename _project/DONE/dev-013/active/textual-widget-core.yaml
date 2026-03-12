@@ -2,7 +2,8 @@ id: "textual-widget-core"
 title: "Implement core Textual widget via ANSI wrapper (Phase 1)"
 worktree: "dev-013"
 priority: "High"
-status: "Not Started"
+status: "Completed"
+completed_date: "2026-03-12"
 description: |
   Create a textcharts[textual] optional extra that provides a TextChart widget
   for embedding any textcharts chart inside a Textual TUI app. This follows the
@@ -22,7 +23,7 @@ category: "Integration"
 work:
   - id: w1
     summary: "Add textual optional dependency to pyproject.toml and create src/textcharts/textual/ package with __init__.py"
-    status: pending
+    status: done
     notes: |
       Add `textual = ["textual>=0.86"]` to [project.optional-dependencies].
       Create src/textcharts/textual/__init__.py that exports TextChart.
@@ -31,7 +32,7 @@ work:
   - id: w2
     summary: "Implement TextChart(Static) widget with ANSI-wrapper rendering, auto-sizing, and theme bridging"
     needs: [w1]
-    status: pending
+    status: done
     notes: |
       Core widget in src/textcharts/textual/widget.py. Key behaviors:
       - Accepts any ChartBase subclass instance (or a callable that returns one)
@@ -46,7 +47,7 @@ work:
   - id: w3
     summary: "Implement chart factory function and convenience constructors for common chart types"
     needs: [w2]
-    status: pending
+    status: done
     notes: |
       Add text_chart() factory that creates TextChart from chart type name + data dict,
       reusing the existing commands/executor.py dispatch. Also add typed convenience
@@ -57,7 +58,7 @@ work:
   - id: w4
     summary: "Write unit tests for TextChart widget (rendering, sizing, theme sync, reactivity)"
     needs: [w2]
-    status: pending
+    status: done
     notes: |
       Use textual's async test harness (pilot). Tests should verify:
       - Widget renders chart content (check for expected labels/values in output)
@@ -70,7 +71,7 @@ work:
   - id: w5
     summary: "Create example Textual app demonstrating all chart types in a gallery layout"
     needs: [w3]
-    status: pending
+    status: done
     notes: |
       examples/textual_gallery.py — a Textual app with a sidebar listing chart types
       and a main content area showing the selected chart. Demonstrates sizing,
@@ -104,9 +105,10 @@ impact:
 files_affected:
   modified:
     - "pyproject.toml"
-    - "src/textcharts/__init__.py"
+    - "docs/index.rst"
   added:
     - "src/textcharts/textual/__init__.py"
+    - "src/textcharts/textual/factories.py"
     - "src/textcharts/textual/widget.py"
     - "tests/test_textual_widget.py"
     - "examples/textual_gallery.py"

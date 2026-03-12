@@ -37,6 +37,7 @@ Issues = "https://github.com/joeharris76/textcharts/issues"
 
 [project.optional-dependencies]
 mcp = ["mcp>=1.0"]
+textual = ["textual>=0.86"]
 
 [project.scripts]
 textcharts = "textcharts.cli:main"

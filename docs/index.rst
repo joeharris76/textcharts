@@ -128,6 +128,7 @@ type in color, greyscale, and monochrome modes.
    guides/chart-selection
    guides/chart-gallery
    guides/configuration
+   textual-integration
    guides/cli
    mcp-setup
    concepts/public-api

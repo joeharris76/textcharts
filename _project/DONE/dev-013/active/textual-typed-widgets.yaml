@@ -2,7 +2,8 @@ id: "textual-typed-widgets"
 title: "Create typed per-chart Textual widgets with reactive data attributes (Phase 2)"
 worktree: "dev-013"
 priority: "Medium-High"
-status: "Not Started"
+status: "Completed"
+completed_date: "2026-03-12"
 description: |
   Build on the Phase 1 TextChart wrapper to provide typed, per-chart-type widgets
   with reactive data attributes. Instead of constructing a BarChart and passing it
@@ -24,7 +25,7 @@ deps:
 work:
   - id: w1
     summary: "Design _ChartWidgetBase and implement 3 representative typed widgets (Bar, Line, Heatmap)"
-    status: pending
+    status: done
     notes: |
       Create src/textcharts/textual/charts.py with:
 
@@ -51,7 +52,7 @@ work:
   - id: w2
     summary: "Implement remaining 12 typed widgets from the established pattern"
     needs: [w1]
-    status: pending
+    status: done
     notes: |
       Follow the pattern established in w1 to implement:
       HistogramWidget, BoxPlotWidget, ScatterPlotWidget, ComparisonBarWidget,
@@ -66,7 +67,7 @@ work:
   - id: w3
     summary: "Add data_bind support and demonstrate parent-to-child reactive data flow"
     needs: [w1]
-    status: pending
+    status: done
     notes: |
       Ensure typed widgets work with Textual's data_bind() for one-way parent→child
       binding. A parent screen/widget with a reactive `chart_data` can bind it to
@@ -75,7 +76,7 @@ work:
   - id: w4
     summary: "Create ChartSwitcher compound widget that wraps a chart + type selector"
     needs: [w2]
-    status: pending
+    status: done
     notes: |
       src/textcharts/textual/compound.py — a ChartSwitcher widget that compose()s
       a Select dropdown (chart type) + TextChart. Changing the selection swaps the
@@ -85,7 +86,7 @@ work:
   - id: w5
     summary: "Write tests for typed widgets: reactivity, data_bind, compound widgets"
     needs: [w2, w3, w4]
-    status: pending
+    status: done
     notes: |
       tests/test_textual_typed_widgets.py — test each typed widget renders with
       correct chart type, reactive data updates cause re-render, data_bind works,
@@ -95,7 +96,7 @@ work:
   - id: w6
     summary: "Create live dashboard example showing reactive data updates from a timer"
     needs: [w2, w3]
-    status: pending
+    status: done
     notes: |
       examples/textual_dashboard.py — a Textual app with 3-4 chart widgets showing
       live-updating data (simulated via set_interval). Demonstrates:
@@ -107,7 +108,7 @@ work:
   - id: w7
     summary: "Update textcharts.textual __init__.py exports and add user-facing docs"
     needs: [w2, w4]
-    status: pending
+    status: done
     notes: |
       Export all typed widgets and compound widgets from textcharts.textual.
       Add docs/textual-integration.md covering: installation, basic usage,
@@ -146,6 +147,7 @@ impact:
 files_affected:
   modified:
     - "src/textcharts/textual/__init__.py"
+    - "docs/index.rst"
   added:
     - "src/textcharts/textual/charts.py"
     - "src/textcharts/textual/compound.py"
