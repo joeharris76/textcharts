@@ -181,6 +181,35 @@ def test_wrap_label_strips_ansi():
     assert result == ["hello", "world"]
 
 
+@pytest.mark.parametrize(
+    ("label", "width", "expected"),
+    [
+        ("_all", 3, ["_al", "l"]),
+        ("-foo", 3, ["-fo", "o"]),
+        (" foo", 3, [" fo", "o"]),
+        ("__x", 2, ["__", "x"]),
+    ],
+)
+def test_wrap_label_avoids_blank_first_line_for_leading_delimiters(
+    label: str, width: int, expected: list[str]
+):
+    assert ChartBase._wrap_label(label, width) == expected
+
+
+def test_wrap_label_leading_delim_with_later_valid_split():
+    """Leading delimiter is skipped but a later boundary is still found."""
+    assert ChartBase._wrap_label("_hello_world", 7) == ["_hello", "world"]
+    assert ChartBase._wrap_label(" foo_bar", 5) == [" foo", "bar"]
+
+
+def test_wrap_label_all_delimiter_preserves_content():
+    """All-delimiter labels are hard-split without silently dropping content."""
+    assert ChartBase._wrap_label("___", 2) == ["__", "_"]
+    assert ChartBase._wrap_label("---", 1) == ["-", "-"]
+    # Trailing delimiter after hard split is preserved
+    assert ChartBase._wrap_label("foo_", 3) == ["foo", "_"]
+
+
 # -- _build_wrapped_label_rows tests ------------------------------------------
 
 
@@ -210,3 +239,18 @@ def test_wrapped_label_rows_respects_prefix_and_separator():
     rows = ChartBase._build_wrapped_label_rows(["AB", "CD"], 4, prefix=">>", separator="|")
     assert rows[0].startswith(">>")
     assert "|" in rows[0]
+
+
+def test_wrapped_label_rows_wrap_width_limits_content_but_preserves_slot():
+    """wrap_width shrinks label text while col_width controls centering/slot size."""
+    # "abcdefghij" is 10 chars — fits in col_width=10 but exceeds wrap_width=9
+    rows = ChartBase._build_wrapped_label_rows(
+        ["abcdefghij", "Q1"],
+        col_width=10,
+        wrap_width=9,
+    )
+    assert len(rows) == 2
+    # Line 1 should NOT contain the full 10-char label (it was wrapped)
+    assert "abcdefghij" not in rows[0]
+    # But each slot is still 10 chars wide (centered)
+    assert "Q1" in rows[0]

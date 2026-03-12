@@ -171,6 +171,11 @@ class LineChart(ChartBase):
         # Build marker→color lookup for cell-level colorization
         marker_color_map: dict[str, str] = dict(series_styles.values())
 
+        # Pre-compute categorical slot width so data points and labels align.
+        cat_label_width = 0
+        if not is_numeric_x and x_labels:
+            cat_label_width = plot_width // len(x_labels)
+
         # Helper to convert data coords to grid coords
         def to_grid_x(x_val: float | str) -> int:
             if is_numeric_x:
@@ -178,9 +183,11 @@ class LineChart(ChartBase):
                 x_range = x_max - x_min if x_max > x_min else 1
                 return int((x_num - x_min) / x_range * (plot_width - 1))
             else:
-                # Categorical
+                # Categorical: center data point in its label slot
                 idx = x_labels.index(str(x_val)) if str(x_val) in x_labels else 0
-                return int(idx / (len(x_labels) - 1) * (plot_width - 1)) if len(x_labels) > 1 else plot_width // 2
+                if len(x_labels) > 1 and cat_label_width > 0:
+                    return min(idx * cat_label_width + cat_label_width // 2, plot_width - 1)
+                return plot_width // 2
 
         def to_grid_y(y_val: float) -> int:
             y_range = y_max - y_min if y_max > y_min else 1
@@ -278,12 +285,14 @@ class LineChart(ChartBase):
             lines.append(x_labels_line[:width])
         else:
             # Show categorical labels (wrapped to 2 lines when needed)
-            label_width = plot_width // len(x_labels) if x_labels else plot_width
+            label_width = cat_label_width if cat_label_width > 0 else plot_width
+            # Reserve one character inside each slot so adjacent labels keep a gutter.
             label_rows = self._build_wrapped_label_rows(
                 x_labels,
                 label_width,
                 prefix=" " * (y_axis_width + 1),
                 separator="",
+                wrap_width=max(1, label_width - 1),
             )
             for row in label_rows:
                 lines.append(row[:width])

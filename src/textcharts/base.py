@@ -585,25 +585,42 @@ class ChartBase(ABC):
         for i in range(1, limit):
             ch = clean[i]
             prev = clean[i - 1]
+            split_here = False
             # Split *before* a delimiter so it lands on line 2 and gets stripped
             if ch in "_- ":
-                best = i
+                split_here = True
             # Split *after* a delimiter
             elif prev in "_- ":
-                best = i
+                split_here = True
             # camelCase boundary: lowercase followed by uppercase
             elif prev.islower() and ch.isupper():
-                best = i
+                split_here = True
             # alpha-to-digit boundary (e.g. "Q10" -> "Q" + "10")
             elif prev.isalpha() and ch.isdigit():
-                best = i
+                split_here = True
+
+            if split_here:
+                left = clean[:i].rstrip("_- ")
+                right = clean[i:].lstrip("_- ")
+                # Skip delimiter-only leading segments that would render blank.
+                if left and right:
+                    best = i
 
         if best == 0:
-            # No word boundary found — hard split at max_width
+            # No usable word boundary found — hard split at max_width
             best = max_width
 
-        line1 = clean[:best].rstrip("_- ")
-        line2 = clean[best:].lstrip("_- ")
+        raw_line1 = clean[:best]
+        raw_line2 = clean[best:]
+        line1 = raw_line1.rstrip("_- ")
+        # This fallback only triggers on the hard-split path (best == max_width)
+        # because the word-boundary loop guarantees `left` is non-empty.
+        if not line1:
+            line1 = raw_line1
+        line2 = raw_line2.lstrip("_- ")
+        # Preserve all-delimiter remainders rather than silently dropping them.
+        if not line2 and raw_line2:
+            line2 = raw_line2
 
         if len(line1) > max_width:
             line1 = line1[:max_width]
@@ -620,16 +637,20 @@ class ChartBase(ABC):
         col_width: int,
         prefix: str = "",
         separator: str = " ",
+        wrap_width: int | None = None,
     ) -> list[str]:
         """Build 1 or 2 complete label-row strings from *labels*.
 
         Each label is wrapped via ``_wrap_label`` and centered within
         *col_width*.  If **any** label needs 2 lines, all labels get a
-        second row (short labels padded with blanks).
+        second row (short labels padded with blanks).  When provided,
+        *wrap_width* limits the visible label content while preserving the
+        full slot width used for centering.
 
         Returns a list of 1 or 2 ready-to-append row strings.
         """
-        wrapped = [ChartBase._wrap_label(lbl, col_width) for lbl in labels]
+        effective_wrap_width = col_width if wrap_width is None else wrap_width
+        wrapped = [ChartBase._wrap_label(lbl, effective_wrap_width) for lbl in labels]
         needs_two = any(len(w) > 1 for w in wrapped)
 
         row1_parts: list[str] = []

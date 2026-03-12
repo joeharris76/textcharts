@@ -1,5 +1,5 @@
-generated_at: '2026-03-12T09:39:29.404399'
-total_items: 22
+generated_at: '2026-03-12T10:01:06.945997'
+total_items: 23
 items:
 - id: shared-command-layer
   file: DONE/main/active/shared-command-layer.yaml
@@ -262,6 +262,22 @@ items:
   needs:
   - fix-terminal-capability-defaults-and-color-contract
   - make-heatmap-and-matrix-apis-explicit-and-safe
+- id: wrap-xaxis-labels
+  file: DONE/dev-012/planning/wrap-xaxis-labels.yaml
+  title: Wrap long horizontal axis labels onto 2 lines instead of truncating
+  worktree: dev-012
+  category: Core Functionality
+  priority: High
+  status: Completed
+  tags:
+  - ux
+  - label-rendering
+  - shared-utility
+  estimated_effort: 1-2 days
+  completed_date: '2026-03-12'
+  work_total: 5
+  work_done: 5
+  work_ready: 0
 - id: configurable-outlier-cap
   file: DONE/main/active/configurable-outlier-cap.yaml
   title: Add configurable outlier_cap to ASCIIChartOptions
