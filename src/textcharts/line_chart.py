@@ -277,13 +277,16 @@ class LineChart(ChartBase):
                     x_labels_line = padded + x_labels_line[len(padded) :]
             lines.append(x_labels_line[:width])
         else:
-            # Show categorical labels
-            x_labels_line = " " * (y_axis_width + 1)
+            # Show categorical labels (wrapped to 2 lines when needed)
             label_width = plot_width // len(x_labels) if x_labels else plot_width
-            for label in x_labels:
-                truncated = self._truncate_label(label, label_width - 1)
-                x_labels_line += truncated.center(label_width)
-            lines.append(x_labels_line[:width])
+            label_rows = self._build_wrapped_label_rows(
+                x_labels,
+                label_width,
+                prefix=" " * (y_axis_width + 1),
+                separator="",
+            )
+            for row in label_rows:
+                lines.append(row[:width])
 
         # Axis labels
         lines.append("")

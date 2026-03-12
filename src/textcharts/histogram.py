@@ -328,12 +328,13 @@ class Histogram(ChartBase):
 
         lines.append(" " * y_axis_width + self._render_horizontal_line(bar_area_width))
 
-        label_row: list[str] = [" " * y_axis_width]
-        for datum in chunk:
-            label = self._compact_label(datum.label, bar_width)
-            label_row.append(label.center(bar_width))
-            label_row.append(" ")
-        lines.append("".join(label_row).rstrip())
+        label_rows = self._build_wrapped_label_rows(
+            [datum.label for datum in chunk],
+            bar_width,
+            prefix=" " * y_axis_width,
+            separator=" ",
+        )
+        lines.extend(label_rows)
 
         lines.append(self._render_axis_label("", width, axis="x"))
 
@@ -553,13 +554,14 @@ class Histogram(ChartBase):
 
         lines.append(" " * y_axis_width + self._render_horizontal_line(bar_area_width))
 
-        label_row: list[str] = [" " * y_axis_width]
         total_group_width = num_platforms * sub_bar_width
-        for qid in unique_queries:
-            label = self._compact_label(qid, total_group_width)
-            label_row.append(label.center(total_group_width))
-            label_row.append(" ")
-        lines.append("".join(label_row).rstrip())
+        label_rows = self._build_wrapped_label_rows(
+            list(unique_queries),
+            total_group_width,
+            prefix=" " * y_axis_width,
+            separator=" ",
+        )
+        lines.extend(label_rows)
 
         lines.append(self._render_axis_label("", width, axis="x"))
 
