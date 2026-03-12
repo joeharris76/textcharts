@@ -2,7 +2,8 @@ id: wrap-xaxis-labels
 title: "Wrap long horizontal axis labels onto 2 lines instead of truncating"
 worktree: dev-012
 priority: High
-status: "Not Started"
+status: "Completed"
+completed_date: "2026-03-12"
 category: "Core Functionality"
 description: |
   Histogram x-axis labels are truncated to fit within bar_width (e.g.,
@@ -17,7 +18,7 @@ description: |
 work:
   - id: w1
     summary: "Add _wrap_label() and _build_wrapped_label_rows() to ChartBase in base.py"
-    status: pending
+    status: done
     notes: |
       Add after _truncate_label (line 567). _wrap_label splits a label into
       1 or 2 lines at word boundaries (underscore, hyphen, space, camelCase)
@@ -27,22 +28,22 @@ work:
   - id: w2
     summary: "Replace histogram simple-mode label rendering (lines 331-336) with _build_wrapped_label_rows"
     needs: [w1]
-    status: pending
+    status: done
 
   - id: w3
     summary: "Replace histogram grouped-mode label rendering (lines 556-562) with _build_wrapped_label_rows"
     needs: [w1]
-    status: pending
+    status: done
 
   - id: w4
     summary: "Replace line chart categorical label rendering (lines 280-286) with _build_wrapped_label_rows"
     needs: [w1]
-    status: pending
+    status: done
 
   - id: w5
     summary: "Add unit tests for _wrap_label and _build_wrapped_label_rows, and integration tests for histogram wrapping"
     needs: [w2, w3, w4]
-    status: pending
+    status: done
     notes: |
       Unit tests in test_base_and_options.py. Integration tests in
       test_histogram_behavior.py. Update golden fixtures if needed.
