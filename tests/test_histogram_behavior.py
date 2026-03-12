@@ -77,3 +77,49 @@ def test_histogram_factory_and_compact_labels_behavior():
     assert "11" in result
     assert "19" in result
     assert "Q1 Q1 Q1" not in result
+
+
+def _extract_label_lines(result: str) -> list[str]:
+    """Extract label rows between the last ─ separator and the → axis line."""
+    lines = result.splitlines()
+    # Find the last horizontal separator (the one below the bars, not the title)
+    sep_indices = [i for i, line in enumerate(lines) if "──" in line]
+    sep_idx = sep_indices[-1]
+    label_lines = []
+    for line in lines[sep_idx + 1 :]:
+        stripped = line.strip()
+        if stripped == "→" or stripped == "" or "Value" in stripped or "Mean" in stripped:
+            break
+        label_lines.append(line)
+    return label_lines
+
+
+def test_histogram_long_labels_wrap_to_two_rows():
+    """Long labels should wrap onto a second label row."""
+    data = [
+        HistogramBar(label="summary_box", value=100),
+        HistogramBar(label="scatter_plot", value=120),
+        HistogramBar(label="histogram", value=200),
+        HistogramBar(label="line_chart", value=180),
+        HistogramBar(label="box_plot", value=90),
+        HistogramBar(label="heatmap", value=150),
+        HistogramBar(label="sparkline", value=160),
+        HistogramBar(label="Q1", value=140),
+    ]
+    result = Histogram(data=data, options=ChartOptions(use_color=False, width=80)).render()
+    label_lines = _extract_label_lines(result)
+    # With 8 bars at width=80, bar_width is small enough to force wrapping
+    assert len(label_lines) == 2
+    # First row has first parts, second row has wrapped second parts
+    assert "box" in label_lines[0]  # "box_plot" first part
+    assert "plot" in label_lines[1]  # "box_plot" second part
+
+
+def test_histogram_short_labels_no_extra_row():
+    """Short labels (e.g. Q1-Q6) should render on a single line with no second row."""
+    data = [HistogramBar(label=f"Q{i}", value=i * 10) for i in range(1, 7)]
+    result = Histogram(data=data, options=ChartOptions(use_color=False, width=80)).render()
+    label_lines = _extract_label_lines(result)
+    assert len(label_lines) == 1
+    assert "Q1" in label_lines[0]
+    assert "Q6" in label_lines[0]

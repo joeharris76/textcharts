@@ -138,3 +138,75 @@ def test_base_legend_wraps_and_respects_show_legend():
 
     no_legend = _DummyChart(options=ChartOptions(width=40, use_color=False, show_legend=False))
     assert no_legend._render_legend([("DuckDB", "#1b9e77")], no_legend.options.get_colors()) == []
+
+
+# -- _wrap_label tests --------------------------------------------------------
+
+
+def test_wrap_label_short_label_returns_single_line():
+    assert ChartBase._wrap_label("Q1", 4) == ["Q1"]
+    assert ChartBase._wrap_label("foo", 10) == ["foo"]
+
+
+def test_wrap_label_splits_at_underscore():
+    assert ChartBase._wrap_label("summary_box", 7) == ["summary", "box"]
+    assert ChartBase._wrap_label("line_chart", 7) == ["line", "chart"]
+
+
+def test_wrap_label_splits_at_camel_case():
+    assert ChartBase._wrap_label("camelCase", 5) == ["camel", "Case"]
+
+
+def test_wrap_label_splits_alpha_digit_boundary():
+    result = ChartBase._wrap_label("Q10", 2)
+    assert result == ["Q", "10"]
+
+
+def test_wrap_label_hard_splits_when_no_boundary():
+    result = ChartBase._wrap_label("abcdef", 3)
+    assert result == ["abc", "def"]
+
+
+def test_wrap_label_truncates_line2_with_dots():
+    result = ChartBase._wrap_label("a_longersecondpart", 6)
+    assert len(result) == 2
+    assert len(result[1]) <= 6
+    # Line 2 should be truncated with ".." if it exceeds max_width
+    assert result[0] == "a"
+    assert result[1] == "long.."
+
+
+def test_wrap_label_strips_ansi():
+    result = ChartBase._wrap_label("\033[31mhello_world\033[0m", 6)
+    assert result == ["hello", "world"]
+
+
+# -- _build_wrapped_label_rows tests ------------------------------------------
+
+
+def test_wrapped_label_rows_single_row_when_all_fit():
+    rows = ChartBase._build_wrapped_label_rows(["Q1", "Q2", "Q3"], 4)
+    assert len(rows) == 1
+    assert "Q1" in rows[0]
+    assert "Q2" in rows[0]
+    assert "Q3" in rows[0]
+
+
+def test_wrapped_label_rows_two_rows_when_any_wraps():
+    rows = ChartBase._build_wrapped_label_rows(
+        ["summary_box", "Q1", "histogram"],
+        7,
+        prefix="  ",
+        separator=" ",
+    )
+    assert len(rows) == 2
+    assert "summary" in rows[0]
+    assert "box" in rows[1]
+    # Q1 has no second line so row 2 should have blank space in that slot
+    assert "Q1" in rows[0]
+
+
+def test_wrapped_label_rows_respects_prefix_and_separator():
+    rows = ChartBase._build_wrapped_label_rows(["AB", "CD"], 4, prefix=">>", separator="|")
+    assert rows[0].startswith(">>")
+    assert "|" in rows[0]
