@@ -1,3 +1,11 @@
-generated_at: '2026-03-10T14:03:15.437217'
-total_categories: 0
-categories: {}
+generated_at: '2026-03-12T08:51:04.711010'
+total_categories: 1
+categories:
+  Core Functionality:
+    count: 1
+    items:
+    - id: wrap-xaxis-labels
+      file: TODO/dev-012/planning/wrap-xaxis-labels.yaml
+      title: Wrap long horizontal axis labels onto 2 lines instead of truncating
+      priority: High
+      status: Not Started
