@@ -11,7 +11,7 @@ Unified code development lifecycle operations.
 
 ## Project Configuration
 
-Read `.claude/skills/skill-sync.config.yaml` → `code` section at project root. Provides:
+Read `.claude/project-config.yaml` → `code` section at project root. Provides:
 - `lint`, `lint_fix`, `format`, `typecheck`, `fast_test`, `verify` — shell commands
 - `line_length` — max line length for review
 - `review_checklist` — project-specific review items

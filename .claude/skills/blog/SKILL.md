@@ -12,7 +12,7 @@ tools: Bash, Read, Write, Edit, Agent, Glob, Grep
 Fallback chain for style and voice guides:
 
 1. **Project-level** (preferred): `_blog/STYLE_GUIDE.md` and `_blog/VOICE_REFERENCE.md`
-2. **Global fallback**: `~/.claude/blog/STYLE_GUIDE.md` and `~/.claude/blog/VOICE_REFERENCE.md`
+2. **Global fallback**: a user-managed global blog guide directory (for example, `$CODEX_HOME/blog/STYLE_GUIDE.md` and `$CODEX_HOME/blog/VOICE_REFERENCE.md`)
 
 Check project-level first; if missing, use global fallback. If neither exists, proceed without and note absence.
 

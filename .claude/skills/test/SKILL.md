@@ -11,7 +11,7 @@ Unified workflow for test development, execution, and maintenance.
 
 ## Project Configuration
 
-Read `.claude/skills/skill-sync.config.yaml` → `test` section at project root. Provides:
+Read `.claude/project-config.yaml` → `test` section at project root. Provides:
 - `runner` — test framework (pytest, jest, vitest, go, cargo)
 - `test_dir` — test root directory
 - `coverage_package` — package name for coverage reporting

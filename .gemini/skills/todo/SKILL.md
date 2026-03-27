@@ -15,9 +15,9 @@ Distributed YAML-based TODO management with auto-generated indexes, dependency g
 2. Convention: `_project/TODO` and `_project/DONE` relative to git root
 
 ```bash
-TODO_CLI="uv run --project ~/.claude/tools/todo todo-cli"
-TODO_VALIDATE="uv run --project ~/.claude/tools/todo todo-validate"
-TODO_INDEX="uv run --project ~/.claude/tools/todo todo-index"
+TODO_CLI="{todo.cli}"
+TODO_VALIDATE="{todo.validate}"
+TODO_INDEX="{todo.index}"
 ```
 
 ## Actions
@@ -48,7 +48,7 @@ See `references/structure.md` for system layout and item format.
 
 1. Create `todo.config.yaml` with configured paths (default: `todo_dir: _project/TODO`, `done_dir: _project/DONE`)
 2. Create directory structure: `{todo_dir}/_indexes/`, `{done_dir}/_indexes/`
-3. Copy schema/template from `~/.claude/skills/todo/defaults/`
+3. Copy schema/template from the packaged `defaults/` directory for this skill
 4. Generate empty indexes: `$TODO_INDEX`
 
 ---

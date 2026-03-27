@@ -9,7 +9,7 @@ tools: Bash, Read, Write, Edit, Task
 
 ## Project Configuration
 
-Read `.claude/skills/skill-sync.config.yaml` → `docs` section at project root. Provides:
+Read `.claude/project-config.yaml` → `docs` section at project root. Provides:
 - `builder` — doc system (sphinx, mkdocs, docusaurus, etc.)
 - `source_dir` — docs root directory
 - `commands` — build, clean, serve, linkcheck, validate
