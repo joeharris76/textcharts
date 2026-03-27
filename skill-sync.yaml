@@ -10,6 +10,7 @@ skills:
   - skill-sync
   - test
   - todo
+  - tidy-perms
 targets:
   claude: .claude/skills
   gemini: .gemini/skills
