@@ -1,5 +1,5 @@
-generated_at: '2026-03-12T10:01:06.945997'
-total_items: 23
+generated_at: '2026-03-27T17:16:11.485474'
+total_items: 25
 items:
 - id: shared-command-layer
   file: DONE/main/active/shared-command-layer.yaml
@@ -183,6 +183,23 @@ items:
   deferred_count: 3
   needs:
   - shared-command-layer
+- id: textual-widget-core
+  file: DONE/dev-013/active/textual-widget-core.yaml
+  title: Implement core Textual widget via ANSI wrapper (Phase 1)
+  worktree: dev-013
+  category: Integration
+  priority: High
+  status: Completed
+  tags:
+  - textual
+  - integration
+  - widget
+  estimated_effort: 3-5 days
+  completed_date: '2026-03-12'
+  work_total: 5
+  work_done: 5
+  work_ready: 0
+  deferred_count: 2
 - id: make-heatmap-and-matrix-apis-explicit-and-safe
   file: DONE/main/planning/make-heatmap-and-matrix-apis-explicit-and-safe.yaml
   title: Make heatmap and matrix APIs explicit and safe
@@ -370,6 +387,26 @@ items:
   work_total: 3
   work_done: 3
   work_ready: 0
+- id: textual-typed-widgets
+  file: DONE/dev-013/active/textual-typed-widgets.yaml
+  title: Create typed per-chart Textual widgets with reactive data attributes (Phase 2)
+  worktree: dev-013
+  category: Integration
+  priority: Medium-High
+  status: Completed
+  tags:
+  - textual
+  - integration
+  - widget
+  - reactive
+  estimated_effort: 3-5 days
+  completed_date: '2026-03-12'
+  work_total: 7
+  work_done: 7
+  work_ready: 0
+  deferred_count: 4
+  needs:
+  - textual-widget-core
 - id: cli-mcp-docs
   file: DONE/main/active/cli-mcp-docs.yaml
   title: Documentation for CLI and MCP interfaces
