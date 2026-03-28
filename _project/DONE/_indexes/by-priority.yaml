@@ -1,5 +1,5 @@
-generated_at: '2026-03-10T14:03:15.483221'
-total_items: 22
+generated_at: '2026-03-27T17:16:11.485506'
+total_items: 25
 priorities:
   Critical:
     count: 1
@@ -10,7 +10,7 @@ priorities:
       category: Core Functionality
       status: Completed
   High:
-    count: 13
+    count: 15
     items:
     - id: behavioral-tests-for-minimal-coverage-charts
       file: DONE/main/active/behavioral-tests-for-minimal-coverage-charts.yaml
@@ -57,6 +57,11 @@ priorities:
       title: Implement MCP server exposing textcharts as tools
       category: Core Functionality
       status: Completed
+    - id: textual-widget-core
+      file: DONE/dev-013/active/textual-widget-core.yaml
+      title: Implement core Textual widget via ANSI wrapper (Phase 1)
+      category: Integration
+      status: Completed
     - id: make-heatmap-and-matrix-apis-explicit-and-safe
       file: DONE/main/planning/make-heatmap-and-matrix-apis-explicit-and-safe.yaml
       title: Make heatmap and matrix APIs explicit and safe
@@ -77,8 +82,13 @@ priorities:
       title: Restore standalone renderer regression coverage
       category: Testing and Quality Assurance
       status: Completed
+    - id: wrap-xaxis-labels
+      file: DONE/dev-012/planning/wrap-xaxis-labels.yaml
+      title: Wrap long horizontal axis labels onto 2 lines instead of truncating
+      category: Core Functionality
+      status: Completed
   Medium-High:
-    count: 5
+    count: 6
     items:
     - id: configurable-improvement-direction
       file: DONE/main/active/configurable-improvement-direction.yaml
@@ -89,6 +99,11 @@ priorities:
       file: DONE/main/active/test-line-chart-trend-and-rendering-paths.yaml
       title: Add tests for LineChart trend line computation and rendering branches
       category: Testing and Quality Assurance
+      status: Completed
+    - id: textual-typed-widgets
+      file: DONE/dev-013/active/textual-typed-widgets.yaml
+      title: Create typed per-chart Textual widgets with reactive data attributes (Phase 2)
+      category: Integration
       status: Completed
     - id: cli-mcp-docs
       file: DONE/main/active/cli-mcp-docs.yaml

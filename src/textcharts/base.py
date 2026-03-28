@@ -566,6 +566,106 @@ class ChartBase(ABC):
             return label[:max_len]
         return label[: max_len - 2] + ".."
 
+    @staticmethod
+    def _wrap_label(label: str, max_width: int) -> list[str]:
+        """Split a label into 1 or 2 lines to fit within *max_width*.
+
+        Prefers splitting at word boundaries (underscore, hyphen, space,
+        camelCase).  Falls back to a hard split at *max_width*.  Line 2 is
+        truncated with ``..`` if it still exceeds *max_width*.
+        """
+        clean = ChartBase._ANSI_ESCAPE_RE.sub("", label)
+        if len(clean) <= max_width or max_width <= 0:
+            return [clean]
+
+        # Find the best split point in [1, max_width].
+        # We want the rightmost boundary that keeps line1 <= max_width.
+        best = 0
+        limit = min(len(clean), max_width + 1)
+        for i in range(1, limit):
+            ch = clean[i]
+            prev = clean[i - 1]
+            split_here = False
+            # Split *before* a delimiter so it lands on line 2 and gets stripped
+            if ch in "_- ":
+                split_here = True
+            # Split *after* a delimiter
+            elif prev in "_- ":
+                split_here = True
+            # camelCase boundary: lowercase followed by uppercase
+            elif prev.islower() and ch.isupper():
+                split_here = True
+            # alpha-to-digit boundary (e.g. "Q10" -> "Q" + "10")
+            elif prev.isalpha() and ch.isdigit():
+                split_here = True
+
+            if split_here:
+                left = clean[:i].rstrip("_- ")
+                right = clean[i:].lstrip("_- ")
+                # Skip delimiter-only leading segments that would render blank.
+                if left and right:
+                    best = i
+
+        if best == 0:
+            # No usable word boundary found — hard split at max_width
+            best = max_width
+
+        raw_line1 = clean[:best]
+        raw_line2 = clean[best:]
+        line1 = raw_line1.rstrip("_- ")
+        # This fallback only triggers on the hard-split path (best == max_width)
+        # because the word-boundary loop guarantees `left` is non-empty.
+        if not line1:
+            line1 = raw_line1
+        line2 = raw_line2.lstrip("_- ")
+        # Preserve all-delimiter remainders rather than silently dropping them.
+        if not line2 and raw_line2:
+            line2 = raw_line2
+
+        if len(line1) > max_width:
+            line1 = line1[:max_width]
+        if len(line2) > max_width:
+            line2 = line2[: max_width - 2] + ".." if max_width > 2 else line2[:max_width]
+
+        if not line2:
+            return [line1]
+        return [line1, line2]
+
+    @staticmethod
+    def _build_wrapped_label_rows(
+        labels: list[str],
+        col_width: int,
+        prefix: str = "",
+        separator: str = " ",
+        wrap_width: int | None = None,
+    ) -> list[str]:
+        """Build 1 or 2 complete label-row strings from *labels*.
+
+        Each label is wrapped via ``_wrap_label`` and centered within
+        *col_width*.  If **any** label needs 2 lines, all labels get a
+        second row (short labels padded with blanks).  When provided,
+        *wrap_width* limits the visible label content while preserving the
+        full slot width used for centering.
+
+        Returns a list of 1 or 2 ready-to-append row strings.
+        """
+        effective_wrap_width = col_width if wrap_width is None else wrap_width
+        wrapped = [ChartBase._wrap_label(lbl, effective_wrap_width) for lbl in labels]
+        needs_two = any(len(w) > 1 for w in wrapped)
+
+        row1_parts: list[str] = []
+        row2_parts: list[str] = []
+        for w in wrapped:
+            row1_parts.append(w[0].center(col_width))
+            if needs_two:
+                row2_parts.append((w[1] if len(w) > 1 else "").center(col_width))
+
+        rows: list[str] = []
+        rows.append((prefix + separator.join(row1_parts)).rstrip())
+        if needs_two:
+            rows.append((prefix + separator.join(row2_parts)).rstrip())
+        return rows
+
     def _render_axis_label(self, label: str, width: int, axis: str = "x") -> str:
         """Render an axis title label.
 

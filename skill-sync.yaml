@@ -1,0 +1,25 @@
+version: 1
+sources:
+  - name: personal
+    type: local
+    path: ~/.skill-sync/skills
+skills:
+  - blog
+  - code
+  - docs
+  - skill-sync
+  - test
+  - todo
+  - tidy-perms
+targets:
+  claude: .claude/skills
+  codex: .codex/skills
+  gemini: .gemini/skills
+install_mode: mirror
+config:
+  code:
+    lint: "uv run ruff check ."
+    lint_fix: "uv run ruff check --fix ."
+    format: "uv run ruff format ."
+    fast_test: "uv run pytest"
+    verify: "uv run pytest"

@@ -1,0 +1,23 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(git:*)",
+      "Bash(uv:*)",
+      "Bash(python:*)",
+      "Bash(python3:*)",
+      "Bash(gh:*)",
+      "Bash(make:*)",
+      "Bash(textcharts:*)",
+      "Bash(claude mcp:*)",
+      "Bash(wc:*)",
+      "Bash(printf:*)",
+      "Bash(du:*)",
+      "Bash(sort:*)",
+      "Bash(which:*)",
+      "Bash(chmod +x scripts/:*)",
+      "Bash(bash -n scripts/:*)",
+      "mcp__textcharts__textcharts_bar",
+      "mcp__textcharts__textcharts_histogram"
+    ]
+  }
+}

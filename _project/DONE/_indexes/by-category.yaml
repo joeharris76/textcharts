@@ -1,8 +1,8 @@
-generated_at: '2026-03-10T14:03:15.483207'
-total_categories: 3
+generated_at: '2026-03-27T17:16:11.485492'
+total_categories: 4
 categories:
   Core Functionality:
-    count: 13
+    count: 14
     items:
     - id: configurable-outlier-cap
       file: DONE/main/active/configurable-outlier-cap.yaml
@@ -69,6 +69,11 @@ categories:
       title: Rename benchmark-specific factory functions to generic names
       priority: Medium
       status: Completed
+    - id: wrap-xaxis-labels
+      file: DONE/dev-012/planning/wrap-xaxis-labels.yaml
+      title: Wrap long horizontal axis labels onto 2 lines instead of truncating
+      priority: High
+      status: Completed
   Documentation:
     count: 4
     items:
@@ -90,6 +95,19 @@ categories:
     - id: fix-gallery-chart-clarity-and-labeling
       file: DONE/main/planning/fix-gallery-chart-clarity-and-labeling.yaml
       title: Fix gallery chart clarity, labeling, and legend issues
+      priority: High
+      status: Completed
+  Integration:
+    count: 2
+    items:
+    - id: textual-typed-widgets
+      file: DONE/dev-013/active/textual-typed-widgets.yaml
+      title: Create typed per-chart Textual widgets with reactive data attributes (Phase 2)
+      priority: Medium-High
+      status: Completed
+    - id: textual-widget-core
+      file: DONE/dev-013/active/textual-widget-core.yaml
+      title: Implement core Textual widget via ANSI wrapper (Phase 1)
       priority: High
       status: Completed
   Testing and Quality Assurance:
