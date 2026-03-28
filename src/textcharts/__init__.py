@@ -23,7 +23,7 @@ Basic usage::
     print(chart.render())
 """
 
-__version__ = "0.1.3"
+__version__ = "0.1.4"
 
 # ---------------------------------------------------------------------------
 # Base classes and configuration
