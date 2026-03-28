@@ -123,7 +123,7 @@ def test_categorical_x_axis_data_points_align_with_labels():
             for col, ch in enumerate(plot_content):
                 if ch == "*":
                     # Map this column to the nearest label center
-                    nearest = min(label_centers, key=lambda l: abs(label_centers[l] - col))
+                    nearest = min(label_centers, key=lambda lbl: abs(label_centers[lbl] - col))
                     marker_cols[nearest] = col
 
     # Each marker should be within 1 column of its label center

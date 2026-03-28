@@ -6,10 +6,9 @@ import pytest
 
 pytest.importorskip("textual")
 
-import textcharts.textual.factories as textual_factories
-
 from textual.app import App, ComposeResult
 
+import textcharts.textual.factories as textual_factories
 from textcharts import (
     BarChart,
     BarData,
@@ -372,7 +371,10 @@ _FACTORY_CASES: list[tuple[str, callable, dict]] = [
     (
         "text_sparkline",
         lambda: text_sparkline(
-            SparklineTableData(rows=["DuckDB", "Polars"], columns=[SparklineColumn("Lat", {"DuckDB": 10.0, "Polars": 13.0})]),
+            SparklineTableData(
+                rows=["DuckDB", "Polars"],
+                columns=[SparklineColumn("Lat", {"DuckDB": 10.0, "Polars": 13.0})],
+            ),
             title="SL",
         ),
         {"title": "SL"},
