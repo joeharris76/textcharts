@@ -119,9 +119,11 @@ class Histogram(ChartBase):
 
         chunks = self._chunk_data(sorted_data, effective_max)
 
-        # Track largest chunk size so all charts in a multi-chart series share the
-        # same bar width — prevents the last (smaller) chunk from having huge bars.
-        self._series_max_bars: int | None = max(len(c) for c in chunks) if len(chunks) > 1 else None
+        # Track largest raw chunk length (bars, not unique queries) so all charts in a
+        # multi-chart series share the same bar spacing — prevents the last (smaller)
+        # chunk from having huge bars. Note: for grouped mode len(chunk) = platforms × queries,
+        # so callers must divide by num_platforms to recover the query count.
+        self._series_max_chunk_len: int | None = max(len(c) for c in chunks) if len(chunks) > 1 else None
 
         # Calculate global statistics for consistent scaling
         all_latencies = [d.value for d in sorted_data]
@@ -207,10 +209,12 @@ class Histogram(ChartBase):
 
         match = re.fullmatch(r"([A-Za-z]+)(\d+[A-Za-z]?)", label)
         if match:
-            _, suffix = match.groups()
+            prefix_char = match.group(1)[0]
+            suffix = match.group(2)
             if len(suffix) >= width:
                 return suffix[-width:]
-            return (label[0] + suffix)[-width:]
+            # Prepend one leading letter to the numeric suffix, then truncate right-to-left
+            return (prefix_char + suffix)[-width:]
 
         return label[:width]
 
@@ -305,7 +309,7 @@ class Histogram(ChartBase):
         y_axis_width = 8
         bar_area_width = width - y_axis_width - 2
 
-        ref_bars = self._series_max_bars or num_bars
+        ref_bars = self._series_max_chunk_len or num_bars
         bar_spacing = max(1, bar_area_width // ref_bars)
         bar_width = max(1, bar_spacing - 1)
 
@@ -528,7 +532,9 @@ class Histogram(ChartBase):
         y_axis_width = 8
         bar_area_width = width - y_axis_width - 2
 
-        ref_queries = self._series_max_bars or num_queries
+        # _series_max_chunk_len counts total bars (platforms × queries); divide to get queries
+        series_max_queries = (self._series_max_chunk_len // num_platforms) if self._series_max_chunk_len else None
+        ref_queries = series_max_queries or num_queries
         group_width = max(num_platforms + 1, bar_area_width // ref_queries)
         sub_bar_width = max(1, (group_width - 1) // num_platforms)
 

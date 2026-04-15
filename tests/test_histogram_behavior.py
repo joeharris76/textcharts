@@ -123,3 +123,33 @@ def test_histogram_short_labels_no_extra_row():
     assert len(label_lines) == 1
     assert "Q1" in label_lines[0]
     assert "Q6" in label_lines[0]
+
+
+def test_histogram_q_prefix_preserved_at_standard_width():
+    """At standard terminal width, 2-digit query labels must retain their Q prefix."""
+    data = [HistogramBar(label=f"Q{i}", value=float(i)) for i in range(10, 20)]
+    # 132-char width: bar_area=120, 120//10=12, bar_width=11 — no compaction needed
+    result = histogram_from_data(data, options=ChartOptions(width=132, use_color=False)).render()
+    assert "Q10" in result
+    assert "Q19" in result
+
+
+def test_histogram_variant_labels_are_distinct_after_compaction():
+    """Q14a and Q14b must produce distinct labels even after compaction."""
+    data = [
+        HistogramBar(label="Q14a", value=100.0),
+        HistogramBar(label="Q14b", value=110.0),
+    ]
+    # width=46, 2 bars: bar_area=36, 36//2=18, bar_width=17 — labels fit in full
+    result = Histogram(data=data, options=ChartOptions(width=46, use_color=False)).render()
+    assert "Q14a" in result
+    assert "Q14b" in result
+
+    # width=40 → bar_width narrows but variants must still be distinct
+    result_narrow = Histogram(data=data, options=ChartOptions(width=40, use_color=False)).render()
+    label_lines = _extract_label_lines(result_narrow)
+    all_labels = " ".join(label_lines)
+    # Extract the two label tokens; they must differ
+    tokens = [t for t in all_labels.split() if t]
+    assert len(tokens) >= 2, "Expected two label tokens"
+    assert tokens[0] != tokens[1], f"Labels collapsed: both rendered as {tokens[0]!r}"
