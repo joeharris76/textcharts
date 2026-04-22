@@ -1,7 +1,7 @@
 ---
 name: code
-description: This skill should be used when the user asks to "commit code", "review code", "fix lint/type error", "improve performance", "compare code", "shrink code", "generate spec from code", "investigate code", or "create handoff prompt".
-version: 0.1.0
+description: This skill should be used when the user asks to "commit code", "review code", "fix lint/type error", "improve performance", "compare code", "shrink code", "generate spec from code", "investigate code", "debug an error", "triage a bug", "iterate to green", or "create handoff prompt".
+version: 0.2.0
 tools: Bash, Read, Write, Edit, Task
 ---
 
@@ -11,7 +11,7 @@ Unified code development lifecycle operations.
 
 ## Project Configuration
 
-Read `.claude/project-config.yaml` → `code` section at project root. Provides:
+Read `.claude/skills/skill-sync.config.yaml` → `code` section at project root. Provides:
 - `lint`, `lint_fix`, `format`, `typecheck`, `fast_test`, `verify` — shell commands
 - `line_length` — max line length for review
 - `review_checklist` — project-specific review items
@@ -24,18 +24,21 @@ If missing, discover from `Makefile`, `package.json`, CLAUDE.md, or common conve
 | Action | Trigger | Description |
 |--------|---------|-------------|
 | `commit` | "commit changes", "commit code" | Commit session-modified files |
-| `review` | "review code", "code review" | Adversarial code review |
+| `review` | "review code", "code review" | Five-axis adversarial code review |
 | `fix` | "fix lint", "fix type error" | Fix code errors |
+| `debug` | "debug error", "triage bug", "why is this failing" | Systematic root-cause debugging |
+| `iterate` | "iterate to green", "drive tests to green", "make command pass", "rerun until passing" | Loop command → debug failures → fix → re-run, until green, blocked, or capped |
 | `perf` | "improve performance", "profile" | Investigate/improve performance |
 | `research` | "investigate code", "understand this" | Research code path before changes |
 | `compare` | "compare code", "diff modules" | Semantic code comparison |
 | `shrink` | "compress code", "shrink file" | Validation-driven compression |
 | `to-spec` | "generate spec", "document API" | Generate spec from code |
 | `handoff` | "create handoff", "session summary" | Generate continuation prompt |
+| `help` | "help", "list actions" | Print available actions |
 
-> **Commit rule**: After any write action completes successfully, always run the
-> Commit step before returning to the user. Do not wait for the user to request
-> a commit.
+**IMPORTANT — Auto-commit rule:** After any write action (fix, debug, perf, review `--chain`, shrink)
+completes and passes verification, ALWAYS run the Commit step, commit, and push before returning
+to the user. Do not wait for the user to request a commit. This is mandatory, not optional.
 
 ---
 
@@ -60,16 +63,13 @@ Uses SHARED/commit-framework.md. Input: optional scope hint.
 | `recent` | `git diff HEAD~5` |
 | `pr` | `git diff main...HEAD` |
 
-**Checklist**: Use config `review_checklist` if present. Defaults: Architecture (inheritance, module structure), Quality (type hints, docstrings, error handling, line length <= config `line_length`), Security (no credentials, parameterized queries, safe file ops), Performance (no O(n²), appropriate data structures, no N+1).
+**Five-Axis Review** (see `references/five-axis-review.md`): Evaluate across Correctness, Readability, Architecture, Security, Performance. Classify findings as Critical (blocks merge), Required (must address), Nit (optional), or Consider (suggestion). See also: `references/security-checklist.md` for the security axis.
 
-**Output**: Issue table, pattern compliance, security checks, quality score, action items.
+Use config `review_checklist` if present for project-specific items. Defaults: Architecture (inheritance, module structure), Quality (type hints, docstrings, error handling, line length <= config `line_length`), Security (no credentials, parameterized queries, safe file ops), Performance (no O(n²), appropriate data structures, no N+1).
 
-**`--chain`**: After reporting, fix each actionable issue (bugs, security, error handling, performance -- skip style/opinion):
-1. Apply SHARED/research-framework.md per issue group
-2. Implement fixes, verify each edit
-3. Run SHARED/verify-framework.md
-4. If all pass, commit via SHARED/commit-framework.md
-5. Output: changes made vs issues deferred
+**Output**: Issue table with severity, five-axis scores, "What's Done Well" section, action items.
+
+**`--chain`**: Fix each actionable issue group (bugs, security, error handling, performance — skip style/opinion): research → implement → smoke-verify that group → repeat for the next group → full verify → commit. Output: changes made vs issues deferred.
 
 ---
 
@@ -90,6 +90,30 @@ Uses SHARED/commit-framework.md. Input: optional scope hint.
 
 ---
 
+## Debug
+
+**Input**: Error message, stack trace, "why is X failing", test path, or empty
+
+Uses SHARED/debug-framework.md, SHARED/context-guide.md (trust levels, confusion protocol), and SHARED/slicing-framework.md (scope discipline for multi-file fixes). Follow Stop-the-Line rule and full triage checklist (Reproduce → Localize → Reduce → Root-cause fix → Guard → Verify). Also enforces: measurement over recall, fix hierarchy (operation/session → engine/config → preprocessing → code), narrow over broad, and the hard-blocker definition.
+
+---
+
+## Iterate
+
+**Input**: A command to drive to green, e.g. `"./scripts/local_stress_test.sh --scale 1 --platform doris"`, `"uv run -- python -m pytest tests/integration/"`, `"make test-all"`.
+
+Loop: run command → parse failures → cluster by signature (same error class + unit type) → per cluster invoke `/code debug` + apply fix + narrow re-verify + `/code review` + `/code commit` → re-run full command. Terminate on green, on all-remaining-failures-are-hard-blocked (per debug-framework), or on `--max-iterations` cap.
+
+**Flags**: `--max-iterations N` (default 20), `--narrow "<cmd>"` (explicit minimal-repro command), `--dry-run`. Advanced flags are defined in `references/iterate.md`.
+
+**Artifacts**: `_project/iterate/<slug>/run<N>.log`, `status.md` (overwritten), `blockers.md` (append).
+
+**Commit behavior**: Iterate commits inside the loop, one logical fix per cluster. Do not add an extra final aggregate commit after green unless new uncommitted changes exist after the last per-cluster commit.
+
+See `references/iterate.md` for the full loop spec, failure-clustering rules, blocker-record format, and anti-patterns.
+
+---
+
 ## Perf
 
 **Input**: Path, "profile {cmd}", "benchmark {test}", "hotspots"
@@ -102,9 +126,9 @@ Use config `perf_targets` for scale/target thresholds if present.
 
 ## Research
 
-**Input**: Path, error message, "trace {function}", module name, or empty. Uses SHARED/research-framework.md.
+**Input**: Path, error message, "trace {function}", module name, or empty. Uses SHARED/research-framework.md and SHARED/context-guide.md (trust levels, progressive disclosure).
 
-Steps: Scope investigation → Read target files + callers/tests → Trace data/control flow → Output: current behavior, dependencies, test coverage, risk assessment.
+Steps: Scope investigation → Read target files + callers/tests → Trace data/control flow → Output: current behavior, dependencies, test coverage, risk assessment. For removal/replacement investigations, see `references/deprecation-patterns.md`.
 
 Auto-invoked as prerequisite by Fix, Review (`--chain`), and Perf.
 
@@ -130,12 +154,9 @@ See `references/compare.md` for full details.
 
 **Input**: File path. Uses SHARED/shrink-framework.md.
 
-**Allowed**: `.py`, `.js`, `.ts`, `.tsx`, `.jsx`, `.go`, `.rs`, `.java`, `.rb`, `.sql`
-**Forbidden**: `__init__.py`, `conftest.py`, `*test*.py`, configs, generated
-
 Steps: Validate file type → Save baseline (once) → Invoke compression agent → Validate via `/code compare original compressed` → If score ≥ 0.95 AND tests pass, approve; if < 0.95, iterate (max 3).
 
-See `references/shrink.md` for full details.
+See `references/shrink.md` for allowed/forbidden types and full details.
 
 ---
 
@@ -165,22 +186,8 @@ See `references/handoff.md` for templates.
 
 ---
 
-## Output Format
+## Help
 
-```markdown
-## Code {Action}: {scope}
+**Input**: Empty
 
-### Summary
-{what was done}
-
-### Details
-{action-specific content}
-
-### Verification
-| Check | Result |
-|-------|--------|
-| {check} | PASS/FAIL |
-
-### Next Steps
-- {recommendation}
-```
+Print the Actions table from this skill — action names, triggers, and descriptions.
