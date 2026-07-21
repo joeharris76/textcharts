@@ -1,0 +1,35 @@
+#!/usr/bin/env bash
+# textcharts consumer adapter for the project-isolated todo-db tracker.
+#
+# This wrapper is the ONLY supported write path for tracker state (per the
+# `todo-db` skill). The database at .todo-db/standalone.sqlite is the record;
+# the legacy YAML under _project/{TODO,DONE} is a READ-ONLY rollback snapshot
+# retained for provenance and MUST NOT be hand-edited as live tracker state.
+#
+# Usage:  _project/scripts/todo <subcommand> [args...]
+#   e.g.  _project/scripts/todo list
+#         _project/scripts/todo ready
+#         _project/scripts/todo create my-item --title "..." --priority medium ...
+#
+# Global flags (--db/--project-id/--repository) are injected here so every call
+# is pinned to this project's isolated database and identity; a mismatch is
+# rejected by the tool. Override via TODO_DB_* env vars only for maintenance.
+set -euo pipefail
+
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+PROJECT_DIR="$(cd "$SCRIPT_DIR/../.." && pwd)"
+
+# The unpublished todo-db tool lives in a sibling checkout (no PyPI resolution).
+TODO_DB_HOME="${TODO_DB_HOME:-/Users/joe/Developer/todo-db}"
+DB="${TODO_DB_PATH:-$PROJECT_DIR/.todo-db/standalone.sqlite}"
+PROJECT_ID="${TODO_DB_PROJECT_ID:-textcharts}"
+REPOSITORY="${TODO_DB_REPOSITORY:-https://github.com/joeharris76/textcharts.git}"
+
+if [[ ! -f "$DB" ]]; then
+  echo "todo: tracker database not found at $DB" >&2
+  echo "todo: rebuild it from the retained YAML with _project/scripts/rebuild_todo_db.sh" >&2
+  exit 2
+fi
+
+exec uv run --project "$TODO_DB_HOME" --extra legacy --extra audit todo-db \
+  --db "$DB" --project-id "$PROJECT_ID" --repository "$REPOSITORY" "$@"
