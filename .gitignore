@@ -24,3 +24,8 @@ htmlcov/
 # Antigravity CLI local project state
 /.antigravitycli/
 /docs/_build/html
+
+# todo-db tracker: project-isolated local database + disposable replica cache.
+# Never commit databases, replicas, or credentials. Rebuild from the retained
+# YAML with _project/scripts/rebuild_todo_db.sh.
+/.todo-db/

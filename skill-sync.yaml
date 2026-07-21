@@ -10,6 +10,7 @@ skills:
   - skill-sync
   - test
   - todo
+  - todo-db
   - tidy-perms
   - SHARED/commit-framework
   - SHARED/verify-framework
