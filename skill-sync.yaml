@@ -23,3 +23,5 @@ config:
     format: "uv run ruff format ."
     fast_test: "uv run pytest"
     verify: "uv run pytest"
+  todo:
+    cli: "_project/scripts/todo"
