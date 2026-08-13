@@ -97,7 +97,12 @@ def assert_source_is_portable() -> None:
         ROOT / "skill-sync.yaml",
         ROOT / ".gitignore",
     )
-    forbidden = ("/Users/joe/Developer/todo-db", "../todo-db", "TODO_DB_AUTH_TOKEN=", "TODO_DB_RO_AUTH_TOKEN=")
+    forbidden = (
+        "/Users/" + "joe/Developer/todo-db",
+        ".." + "/todo-db",
+        "TODO_DB_AUTH_TOKEN=",
+        "TODO_DB_RO_AUTH_TOKEN=",
+    )
     for path in tracked_runtime:
         text = path.read_text(encoding="utf-8")
         for pattern in forbidden:
