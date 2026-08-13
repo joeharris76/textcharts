@@ -1,0 +1,23 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+ROOT="$(cd "$SCRIPT_DIR/../.." && pwd)"
+
+for arg in "$@"; do
+    case "$arg" in
+        --project-id|--project-id=*|--repository|--repository=*)
+            echo "error: project identity is fixed by the textcharts wrapper" >&2
+            exit 2
+            ;;
+    esac
+done
+
+if [[ -z "${TODO_DB_PATH:-}" && -z "${TODO_DB_URL:-}" ]]; then
+    export TODO_DB_PATH="$ROOT/.todo-db/standalone.sqlite"
+fi
+
+exec uv run --project "$SCRIPT_DIR" --locked -- todo-db \
+    --project-id textcharts \
+    --repository https://github.com/joeharris76/textcharts.git \
+    "$@"
