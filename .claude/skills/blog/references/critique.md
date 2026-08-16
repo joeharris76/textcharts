@@ -1,102 +1,47 @@
 # Blog Critique Reference
 
-Adversarial blog post review rubric.
+Use for adversarial draft review.
 
-## Review Areas
+Apply `SHARED/review-protocol/references/adversarial-review.md` with `change`
+scope. This file adds the blog-specific rubric and readiness score.
 
-### Style Compliance
+## Rubric
 
-| Check | What to Look For |
-|-------|------------------|
-| Voice | Matches project voice reference guide |
-| Jargon | Technical terms explained on first use |
-| Data-first | Claims backed by specific numbers |
-| Format | Title with specifics, hook, TL;DR, clear sections, code blocks |
+| Area | Questions |
+|---|---|
+| Thesis | Is the claim specific, defensible, and worth reading? |
+| Audience | Is the reader clear, and are prerequisites handled? |
+| Evidence | Are technical claims sourced, measured, or reproducible? |
+| Structure | Does each section advance the argument without boilerplate? |
+| Voice | Does it match the voice guide and avoid banned patterns? |
+| Utility | Does the reader leave with a usable insight, command, or decision? |
+| Risk | What could be misleading, stale, partisan, overclaimed, or underqualified? |
+| Shelf-life | For vendor-response posts, compare outline and source dates; flag a response window beyond the typical 1-2 weeks. |
 
-### Technical Accuracy
+## Vendor-Response Checks
 
-| Check | Verification |
-|-------|--------------|
-| Benchmarks | Data correct, reproducible |
-| Citations | Sources valid, recent |
-| Claims | Supported by evidence |
-| Methodology | Documented, limitations noted |
-| Environment | Hardware/software documented |
+Apply only when a post responds to a vendor or source author.
 
-### Engagement
-
-| Element | Target |
-|---------|--------|
-| Hook | Compelling, draws reader in |
-| Flow | Logical progression |
-| Transitions | Smooth between sections |
-| Paragraphs | Short (3-4 sentences) |
-| Skimmability | Headers, bullets, visual breaks |
-
-### Editorial
-
-| Check | Standard |
-|-------|----------|
-| Title | Specific, under 70 chars |
-| Evidence | Present for all claims |
-| Code | Valid, tested |
-| Links | Working |
-| Length | Appropriate for type |
+- **Currency (Risk lane):** verify blocked TODOs, deferrals, and "not yet
+  shipped" claims
+  against `git log`, `todo list`, and `todo show <id>`. Flag work shipped after
+  the outline date.
+- **Partisan reader (Voice lane):** flag contrasts such as boring/novel,
+  surface/hidden, and obvious/clever when the source's team could find them
+  dismissive. Replace rankings with the exact API, benchmark coverage, or
+  operational limitation.
 
 ## Scoring
 
-| Score | Meaning |
-|-------|---------|
-| 9-10 | Publish-ready with minor polish |
-| 7-8 | Solid, needs targeted improvements |
-| 5-6 | Significant revision required |
-| <5 | Structural/fundamental issues |
+9-10 publish-ready, 7-8 targeted edits, 5-6 significant revision, <5 structural rethink.
 
-## Common Issues
+## Output
 
-- **Structure**: Burying the lede, missing thesis, repetitive conclusion, poor section order
-- **Style**: Passive voice overuse, unexplained jargon, too formal, missing "why care"
-- **Technical**: Unsupported claims, missing methodology, outdated sources, no limitations
-- **Engagement**: Weak hook, long paragraphs (>5 sentences), no visual breaks, abrupt ending
+Lead with blockers, then targeted improvements, useful rewrites, and publish
+readiness. Separate factual corrections from taste.
 
-## Report Format
+## Authorized follow-up fixes
 
-```markdown
-## Blog Critique: {Title}
-
-### Overview
-- **File**: `{path}`
-- **Word Count**: X,XXX
-- **Quality**: [Excellent/Good/Needs Work/Major Revision]
-
-### Style Compliance
-| Category | Score | Notes |
-|----------|-------|-------|
-| Voice | X/10 | |
-| Data-First | X/10 | |
-| Formatting | X/10 | |
-
-### Issues Found
-| Severity | Location | Issue | Recommendation |
-|----------|----------|-------|----------------|
-| Critical | Para 3 | Unsupported claim | Add citation |
-
-### Section Analysis
-
-#### {Section Name}
-- **Strength**: {what works}
-- **Weakness**: {what doesn't}
-- **Suggestion**: {improvement}
-
-### Rewrites Suggested
-**Original**: > {text}
-**Suggested**: > {improved text}
-
-### Action Items
-- [ ] **CRITICAL**: {must fix before publish}
-- [ ] **HIGH**: {strongly recommended}
-- [ ] **MEDIUM**: {nice to have}
-
-### Recommendation
-**Publish Ready**: [Yes / After Edits / Needs Revision / Major Rewrite]
-```
+After later authorization, fix only broken links, formatting, obvious factual
+errors, and local wording. Leave thesis, framing, and controversial judgments
+to the user.
