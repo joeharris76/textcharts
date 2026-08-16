@@ -1,8 +1,15 @@
 version: 1
 sources:
-  - name: personal
-    type: local
-    path: ~/.skill-sync/skills
+  - name: catalog
+    type: git
+    url: https://github.com/joeharris76/skill-sync-skills.git
+    ref: 740eeab3a585af162523c5b5e653fea18fae19f1
+    subdir: skills
+  - name: product
+    type: git
+    url: https://github.com/joeharris76/skill-sync.git
+    ref: 6ebc1e4f0df13de5e9c71f5925e06ff4aa73c984
+    subdir: skills
 skills:
   - blog
   - code
@@ -10,12 +17,18 @@ skills:
   - skill-sync
   - test
   - todo
+  - SHARED/change-framework
+  - SHARED/investigation-framework
+  - SHARED/review-protocol
   - tidy-perms
 targets:
   claude: .claude/skills
   codex: .codex/skills
   gemini: .gemini/skills
 install_mode: mirror
+overrides:
+  skill-sync:
+    source_name: product
 config:
   code:
     lint: "uv run ruff check ."
