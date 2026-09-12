@@ -21,4 +21,8 @@ htmlcov/
 .vscode/
 *.swp
 .DS_Store
+
+# Antigravity CLI local project state
+/.antigravitycli/
 /docs/_build/html
+
