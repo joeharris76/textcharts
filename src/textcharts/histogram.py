@@ -56,7 +56,7 @@ class Histogram(ChartBase):
     ```
     """
 
-    DEFAULT_MAX_BARS = 33
+    DEFAULT_MAX_BARS = 25
 
     def __init__(
         self,
@@ -118,6 +118,12 @@ class Histogram(ChartBase):
             effective_max = self.max_per_chart
 
         chunks = self._chunk_data(sorted_data, effective_max)
+
+        # Track largest raw chunk length (bars, not unique queries) so all charts in a
+        # multi-chart series share the same bar spacing — prevents the last (smaller)
+        # chunk from having huge bars. Note: for grouped mode len(chunk) = platforms × queries,
+        # so callers must divide by num_platforms to recover the query count.
+        self._series_max_chunk_len: int | None = max(len(c) for c in chunks) if len(chunks) > 1 else None
 
         # Calculate global statistics for consistent scaling
         all_latencies = [d.value for d in sorted_data]
@@ -183,13 +189,13 @@ class Histogram(ChartBase):
         return sorted(self.data, key=lambda d: self._natural_sort_key(d.label))
 
     @staticmethod
-    def _natural_sort_key(label: str) -> tuple[str, int]:
-        """Natural sort key for labels (Q1, Q2, Q10 not Q1, Q10, Q2)."""
-        match = re.match(r"([A-Za-z]*)(\d+)", label)
+    def _natural_sort_key(label: str) -> tuple[str, int, str]:
+        """Natural sort key for labels (Q1, Q2, Q10 not Q1, Q10, Q2; Q14a before Q14b)."""
+        match = re.match(r"([A-Za-z]*)(\d+)([A-Za-z]*)", label)
         if match:
-            prefix, num = match.groups()
-            return (prefix.upper(), int(num))
-        return (label.upper(), 0)
+            prefix, num, suffix = match.groups()
+            return (prefix.upper(), int(num), suffix.lower())
+        return (label.upper(), 0, "")
 
     @staticmethod
     def _compact_label(label: str, width: int) -> str:
@@ -201,12 +207,14 @@ class Histogram(ChartBase):
         if len(label) <= width:
             return label
 
-        match = re.fullmatch(r"([A-Za-z]+)(\d+)", label)
+        match = re.fullmatch(r"([A-Za-z]+)(\d+[A-Za-z]?)", label)
         if match:
-            _, number = match.groups()
-            if len(number) >= width:
-                return number[-width:]
-            return (label[0] + number)[-width:]
+            prefix_char = match.group(1)[0]
+            suffix = match.group(2)
+            if len(suffix) >= width:
+                return suffix[-width:]
+            # Prepend one leading letter to the numeric suffix, then truncate right-to-left
+            return (prefix_char + suffix)[-width:]
 
         return label[:width]
 
@@ -301,7 +309,8 @@ class Histogram(ChartBase):
         y_axis_width = 8
         bar_area_width = width - y_axis_width - 2
 
-        bar_spacing = max(1, bar_area_width // num_bars)
+        ref_bars = self._series_max_chunk_len or num_bars
+        bar_spacing = max(1, bar_area_width // ref_bars)
         bar_width = max(1, bar_spacing - 1)
 
         chart_height = 12
@@ -523,7 +532,10 @@ class Histogram(ChartBase):
         y_axis_width = 8
         bar_area_width = width - y_axis_width - 2
 
-        group_width = max(num_platforms + 1, bar_area_width // num_queries)
+        # _series_max_chunk_len counts total bars (platforms × queries); divide to get queries
+        series_max_queries = (self._series_max_chunk_len // num_platforms) if self._series_max_chunk_len else None
+        ref_queries = series_max_queries or num_queries
+        group_width = max(num_platforms + 1, bar_area_width // ref_queries)
         sub_bar_width = max(1, (group_width - 1) // num_platforms)
 
         chart_height = 12

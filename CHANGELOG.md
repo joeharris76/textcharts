@@ -4,9 +4,19 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/).
 
-## [Unreleased]
+## [0.1.4] - 2026-09-16
 
+### Fixed
 
+- **Histogram bar width consistency:** Track maximum chunk length across multi-chart series (`_series_max_chunk_len`) to ensure uniform bar spacing across all chunks and prevent oversized bars in trailing chunks.
+- **Histogram query label sorting:** Natural sort key now accounts for letter suffixes (`Q14a` before `Q14b`).
+- **Histogram compact label collision:** Retain variant suffixes when compacting narrow query labels to avoid collapsing distinct queries to duplicate labels.
+- **Histogram default bar count:** Adjust `DEFAULT_MAX_BARS` from 33 to 25 to ensure 3-character bar widths on standard 130-character terminal widths.
+- **CI test coverage gate:** Install all optional integration extras (`--all-extras`) during CI test matrix runs to ensure coverage gates pass.
+
+### Added
+
+- Behavioral tests verifying non-collapsing variant query labels and prefix retention under terminal width constraints.
 ## [0.1.3] - 2026-03-28
 
 ### Added
@@ -53,7 +63,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 - MCP server (`textcharts-mcp` command)
 - Sphinx documentation with Furo theme
 
-[Unreleased]: https://github.com/joeharris76/textcharts/compare/v0.1.3...HEAD
+[Unreleased]: https://github.com/joeharris76/textcharts/compare/v0.1.4...HEAD
+[0.1.4]: https://github.com/joeharris76/textcharts/compare/v0.1.3...v0.1.4
 [0.1.3]: https://github.com/joeharris76/textcharts/compare/v0.1.2...v0.1.3
 [0.1.2]: https://github.com/joeharris76/textcharts/compare/v0.1.1...v0.1.2
 [0.1.1]: https://github.com/joeharris76/textcharts/compare/v0.1.0...v0.1.1
