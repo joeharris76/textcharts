@@ -1,14 +1,11 @@
 # Write a Specification
 
 State assumptions, objective, commands, structure, style, tests, boundaries,
-success criteria, and review gate. Before finalizing, apply
-`SHARED/plan-deepening-framework/SKILL.md` L3 and include a reframe only if it
-changes the spec. Save only after confirmation.
-
-A spec for new infrastructure must list existing patterns by file path and the
-reuse decision: extend, supersede, or genuinely new.
+success criteria, and review gate. Before finalizing, apply Layer 3 of
+`SHARED/review-protocol/SKILL.md`. Include a reframe only if it changes the
+specification. Save only after the user confirms.
 
 ## Prior art
 
-Record the relevant existing patterns and why the proposal extends,
-supersedes, or genuinely adds to them.
+For new infrastructure, list relevant patterns by file path. Explain whether
+the proposal extends or supersedes each pattern, or adds something new.
