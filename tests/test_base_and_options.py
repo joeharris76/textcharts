@@ -5,7 +5,26 @@ import io
 import pytest
 
 import textcharts.base as base
+from textcharts import (
+    BoxPlot,
+    BoxPlotSeries,
+    CDFChart,
+    CDFSeriesData,
+    ComparisonBar,
+    ComparisonBarData,
+    Histogram,
+    HistogramBar,
+    LineChart,
+    LinePoint,
+    ScatterPlot,
+    ScatterPoint,
+    StackedBar,
+    StackedBarData,
+    StackedBarSegment,
+)
 from textcharts.base import (
+    DARK_PALETTE,
+    LIGHT_PALETTE,
     ChartBase,
     ChartOptions,
     ColorMode,
@@ -254,3 +273,69 @@ def test_wrapped_label_rows_wrap_width_limits_content_but_preserves_slot():
     assert "abcdefghij" not in rows[0]
     # But each slot is still 10 chars wide (centered)
     assert "Q1" in rows[0]
+
+
+def _truecolor_caps() -> TerminalCapabilities:
+    return TerminalCapabilities(
+        width=80, height=24, color_mode=ColorMode.TRUECOLOR,
+        unicode_support=True, interactive=False,
+    )
+
+
+def _hex_to_truecolor_esc(hex_color: str) -> str:
+    hex_color = hex_color.lstrip("#")
+    r, g, b = (int(hex_color[i : i + 2], 16) for i in (0, 2, 4))
+    return f"\033[38;2;{r};{g};{b}m"
+
+
+def _themed_chart_factory(theme: str):
+    """Build one chart per palette-consuming type bound to *theme*."""
+    opts = ChartOptions(theme=theme, width=80)
+    return {
+        "box": BoxPlot(series=[BoxPlotSeries(name="S", values=[1, 2, 3, 4, 5])], options=opts),
+        "histogram": Histogram(
+            data=[HistogramBar(label="A", value=10), HistogramBar(label="B", value=20)],
+            options=opts,
+        ),
+        "cdf": CDFChart(data=[CDFSeriesData(name="S", values=[1, 2, 3])], options=opts),
+        "stacked": StackedBar(
+            data=[StackedBarData(label="A", segments=[StackedBarSegment("p", 10.0)])],
+            options=opts,
+        ),
+        "comparison": ComparisonBar(
+            data=[ComparisonBarData(label="Q", baseline_value=100, comparison_value=120)],
+            options=opts,
+        ),
+        "scatter": ScatterPlot(
+            points=[ScatterPoint(name="A", x=10, y=20), ScatterPoint(name="B", x=30, y=40)],
+            options=opts,
+        ),
+        "line": LineChart(
+            points=[LinePoint(series="S", x=0, y=1), LinePoint(series="S", x=1, y=2)],
+            options=opts,
+        ),
+    }
+
+
+def test_dark_theme_renders_dark_palette(monkeypatch: pytest.MonkeyPatch):
+    monkeypatch.setattr(base, "detect_terminal_capabilities", _truecolor_caps)
+    charts = _themed_chart_factory("dark")
+    assert len(charts) == 7
+    dark_esc = _hex_to_truecolor_esc(DARK_PALETTE[0])
+    light_esc = _hex_to_truecolor_esc(LIGHT_PALETTE[0])
+    for name, chart in charts.items():
+        result = chart.render()
+        assert dark_esc in result, f"{name} missing DARK_PALETTE color with theme='dark'"
+        assert light_esc not in result, f"{name} leaked LIGHT_PALETTE color with theme='dark'"
+
+
+def test_light_theme_renders_light_palette(monkeypatch: pytest.MonkeyPatch):
+    monkeypatch.setattr(base, "detect_terminal_capabilities", _truecolor_caps)
+    charts = _themed_chart_factory("light")
+    assert len(charts) == 7
+    dark_esc = _hex_to_truecolor_esc(DARK_PALETTE[0])
+    light_esc = _hex_to_truecolor_esc(LIGHT_PALETTE[0])
+    for name, chart in charts.items():
+        result = chart.render()
+        assert light_esc in result, f"{name} missing LIGHT_PALETTE color with theme='light'"
+        assert dark_esc not in result, f"{name} leaked DARK_PALETTE color with theme='light'"

@@ -9,7 +9,7 @@ from typing import TYPE_CHECKING
 
 logger = logging.getLogger(__name__)
 
-from textcharts.base import DEFAULT_PALETTE, ChartBase, ChartOptions, ColorMode, robust_p95
+from textcharts.base import ChartBase, ChartOptions, ColorMode, robust_p95
 
 if TYPE_CHECKING:
     from collections.abc import Sequence
@@ -170,7 +170,7 @@ class ScatterPlot(ChartBase):
             gy = plot_height - 1 - gy
             return max(0, min(plot_width - 1, gx)), max(0, min(plot_height - 1, gy))
 
-        palette = list(DEFAULT_PALETTE)
+        palette = list(self.options.get_palette())
         point_styles = {
             point.name: (
                 self.MARKERS[i % len(self.MARKERS)],

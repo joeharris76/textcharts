@@ -9,7 +9,6 @@ from dataclasses import dataclass, field
 from typing import TYPE_CHECKING
 
 from textcharts.base import (
-    DEFAULT_PALETTE,
     ChartBase,
     ChartOptions,
     TerminalColors,
@@ -157,7 +156,7 @@ class StackedBar(ChartBase):
             total_str = self._format_total(total).rjust(total_annotation_width)
 
             # Colorize label
-            colored_label = colors.colorize(label_padded, fg_color=DEFAULT_PALETTE[0])
+            colored_label = colors.colorize(label_padded, fg_color=self.options.get_palette()[0])
 
             lines.append(f"{colored_label} {bar}  {total_str}")
 
@@ -168,7 +167,8 @@ class StackedBar(ChartBase):
         legend_parts: list[str] = []
         for i, phase_name in enumerate(phase_names):
             fill = fills[i % len(fills)]
-            color = DEFAULT_PALETTE[i % len(DEFAULT_PALETTE)]
+            palette = self.options.get_palette()
+            color = palette[i % len(palette)]
             colored_fill = colors.colorize(fill, fg_color=color)
             legend_parts.append(f"{colored_fill} {phase_name}")
         lines.append("  ".join(legend_parts))
@@ -222,7 +222,8 @@ class StackedBar(ChartBase):
             fill = fills[i % len(fills)]
             # Use segment color override if available, otherwise palette
             seg = next((s for s in datum.segments if s.phase_name == phase_name), None)
-            color = seg.color if seg and seg.color else DEFAULT_PALETTE[i % len(DEFAULT_PALETTE)]
+            palette = self.options.get_palette()
+            color = seg.color if seg and seg.color else palette[i % len(palette)]
             segment = fill * seg_len
             bar_chars.append(colors.colorize(segment, fg_color=color))
             used += seg_len

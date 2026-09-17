@@ -11,7 +11,6 @@ from typing import TYPE_CHECKING
 logger = logging.getLogger(__name__)
 
 from textcharts.base import (
-    DEFAULT_PALETTE,
     ChartBase,
     ChartOptions,
     outlier_severity_markers,
@@ -198,7 +197,7 @@ class BoxPlot(ChartBase):
             lines.append(self._render_horizontal_line(width))
             lines.append("")
 
-        palette = list(DEFAULT_PALETTE)
+        palette = list(self.options.get_palette())
 
         # Resolve drawing glyphs for the configured character set
         box = self.options.get_box_chars()

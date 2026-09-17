@@ -8,7 +8,6 @@ from dataclasses import dataclass
 from typing import TYPE_CHECKING
 
 from textcharts.base import (
-    DEFAULT_PALETTE,
     ChartBase,
     ChartOptions,
     robust_p95,
@@ -86,6 +85,7 @@ class CDFChart(ChartBase):
         colors = self.options.get_colors()
         width = self.options.get_effective_width()
         box = self.options.get_box_chars()
+        palette = self.options.get_palette()
 
         # Y-axis is fixed 0-100%
         y_label_width = 5  # "100%│"
@@ -175,7 +175,7 @@ class CDFChart(ChartBase):
                 ch = grid[row][col]
                 if ch in _MARKERS:
                     series_idx = _MARKERS.index(ch)
-                    color = DEFAULT_PALETTE[series_idx % len(DEFAULT_PALETTE)]
+                    color = palette[series_idx % len(palette)]
                     row_str += colors.colorize(ch, fg_color=color)
                 else:
                     if row == self.height - 1:
@@ -208,7 +208,7 @@ class CDFChart(ChartBase):
         legend_parts: list[str] = []
         for i, series in enumerate(self.data):
             marker = _MARKERS[i % len(_MARKERS)]
-            color = DEFAULT_PALETTE[i % len(DEFAULT_PALETTE)]
+            color = palette[i % len(palette)]
             colored_marker = colors.colorize(marker, fg_color=color)
             legend_parts.append(f"{colored_marker} {series.name}")
         legend_line = "  " + "    ".join(legend_parts)

@@ -11,7 +11,6 @@ from typing import TYPE_CHECKING
 logger = logging.getLogger(__name__)
 
 from textcharts.base import (
-    DEFAULT_PALETTE,
     ChartBase,
     ChartOptions,
     ColorMode,
@@ -166,7 +165,7 @@ class LineChart(ChartBase):
         grid: list[list[str]] = [[" " for _ in range(plot_width)] for _ in range(plot_height)]
 
         # Assign markers and colors to series
-        palette = list(DEFAULT_PALETTE)
+        palette = list(self.options.get_palette())
         series_styles: dict[str, tuple[str, str]] = {}
         for i, series_name in enumerate(series_map.keys()):
             marker = self.MARKERS[i % len(self.MARKERS)]

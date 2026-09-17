@@ -11,7 +11,6 @@ from typing import TYPE_CHECKING
 logger = logging.getLogger(__name__)
 
 from textcharts.base import (
-    DEFAULT_PALETTE,
     ChartBase,
     ChartOptions,
     outlier_severity_markers,
@@ -318,7 +317,7 @@ class Histogram(ChartBase):
         normalized = self._normalize_bars(chunk, global_max, chart_height)
         mean_row = round((global_mean / global_max) * chart_height) if global_max > 0 else 0
 
-        palette = list(DEFAULT_PALETTE)
+        palette = list(self.options.get_palette())
         no_color = not self.options.use_color
 
         chart_rows = self._build_simple_chart_rows(
@@ -479,7 +478,9 @@ class Histogram(ChartBase):
         """Build the footer line with mean and legend markers."""
         footer_parts: list[str] = []
         bar_glyph = "█" if self.options.use_unicode else "#"
-        footer_parts.append(f"{colors.colorize(bar_glyph, fg_color='#1b9e77')} {self.y_label}")
+        footer_parts.append(
+            f"{colors.colorize(bar_glyph, fg_color=self.options.get_palette()[0])} {self.y_label}"
+        )
         if self.show_mean_line and global_mean > 0:
             mean_glyph = "·" if self.options._has_unicode() else "-"
             mean_text = f"{mean_glyph * 5} Mean: {self._format_value(global_mean)}"
@@ -517,7 +518,7 @@ class Histogram(ChartBase):
         colors = self.options.get_colors()
         blocks = self.options.get_vertical_block_chars()
         width = self.options.get_effective_width()
-        palette = list(DEFAULT_PALETTE)
+        palette = list(self.options.get_palette())
 
         platform_colors, platform_fills = self._build_platform_maps(palette)
         no_color = not self.options.use_color
