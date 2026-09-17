@@ -9,7 +9,6 @@ from typing import TYPE_CHECKING
 
 from textcharts.base import (
     DEFAULT_PALETTE,
-    TRUNCATION_MARKER,
     ChartBase,
     ChartOptions,
     robust_p95,
@@ -214,7 +213,7 @@ class CDFChart(ChartBase):
             legend_parts.append(f"{colored_marker} {series.name}")
         legend_line = "  " + "    ".join(legend_parts)
         if self._x_capped:
-            legend_line += f"  {TRUNCATION_MARKER} X-axis capped"
+            legend_line += f"  {self._truncation_marker()} X-axis capped"
         lines.append(legend_line)
 
         return "\n".join(lines)

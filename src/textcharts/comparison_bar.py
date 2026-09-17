@@ -244,7 +244,7 @@ class ComparisonBar(ChartBase):
             bar += fc if fill_char else blocks[partial]
 
         if truncated and truncate_threshold and truncate_threshold > 0:
-            markers = outlier_severity_markers(value, truncate_threshold)
+            markers = outlier_severity_markers(value, truncate_threshold, self.options._has_unicode())
             bar = bar[: bar_width - len(markers)] + markers
         else:
             bar = bar.ljust(bar_width)

@@ -92,7 +92,7 @@ ASCII_SERIES_MARKERS: tuple[str, ...] = ("#", "*", "+", "o", "x", "^", "~", "=")
 TRUNCATION_MARKER = "\u25b8"  # ▸
 
 
-def outlier_severity_markers(value: float, scale_max: float) -> str:
+def outlier_severity_markers(value: float, scale_max: float, use_unicode: bool = True) -> str:
     """Return 1-4 ``▸`` characters indicating how far *value* exceeds *scale_max*.
 
     Thresholds are logarithmic:
@@ -100,6 +100,9 @@ def outlier_severity_markers(value: float, scale_max: float) -> str:
         ≤ 5×  → ▸▸
         ≤ 10× → ▸▸▸
         > 10× → ▸▸▸▸
+
+    When *use_unicode* is False, returns ``>`` characters instead so output
+    stays strictly ASCII.
     """
     if scale_max <= 0 or value <= scale_max:
         return ""
@@ -112,7 +115,8 @@ def outlier_severity_markers(value: float, scale_max: float) -> str:
         n = 2
     else:
         n = 1
-    return TRUNCATION_MARKER * n
+    marker = TRUNCATION_MARKER if use_unicode else ">"
+    return marker * n
 
 
 def compute_percentile_linear(values: Sequence[float], percentile: float, *, presorted: bool = False) -> float:
@@ -542,6 +546,10 @@ class ChartBase(ABC):
         line_char = box["h"] if char == "─" else char
         return line_char * width
 
+    def _truncation_marker(self) -> str:
+        """Return the truncation marker for the configured character set."""
+        return TRUNCATION_MARKER if self.options._has_unicode() else ">"
+
     def _format_value(self, value: float, precision: int = 1) -> str:
         """Format a numeric value for display."""
         import math
@@ -681,11 +689,11 @@ class ChartBase(ABC):
             Centered label string with arrow indicator.
         """
         colors = self.options.get_colors()
-        arrow = "\u2192" if self.options.use_unicode else "->"
+        arrow = "\u2192" if self.options._has_unicode() else "->"
         if axis == "x":
             text = f"{label} {arrow}"
         else:
-            arrow_up = "\u2191" if self.options.use_unicode else "^"
+            arrow_up = "\u2191" if self.options._has_unicode() else "^"
             text = f"{arrow_up} {label}"
         text = text[:width] if len(text) > width else text
         padded = text.center(width)
@@ -694,8 +702,8 @@ class ChartBase(ABC):
     def _render_compact_axis_labels(self, y_label: str, x_label: str, width: int) -> str:
         """Render both axis labels on one compact centered line."""
         colors = self.options.get_colors()
-        right_arrow = "\u2192" if self.options.use_unicode else "->"
-        up_arrow = "\u2191" if self.options.use_unicode else "^"
+        right_arrow = "\u2192" if self.options._has_unicode() else "->"
+        up_arrow = "\u2191" if self.options._has_unicode() else "^"
         text = f"{up_arrow} {y_label} / {x_label} {right_arrow}"
         text = text[:width] if len(text) > width else text
         return colors.colorize(text.center(width), fg_color="#666666")

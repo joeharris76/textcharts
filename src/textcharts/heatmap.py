@@ -6,7 +6,6 @@ import math
 from typing import TYPE_CHECKING
 
 from textcharts.base import (
-    TRUNCATION_MARKER,
     ChartBase,
     ChartOptions,
     ColorMode,
@@ -239,7 +238,7 @@ class Heatmap(ChartBase):
         lines.append(self._render_scale_legend(use_bg, bg_scale, colors, intensity_chars))
         range_str = f"Range: {self._format_value(min_val)} - {self._format_value(max_val)} {self.value_label}"
         if scale_max < max_val:
-            range_str += f"  (scale capped at {self._format_value(scale_max)}, {TRUNCATION_MARKER}=truncated)"
+            range_str += f"  (scale capped at {self._format_value(scale_max)}, {self._truncation_marker()}=truncated)"
         lines.append(range_str)
 
         return "\n".join(lines)
@@ -337,7 +336,7 @@ class Heatmap(ChartBase):
         # Mark cells that exceed the capped scale
         is_truncated = value > self._scale_max
         if is_truncated:
-            value_str += TRUNCATION_MARKER
+            value_str += self._truncation_marker()
 
         if use_bg:
             padded = value_str.center(cell_width)
@@ -373,7 +372,8 @@ class Heatmap(ChartBase):
         scale_line = "Scale: "
         for char in intensity_chars[1:]:
             scale_line += char + " "
-        scale_line += f"(fast → slow, {self.value_label})"
+        arrow = "→" if self.options._has_unicode() else "->"
+        scale_line += f"(fast {arrow} slow, {self.value_label})"
         return scale_line
 
 

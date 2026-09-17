@@ -9,7 +9,7 @@ from typing import TYPE_CHECKING
 
 logger = logging.getLogger(__name__)
 
-from textcharts.base import DEFAULT_PALETTE, TRUNCATION_MARKER, ChartBase, ChartOptions, ColorMode, robust_p95
+from textcharts.base import DEFAULT_PALETTE, ChartBase, ChartOptions, ColorMode, robust_p95
 
 if TYPE_CHECKING:
     from collections.abc import Sequence
@@ -159,6 +159,9 @@ class ScatterPlot(ChartBase):
         # Create plot grid
         grid: list[list[str]] = [[" " for _ in range(plot_width)] for _ in range(plot_height)]
 
+        # Pareto frontier line character follows the configured character set
+        frontier_mark = self.MARKER_FRONTIER if self.options._has_unicode() else "-"
+
         # Helper to convert data coords to grid coords
         def to_grid(x: float, y: float) -> tuple[int, int]:
             gx = int((x - x_min) / (x_max - x_min) * (plot_width - 1))
@@ -194,7 +197,7 @@ class ScatterPlot(ChartBase):
                     ly = int(gy1 + t * (gy2 - gy1))
                     if 0 <= lx < plot_width and 0 <= ly < plot_height:
                         if grid[ly][lx] == " ":
-                            grid[ly][lx] = self.MARKER_FRONTIER
+                            grid[ly][lx] = frontier_mark
 
         # Plot points (skip NaN/Inf)
         point_positions: dict[tuple[int, int], list[ScatterPoint]] = {}
@@ -220,11 +223,11 @@ class ScatterPlot(ChartBase):
             y_label = self._format_value(y_val).rjust(y_axis_width - 1)
 
             if row_idx == 0:
-                axis_char = "┐"
+                axis_char = box_chars["tr"]
             elif row_idx == plot_height - 1:
-                axis_char = "┘"
+                axis_char = box_chars["br"]
             else:
-                axis_char = "│"
+                axis_char = box_chars["v"]
 
             # Colorize grid cells individually to avoid str.replace() collisions
             if colors.color_mode != ColorMode.NONE:
@@ -234,7 +237,7 @@ class ScatterPlot(ChartBase):
                     if marker_match is not None:
                         _, color = marker_match
                         colored_cells.append(colors.colorize(cell, fg_color=color))
-                    elif cell == self.MARKER_FRONTIER:
+                    elif cell == frontier_mark:
                         colored_cells.append(colors.colorize(cell, fg_color="#666666"))
                     else:
                         colored_cells.append(cell)
@@ -245,7 +248,7 @@ class ScatterPlot(ChartBase):
             lines.append(f"{y_label}{axis_char}{row_content}")
 
         # X-axis
-        x_axis = " " * y_axis_width + "└" + box_chars["h"] * plot_width
+        x_axis = " " * y_axis_width + box_chars["bl"] + box_chars["h"] * plot_width
         lines.append(x_axis)
 
         # X-axis labels
@@ -283,7 +286,7 @@ class ScatterPlot(ChartBase):
                 marker_colored = marker
             pareto_note = " (Pareto optimal)" if point.is_pareto else ""
             is_truncated = self._truncation_active and (point.x > self._x_cap or point.y > self._y_cap)
-            truncated_note = f" {TRUNCATION_MARKER}" if is_truncated else ""
+            truncated_note = f" {self._truncation_marker()}" if is_truncated else ""
             x_val = self._format_value(point.x)
             y_val = self._format_value(point.y)
             lines.append(f"  {marker_colored} {point.name}: x={x_val}, y={y_val}{pareto_note}{truncated_note}")

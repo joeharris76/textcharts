@@ -199,7 +199,7 @@ class StackedBar(ChartBase):
         # Reserve space for severity markers on truncated bars
         markers = ""
         if is_truncated:
-            markers = outlier_severity_markers(total, max_total)
+            markers = outlier_severity_markers(total, max_total, self.options._has_unicode())
             total_bar_len = max(1, total_bar_len - len(markers))
 
         # Calculate each segment's proportional length (sum duplicates)

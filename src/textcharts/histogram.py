@@ -12,7 +12,6 @@ logger = logging.getLogger(__name__)
 
 from textcharts.base import (
     DEFAULT_PALETTE,
-    TRUNCATION_MARKER,
     ChartBase,
     ChartOptions,
     outlier_severity_markers,
@@ -432,7 +431,9 @@ class Histogram(ChartBase):
             block = self._compute_bar_block(row, bar_height, fill_char, is_outlier, bar_width, blocks)
             # Top row of a truncated bar: append severity markers
             if is_truncated and row == chart_height:
-                markers = outlier_severity_markers(datum.value, self._scale_max)
+                markers = outlier_severity_markers(
+                    datum.value, self._scale_max, self.options._has_unicode()
+                )
                 if markers and len(markers) < bar_width:
                     block = block[: bar_width - len(markers)] + markers
                 elif markers and bar_width >= 2:
@@ -442,7 +443,8 @@ class Histogram(ChartBase):
             return colors.colorize(block, fg_color=bar_color)
 
         if self.show_mean_line and row == mean_row:
-            return colors.colorize("·" * bar_width, fg_color="#6b7075")
+            mean_glyph = "·" if self.options._has_unicode() else "-"
+            return colors.colorize(mean_glyph * bar_width, fg_color="#6b7075")
         return " " * bar_width
 
     def _simple_bar_color(self, datum: HistogramBar, palette: list[str]) -> str:
@@ -479,7 +481,8 @@ class Histogram(ChartBase):
         bar_glyph = "█" if self.options.use_unicode else "#"
         footer_parts.append(f"{colors.colorize(bar_glyph, fg_color='#1b9e77')} {self.y_label}")
         if self.show_mean_line and global_mean > 0:
-            mean_text = f"····· Mean: {self._format_value(global_mean)}"
+            mean_glyph = "·" if self.options._has_unicode() else "-"
+            mean_text = f"{mean_glyph * 5} Mean: {self._format_value(global_mean)}"
             footer_parts.append(colors.colorize(mean_text, fg_color="#6b7075"))
 
         has_best = any(d.is_best for d in chunk)
@@ -497,7 +500,7 @@ class Histogram(ChartBase):
             outlier_char = self._get_outlier_char(no_color=no_color)
             footer_parts.append(f"{colors.colorize(outlier_char, fg_color='#666666')} Outlier")
         if has_truncated:
-            footer_parts.append(f"{TRUNCATION_MARKER} Truncated")
+            footer_parts.append(f"{self._truncation_marker()} Truncated")
 
         if footer_parts:
             return " " * y_axis_width + "  ".join(footer_parts)
@@ -683,7 +686,9 @@ class Histogram(ChartBase):
             block = self._compute_bar_block(row, bar_height, fill_char, is_outlier, sub_bar_width, blocks)
             # Top row of a truncated bar: append severity markers
             if is_truncated and row == chart_height:
-                markers = outlier_severity_markers(datum.value, self._scale_max)
+                markers = outlier_severity_markers(
+                    datum.value, self._scale_max, self.options._has_unicode()
+                )
                 if markers and len(markers) < sub_bar_width:
                     block = block[: sub_bar_width - len(markers)] + markers
                 elif markers and sub_bar_width >= 2:
@@ -692,7 +697,8 @@ class Histogram(ChartBase):
             return colors.colorize(block, fg_color=bar_color)
 
         if self.show_mean_line and row == mean_row:
-            return colors.colorize("·" * sub_bar_width, fg_color="#6b7075")
+            mean_glyph = "·" if self.options._has_unicode() else "-"
+            return colors.colorize(mean_glyph * sub_bar_width, fg_color="#6b7075")
         return " " * sub_bar_width
 
     def _build_grouped_footer(
@@ -712,7 +718,8 @@ class Histogram(ChartBase):
         """
         footer_parts: list[str] = []
         if self.show_mean_line and global_mean > 0:
-            mean_text = f"····· Mean: {self._format_value(global_mean)}"
+            mean_glyph = "·" if self.options._has_unicode() else "-"
+            mean_text = f"{mean_glyph * 5} Mean: {self._format_value(global_mean)}"
             footer_parts.append(colors.colorize(mean_text, fg_color="#6b7075"))
 
         for i, platform in enumerate(self._platforms):

@@ -227,7 +227,7 @@ class PercentileLadder(ChartBase):
         markers = ""
         effective_width = bar_width
         if is_truncated:
-            markers = outlier_severity_markers(datum.p99, max_val)
+            markers = outlier_severity_markers(datum.p99, max_val, self.options._has_unicode())
             effective_width = max(1, bar_width - len(markers))
 
         percentiles = [datum.p50, datum.p90, datum.p95, datum.p99]

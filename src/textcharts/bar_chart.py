@@ -162,7 +162,7 @@ class BarChart(ChartBase):
 
             # Mark truncated bars with severity-scaled markers (1-4 ▸)
             if is_truncated:
-                markers = outlier_severity_markers(datum.value, scale_max)
+                markers = outlier_severity_markers(datum.value, scale_max, self.options._has_unicode())
                 bar = bar[: bar_width - len(markers)] + markers
 
             # Determine bar color: cycle palette per bar, grouped bars share a color

@@ -10,14 +10,38 @@ import textcharts.base as base
 from textcharts import (
     BarChart,
     BarData,
+    BoxPlot,
+    BoxPlotSeries,
+    CDFChart,
+    CDFSeriesData,
     ChartOptions,
+    ComparisonBar,
+    ComparisonBarData,
+    DivergingBar,
+    DivergingBarData,
     Heatmap,
     Histogram,
     HistogramBar,
+    LineChart,
+    LinePoint,
+    NormalizedSpeedup,
+    PercentileData,
+    PercentileLadder,
+    RankTable,
+    RankTableData,
     ScatterPlot,
     ScatterPoint,
+    SparklineColumn,
+    SparklineTable,
+    SparklineTableData,
+    SpeedupData,
+    StackedBar,
+    StackedBarData,
+    StackedBarSegment,
+    SummaryBox,
+    SummaryStats,
 )
-from textcharts.base import ColorMode, TerminalCapabilities
+from textcharts.base import ColorMode, TerminalCapabilities, outlier_severity_markers
 
 ANSI_RE = re.compile(r"\x1b\[[\d;]*m")
 # Unicode block elements range U+2580-U+259F
@@ -140,3 +164,127 @@ def test_dark_vs_light_theme_differ(monkeypatch: pytest.MonkeyPatch):
     assert ANSI_RE.search(light)
     assert dark != light
     assert set(ANSI_RE.findall(dark)) != set(ANSI_RE.findall(light))
+
+
+# ---------------------------------------------------------------------------
+# Strict ASCII compliance across all chart types (use_unicode=False)
+# ---------------------------------------------------------------------------
+
+_OUTLIER_VALUES = [10, 11, 12, 13, 14, 15, 5000]
+
+
+def _ascii_chart_factory(opts: ChartOptions):
+    """Build one chart per type with outlier data exercising truncation paths."""
+    return {
+        "bar": BarChart(
+            data=[BarData(label=f"B{i}", value=v) for i, v in enumerate(_OUTLIER_VALUES)],
+            options=opts,
+        ),
+        "box": BoxPlot(
+            series=[BoxPlotSeries(name="S", values=[1, 2, 3, 4, 5, 6, 100])],
+            options=opts,
+        ),
+        "cdf": CDFChart(
+            data=[CDFSeriesData(name="S", values=[1, 2, 3, 4, 5, 500])],
+            options=opts,
+        ),
+        "comparison": ComparisonBar(
+            data=[ComparisonBarData(label="Q", baseline_value=10, comparison_value=5000)],
+            options=opts,
+        ),
+        "diverging": DivergingBar(
+            data=[
+                DivergingBarData(label="A", pct_change=-5),
+                DivergingBarData(label="B", pct_change=726),
+            ],
+            options=opts,
+        ),
+        "heatmap": Heatmap(
+            matrix=[[10, 20], [30, 9000]],
+            row_labels=["Q1", "Q2"],
+            col_labels=["X", "Y"],
+            options=opts,
+        ),
+        "histogram": Histogram(
+            data=[HistogramBar(label=f"Q{i}", value=v) for i, v in enumerate(_OUTLIER_VALUES)],
+            options=opts,
+        ),
+        "line": LineChart(
+            points=[LinePoint(series="S", x=i, y=v) for i, v in enumerate(_OUTLIER_VALUES)],
+            options=opts,
+        ),
+        "speedup": NormalizedSpeedup(
+            data=[
+                SpeedupData(name="A", ratio=8.0),
+                SpeedupData(name="B", ratio=1.0, is_baseline=True),
+            ],
+            options=opts,
+        ),
+        "ladder": PercentileLadder(
+            data=[PercentileData(name="S", p50=10, p90=20, p95=30, p99=9000)],
+            options=opts,
+        ),
+        "rank": RankTable(
+            data=RankTableData(
+                items=["Q1"],
+                groups=["G1", "G2"],
+                values={("G1", "Q1"): 10, ("G2", "Q1"): 20},
+            ),
+            options=opts,
+        ),
+        "scatter": ScatterPlot(
+            points=[ScatterPoint(name=f"P{i}", x=v, y=v * 10) for i, v in enumerate(_OUTLIER_VALUES)],
+            options=opts,
+        ),
+        "sparkline": SparklineTable(
+            data=SparklineTableData(
+                rows=["A", "B"],
+                columns=[SparklineColumn(name="M", values={"A": 10, "B": 20})],
+            ),
+            options=opts,
+        ),
+        "stacked": StackedBar(
+            data=[
+                StackedBarData(label="A", segments=[StackedBarSegment(phase_name="p", value=10)]),
+                StackedBarData(label="B", segments=[StackedBarSegment(phase_name="p", value=9000)]),
+            ],
+            options=opts,
+        ),
+        "summary": SummaryBox(
+            stats=SummaryStats(title="S", primary_value=100),
+            options=opts,
+        ),
+    }
+
+
+def test_all_charts_emit_strict_ascii_when_unicode_disabled():
+    opts = ChartOptions(use_color=False, use_unicode=False, width=80)
+    charts = _ascii_chart_factory(opts)
+    assert len(charts) == 15
+    for name, chart in charts.items():
+        result = chart.render()
+        assert isinstance(result, str), name
+        try:
+            result.encode("ascii")
+        except UnicodeEncodeError:
+            pytest.fail(f"{name} emitted non-ASCII output with use_unicode=False")
+
+
+def test_outlier_severity_markers_ascii_fallback():
+    assert outlier_severity_markers(21, 2) == "▸▸▸▸"
+    assert outlier_severity_markers(21, 2, use_unicode=False) == ">>>>"
+    assert outlier_severity_markers(3, 2, use_unicode=False) == ">"
+    assert outlier_severity_markers(50, 100, use_unicode=False) == ""
+
+
+def test_axis_labels_honor_terminal_unicode_detection(monkeypatch: pytest.MonkeyPatch):
+    no_unicode = TerminalCapabilities(
+        width=80, height=24, color_mode=ColorMode.NONE,
+        unicode_support=False, interactive=False,
+    )
+    monkeypatch.setattr(base, "detect_terminal_capabilities", lambda: no_unicode)
+    result = LineChart(
+        points=[LinePoint(series="S", x=0, y=1), LinePoint(series="S", x=1, y=2)],
+        options=ChartOptions(use_color=False, use_unicode=True, width=80),
+    ).render()
+    result.encode("ascii")

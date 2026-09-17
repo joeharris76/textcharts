@@ -12,7 +12,6 @@ logger = logging.getLogger(__name__)
 
 from textcharts.base import (
     DEFAULT_PALETTE,
-    TRUNCATION_MARKER,
     ChartBase,
     ChartOptions,
     ColorMode,
@@ -265,11 +264,11 @@ class LineChart(ChartBase):
             y_label_str = self._format_value(y_val).rjust(y_axis_width - 1)
 
             if row_idx == 0:
-                axis_char = "┐"
+                axis_char = box_chars["tr"]
             elif row_idx == plot_height - 1:
-                axis_char = "┘"
+                axis_char = box_chars["br"]
             else:
-                axis_char = "│"
+                axis_char = box_chars["v"]
 
             # Colorize grid cells individually to avoid str.replace() collisions
             if colors.color_mode != ColorMode.NONE:
@@ -286,7 +285,7 @@ class LineChart(ChartBase):
             lines.append(f"{y_label_str}{axis_char}{row_content}")
 
         # X-axis
-        x_axis = " " * y_axis_width + "└" + box_chars["h"] * plot_width
+        x_axis = " " * y_axis_width + box_chars["bl"] + box_chars["h"] * plot_width
         lines.append(x_axis)
 
         # X-axis labels
@@ -328,13 +327,13 @@ class LineChart(ChartBase):
             lines.append("Legend:")
             for series_name, (marker, color) in series_styles.items():
                 if colors.color_mode != ColorMode.NONE:
-                    marker_colored = colors.colorize(f"─{marker}─", fg_color=color)
+                    marker_colored = colors.colorize(f"{box_chars['h']}{marker}{box_chars['h']}", fg_color=color)
                 else:
-                    marker_colored = f"─{marker}─"
+                    marker_colored = f"{box_chars['h']}{marker}{box_chars['h']}"
                 lines.append(f"  {marker_colored} {series_name}")
 
         if self._y_capped:
-            lines.append(f"  {TRUNCATION_MARKER} Y-axis capped (outlier values clipped to top)")
+            lines.append(f"  {self._truncation_marker()} Y-axis capped (outlier values clipped to top)")
 
         return "\n".join(lines)
 
