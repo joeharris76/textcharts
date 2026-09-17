@@ -6,6 +6,34 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 
 ## [Unreleased]
 
+## [0.1.5] - 2026-09-17
+
+### Fixed
+
+- **Non-finite float sanitization:** Filter NaN/Inf before bounds, statistics,
+  and grid math across heatmap, line chart, scatter plot, box plot, sparkline
+  table, histogram, percentile ladder, rank table, and stacked bar. Invalid
+  cells render `-`, unplottable points are skipped, and all-invalid inputs
+  return "No data to display". Fixes a rank-table infinite loop on NaN tie
+  comparison and a `statistics.stdev` crash on NaN in box plots.
+- **Strict ASCII fallback:** `use_unicode=False` output is now strictly ASCII
+  across all 15 chart types — box-drawing characters resolve through
+  `get_box_chars()`, truncation markers fall back to `>`, and axis-label
+  arrows honor terminal Unicode detection.
+- **Dark theme palette:** Multi-series charts (BoxPlot, Histogram, CDFChart,
+  StackedBar, ComparisonBar, ScatterPlot, LineChart) now render
+  `DARK_PALETTE` when `theme="dark"` instead of the hardcoded light palette.
+- **Diverging bar direction:** `lower_is_better=False` renders Worse | Better
+  headers with mirrored sort order, and `from_data` accepts the flag.
+
+### Added
+
+- `outlier_cap` plumbed through the shared executor, command registry, CLI
+  (`--outlier-cap`), and MCP server tools.
+- `lower_is_better` chart parameter on the diverging command; registry
+  histogram `max_per_chart` default synchronized to 25.
+- `outlier_severity_markers(..., use_unicode=False)` ASCII fallback.
+
 ## [0.1.4] - 2026-09-16
 
 ### Fixed
@@ -65,7 +93,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 - MCP server (`textcharts-mcp` command)
 - Sphinx documentation with Furo theme
 
-[Unreleased]: https://github.com/joeharris76/textcharts/compare/v0.1.4...HEAD
+[Unreleased]: https://github.com/joeharris76/textcharts/compare/v0.1.5...HEAD
+[0.1.5]: https://github.com/joeharris76/textcharts/compare/v0.1.4...v0.1.5
 [0.1.4]: https://github.com/joeharris76/textcharts/compare/v0.1.3...v0.1.4
 [0.1.3]: https://github.com/joeharris76/textcharts/compare/v0.1.2...v0.1.3
 [0.1.2]: https://github.com/joeharris76/textcharts/compare/v0.1.1...v0.1.2
