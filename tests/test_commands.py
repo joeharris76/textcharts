@@ -52,11 +52,12 @@ class TestRegistry:
             assert len(cmd.data_fields) > 0
 
     def test_common_options_defined(self):
-        assert len(COMMON_OPTIONS) == 7
+        assert len(COMMON_OPTIONS) == 8
         names = {p.name for p in COMMON_OPTIONS}
         assert "width" in names
         assert "use_color" in names
         assert "theme" in names
+        assert "outlier_cap" in names
 
 
 # ---------------------------------------------------------------------------
@@ -82,7 +83,7 @@ class TestIntrospection:
         assert "data_fields" in desc
         assert "chart_params" in desc
         assert "common_options" in desc
-        assert len(desc["common_options"]) == 7
+        assert len(desc["common_options"]) == 8
 
     def test_describe_command_unknown_raises(self):
         with pytest.raises(KeyError):

@@ -11,8 +11,6 @@ from typing import TYPE_CHECKING
 logger = logging.getLogger(__name__)
 
 from textcharts.base import (
-    DEFAULT_PALETTE,
-    TRUNCATION_MARKER,
     ChartBase,
     ChartOptions,
     outlier_severity_markers,
@@ -125,8 +123,10 @@ class Histogram(ChartBase):
         # so callers must divide by num_platforms to recover the query count.
         self._series_max_chunk_len: int | None = max(len(c) for c in chunks) if len(chunks) > 1 else None
 
-        # Calculate global statistics for consistent scaling
-        all_latencies = [d.value for d in sorted_data]
+        # Calculate global statistics for consistent scaling (filter NaN/Inf)
+        all_latencies = [d.value for d in sorted_data if math.isfinite(d.value)]
+        if not all_latencies:
+            return "No data to display"
         global_max = max(all_latencies) if all_latencies else 1
         global_mean = sum(all_latencies) / len(all_latencies) if all_latencies else 0
 
@@ -317,7 +317,7 @@ class Histogram(ChartBase):
         normalized = self._normalize_bars(chunk, global_max, chart_height)
         mean_row = round((global_mean / global_max) * chart_height) if global_max > 0 else 0
 
-        palette = list(DEFAULT_PALETTE)
+        palette = list(self.options.get_palette())
         no_color = not self.options.use_color
 
         chart_rows = self._build_simple_chart_rows(
@@ -357,7 +357,7 @@ class Histogram(ChartBase):
     def _normalize_bars(self, chunk: list[HistogramBar], global_max: float, chart_height: int) -> list[float]:
         """Normalize bar heights to chart row units."""
         if global_max > 0:
-            normalized = [(d.value / global_max) * chart_height for d in chunk]
+            normalized = [(d.value / global_max) * chart_height if math.isfinite(d.value) else 0 for d in chunk]
             return [max(0.125, n) if n > 0 else 0 for n in normalized]
         return [0] * len(chunk)
 
@@ -430,7 +430,9 @@ class Histogram(ChartBase):
             block = self._compute_bar_block(row, bar_height, fill_char, is_outlier, bar_width, blocks)
             # Top row of a truncated bar: append severity markers
             if is_truncated and row == chart_height:
-                markers = outlier_severity_markers(datum.value, self._scale_max)
+                markers = outlier_severity_markers(
+                    datum.value, self._scale_max, self.options._has_unicode()
+                )
                 if markers and len(markers) < bar_width:
                     block = block[: bar_width - len(markers)] + markers
                 elif markers and bar_width >= 2:
@@ -440,7 +442,8 @@ class Histogram(ChartBase):
             return colors.colorize(block, fg_color=bar_color)
 
         if self.show_mean_line and row == mean_row:
-            return colors.colorize("·" * bar_width, fg_color="#6b7075")
+            mean_glyph = "·" if self.options._has_unicode() else "-"
+            return colors.colorize(mean_glyph * bar_width, fg_color="#6b7075")
         return " " * bar_width
 
     def _simple_bar_color(self, datum: HistogramBar, palette: list[str]) -> str:
@@ -475,9 +478,12 @@ class Histogram(ChartBase):
         """Build the footer line with mean and legend markers."""
         footer_parts: list[str] = []
         bar_glyph = "█" if self.options.use_unicode else "#"
-        footer_parts.append(f"{colors.colorize(bar_glyph, fg_color='#1b9e77')} {self.y_label}")
+        footer_parts.append(
+            f"{colors.colorize(bar_glyph, fg_color=self.options.get_palette()[0])} {self.y_label}"
+        )
         if self.show_mean_line and global_mean > 0:
-            mean_text = f"····· Mean: {self._format_value(global_mean)}"
+            mean_glyph = "·" if self.options._has_unicode() else "-"
+            mean_text = f"{mean_glyph * 5} Mean: {self._format_value(global_mean)}"
             footer_parts.append(colors.colorize(mean_text, fg_color="#6b7075"))
 
         has_best = any(d.is_best for d in chunk)
@@ -495,7 +501,7 @@ class Histogram(ChartBase):
             outlier_char = self._get_outlier_char(no_color=no_color)
             footer_parts.append(f"{colors.colorize(outlier_char, fg_color='#666666')} Outlier")
         if has_truncated:
-            footer_parts.append(f"{TRUNCATION_MARKER} Truncated")
+            footer_parts.append(f"{self._truncation_marker()} Truncated")
 
         if footer_parts:
             return " " * y_axis_width + "  ".join(footer_parts)
@@ -512,7 +518,7 @@ class Histogram(ChartBase):
         colors = self.options.get_colors()
         blocks = self.options.get_vertical_block_chars()
         width = self.options.get_effective_width()
-        palette = list(DEFAULT_PALETTE)
+        palette = list(self.options.get_palette())
 
         platform_colors, platform_fills = self._build_platform_maps(palette)
         no_color = not self.options.use_color
@@ -681,7 +687,9 @@ class Histogram(ChartBase):
             block = self._compute_bar_block(row, bar_height, fill_char, is_outlier, sub_bar_width, blocks)
             # Top row of a truncated bar: append severity markers
             if is_truncated and row == chart_height:
-                markers = outlier_severity_markers(datum.value, self._scale_max)
+                markers = outlier_severity_markers(
+                    datum.value, self._scale_max, self.options._has_unicode()
+                )
                 if markers and len(markers) < sub_bar_width:
                     block = block[: sub_bar_width - len(markers)] + markers
                 elif markers and sub_bar_width >= 2:
@@ -690,7 +698,8 @@ class Histogram(ChartBase):
             return colors.colorize(block, fg_color=bar_color)
 
         if self.show_mean_line and row == mean_row:
-            return colors.colorize("·" * sub_bar_width, fg_color="#6b7075")
+            mean_glyph = "·" if self.options._has_unicode() else "-"
+            return colors.colorize(mean_glyph * sub_bar_width, fg_color="#6b7075")
         return " " * sub_bar_width
 
     def _build_grouped_footer(
@@ -710,7 +719,8 @@ class Histogram(ChartBase):
         """
         footer_parts: list[str] = []
         if self.show_mean_line and global_mean > 0:
-            mean_text = f"····· Mean: {self._format_value(global_mean)}"
+            mean_glyph = "·" if self.options._has_unicode() else "-"
+            mean_text = f"{mean_glyph * 5} Mean: {self._format_value(global_mean)}"
             footer_parts.append(colors.colorize(mean_text, fg_color="#6b7075"))
 
         for i, platform in enumerate(self._platforms):

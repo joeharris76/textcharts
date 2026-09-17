@@ -2,10 +2,10 @@
 
 from __future__ import annotations
 
+import math
 from typing import TYPE_CHECKING
 
 from textcharts.base import (
-    TRUNCATION_MARKER,
     ChartBase,
     ChartOptions,
     ColorMode,
@@ -145,8 +145,10 @@ class Heatmap(ChartBase):
         box = self.options.get_box_chars()
         width = self.options.get_effective_width()
 
-        # Find min/max for normalization
-        all_values = [v for row in self.matrix for v in row if v is not None]
+        # Find min/max for normalization (filter NaN/Inf)
+        all_values = [
+            v for row in self.matrix for v in row if v is not None and math.isfinite(v)
+        ]
         if not all_values:
             return "No data to display"
 
@@ -236,7 +238,7 @@ class Heatmap(ChartBase):
         lines.append(self._render_scale_legend(use_bg, bg_scale, colors, intensity_chars))
         range_str = f"Range: {self._format_value(min_val)} - {self._format_value(max_val)} {self.value_label}"
         if scale_max < max_val:
-            range_str += f"  (scale capped at {self._format_value(scale_max)}, {TRUNCATION_MARKER}=truncated)"
+            range_str += f"  (scale capped at {self._format_value(scale_max)}, {self._truncation_marker()}=truncated)"
         lines.append(range_str)
 
         return "\n".join(lines)
@@ -322,7 +324,7 @@ class Heatmap(ChartBase):
         intensity_chars: list[str],
     ) -> str:
         """Render a single heatmap cell (colored background or intensity chars)."""
-        if value is None:
+        if value is None or not math.isfinite(value):
             return (" " * max(0, cell_width - 1)) + "-"
 
         # Clamp for color normalization; values beyond scale_max map to max color
@@ -334,7 +336,7 @@ class Heatmap(ChartBase):
         # Mark cells that exceed the capped scale
         is_truncated = value > self._scale_max
         if is_truncated:
-            value_str += TRUNCATION_MARKER
+            value_str += self._truncation_marker()
 
         if use_bg:
             padded = value_str.center(cell_width)
@@ -370,7 +372,8 @@ class Heatmap(ChartBase):
         scale_line = "Scale: "
         for char in intensity_chars[1:]:
             scale_line += char + " "
-        scale_line += f"(fast → slow, {self.value_label})"
+        arrow = "→" if self.options._has_unicode() else "->"
+        scale_line += f"(fast {arrow} slow, {self.value_label})"
         return scale_line
 
 

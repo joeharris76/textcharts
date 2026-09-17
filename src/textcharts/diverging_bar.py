@@ -102,8 +102,12 @@ class DivergingBar(ChartBase):
         lines.append(self._render_horizontal_line(width))
 
         # Header showing direction
-        header_left = "Faster".rjust(max_label_len + 1 + half_bar)
-        lines.append(f"{header_left}{box['v']}  Slower")
+        if self.lower_is_better:
+            left_label, right_label = "Faster", "Slower"
+        else:
+            left_label, right_label = "Worse", "Better"
+        header_left = left_label.rjust(max_label_len + 1 + half_bar)
+        lines.append(f"{header_left}{box['v']}  {right_label}")
 
         # Determine bar fill characters
         intensity = self.options.get_intensity_chars()
@@ -122,15 +126,27 @@ class DivergingBar(ChartBase):
         return "\n".join(lines)
 
     def _sort_by_direction(self) -> list[DivergingBarData]:
-        """Sort data: improvements (negative) first, then regressions (positive)."""
-        improvements = sorted(
-            [d for d in self.data if d.pct_change < 0],
-            key=lambda d: d.pct_change,
-        )
-        regressions = sorted(
-            [d for d in self.data if d.pct_change >= 0],
-            key=lambda d: d.pct_change,
-        )
+        """Sort data: improvements first (strongest to weakest), then regressions."""
+        if self.lower_is_better:
+            improvements = sorted(
+                [d for d in self.data if d.pct_change < 0],
+                key=lambda d: d.pct_change,
+            )
+            regressions = sorted(
+                [d for d in self.data if d.pct_change >= 0],
+                key=lambda d: d.pct_change,
+            )
+        else:
+            improvements = sorted(
+                [d for d in self.data if d.pct_change > 0],
+                key=lambda d: d.pct_change,
+                reverse=True,
+            )
+            regressions = sorted(
+                [d for d in self.data if d.pct_change <= 0],
+                key=lambda d: d.pct_change,
+                reverse=True,
+            )
         return improvements + regressions
 
     def _select_fill_chars(self, intensity: list[str]) -> tuple[str, str, str]:
@@ -248,6 +264,7 @@ def from_data(
     title: str | None = None,
     options: ChartOptions | None = None,
     subject: str | None = None,
+    lower_is_better: bool = True,
 ) -> DivergingBar:
     """Create DivergingBar from regression data.
 
@@ -274,4 +291,5 @@ def from_data(
         title=title,
         options=options,
         subject=subject,
+        lower_is_better=lower_is_better,
     )

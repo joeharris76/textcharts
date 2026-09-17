@@ -86,7 +86,7 @@ def _build_registry() -> dict[str, CommandInfo]:
             chart_params=[
                 ParamInfo("y_label", "string", "Label for the Y axis", "Value"),
                 ParamInfo("sort_by", "string", "Sort order", "label", enum=["label", "value"]),
-                ParamInfo("max_per_chart", "integer", "Max bars before splitting", 33),
+                ParamInfo("max_per_chart", "integer", "Max bars before splitting", 25),
                 ParamInfo("show_mean_line", "boolean", "Show mean reference line", True),
             ],
         ),
@@ -195,6 +195,7 @@ def _build_registry() -> dict[str, CommandInfo]:
             ],
             chart_params=[
                 ParamInfo("clip_pct", "number", "Outlier clipping threshold percentage", 200.0),
+                ParamInfo("lower_is_better", "boolean", "Treat negative change as improvement", True),
             ],
         ),
         "summary": CommandInfo(
@@ -350,6 +351,7 @@ COMMON_OPTIONS: list[ParamInfo] = [
     ParamInfo("theme", "string", "Color theme", "light", enum=["light", "dark"]),
     ParamInfo("show_legend", "boolean", "Show chart legend", True),
     ParamInfo("show_values", "boolean", "Show numeric values on chart", True),
+    ParamInfo("outlier_cap", "number", "Fixed scale cap for outliers (auto P95-based if omitted, 0 disables)"),
 ]
 
 

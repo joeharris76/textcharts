@@ -8,7 +8,6 @@ from dataclasses import dataclass
 from typing import TYPE_CHECKING
 
 from textcharts.base import (
-    DEFAULT_PALETTE,
     ChartBase,
     ChartOptions,
     TerminalColors,
@@ -138,7 +137,7 @@ class ComparisonBar(ChartBase):
         lines.append(self._render_horizontal_line(width))
 
         # Assign palette colors and fill patterns to baseline and comparison
-        palette = list(DEFAULT_PALETTE)
+        palette = list(self.options.get_palette())
         baseline_color = palette[0]
         comparison_color = palette[1]
         no_color = not self.options.use_color
@@ -244,7 +243,7 @@ class ComparisonBar(ChartBase):
             bar += fc if fill_char else blocks[partial]
 
         if truncated and truncate_threshold and truncate_threshold > 0:
-            markers = outlier_severity_markers(value, truncate_threshold)
+            markers = outlier_severity_markers(value, truncate_threshold, self.options._has_unicode())
             bar = bar[: bar_width - len(markers)] + markers
         else:
             bar = bar.ljust(bar_width)

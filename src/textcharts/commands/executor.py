@@ -105,6 +105,7 @@ def _build_chart_options(options: dict[str, Any] | None) -> Any | None:
         "theme": "theme",
         "show_legend": "show_legend",
         "show_values": "show_values",
+        "outlier_cap": "outlier_cap",
     }
     for key, attr in field_map.items():
         if key in options and options[key] is not None:

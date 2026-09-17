@@ -181,6 +181,28 @@ class TestRenderingFromStdin:
         assert code == 0
         assert len(out.strip()) > 0
 
+    def test_render_with_outlier_cap(self):
+        data = [{"label": f"B{i}", "value": v} for i, v in enumerate([10, 11, 12, 13, 14, 15, 5000])]
+        data_json = json.dumps(data)
+        capped, _, capped_code = _run_cli(
+            ["bar", "--no-color", "--no-unicode", "--outlier-cap", "20"], stdin_data=data_json
+        )
+        assert capped_code == 0
+        uncapped, _, uncapped_code = _run_cli(
+            ["bar", "--no-color", "--no-unicode", "--outlier-cap", "0"], stdin_data=data_json
+        )
+        assert uncapped_code == 0
+        assert capped != uncapped
+
+    def test_diverging_lower_is_better_flag(self):
+        data_json = json.dumps(SAMPLE_DATA["diverging"])
+        out, _, code = _run_cli(
+            ["diverging", "--no-color", "--no-lower-is-better"], stdin_data=data_json
+        )
+        assert code == 0
+        assert "Worse" in out
+        assert "Better" in out
+
 
 # ---------------------------------------------------------------------------
 # File input tests

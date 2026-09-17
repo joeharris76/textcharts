@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import logging
+import math
 from dataclasses import dataclass
 from statistics import mean, stdev
 from typing import TYPE_CHECKING
@@ -10,7 +11,6 @@ from typing import TYPE_CHECKING
 logger = logging.getLogger(__name__)
 
 from textcharts.base import (
-    DEFAULT_PALETTE,
     ChartBase,
     ChartOptions,
     outlier_severity_markers,
@@ -39,7 +39,9 @@ def compute_quartiles(values: Sequence[float]) -> BoxPlotStats:
     if not values:
         return BoxPlotStats(0, 0, 0, 0, 0, 0, 0, [])
 
-    sorted_vals = sorted(values)
+    sorted_vals = sorted(v for v in values if math.isfinite(v))
+    if not sorted_vals:
+        return BoxPlotStats(0, 0, 0, 0, 0, 0, 0, [])
     n = len(sorted_vals)
 
     def percentile(p: float) -> float:
@@ -157,10 +159,10 @@ class BoxPlot(ChartBase):
             stats = compute_quartiles(s.values)
             stats_list.append((s.name, stats))
 
-        # Find global min/max for scale
+        # Find global min/max for scale (filter NaN/Inf)
         all_values: list[float] = []
         for s in self.series:
-            all_values.extend(s.values)
+            all_values.extend(v for v in s.values if math.isfinite(v))
 
         if not all_values:
             return "No data to display"
@@ -195,7 +197,18 @@ class BoxPlot(ChartBase):
             lines.append(self._render_horizontal_line(width))
             lines.append("")
 
-        palette = list(DEFAULT_PALETTE)
+        palette = list(self.options.get_palette())
+
+        # Resolve drawing glyphs for the configured character set
+        box = self.options.get_box_chars()
+        glyph_h = box["h"]
+        glyph_v = box["v"]
+        glyph_tl, glyph_tr = box["tl"], box["tr"]
+        glyph_bl, glyph_br = box["bl"], box["br"]
+        glyph_top, glyph_bottom = box["tm"], box["bm"]
+        glyph_left, glyph_right = box["lm"], box["rm"]
+        cap_top = self.WHISKER_V_TOP if self.options._has_unicode() else "|"
+        cap_bottom = self.WHISKER_V_BOTTOM if self.options._has_unicode() else "|"
 
         # Render each series as a horizontal box plot
         for i, (name, stats) in enumerate(stats_list):
@@ -217,50 +230,50 @@ class BoxPlot(ChartBase):
             # Build the three lines for this box plot
             # Top line: whisker caps
             top_line = [" "] * plot_width
-            top_line[pos_min] = self.WHISKER_V_TOP
-            top_line[pos_max] = self.WHISKER_V_TOP
+            top_line[pos_min] = cap_top
+            top_line[pos_max] = cap_top
             for p in range(pos_q1, pos_q3 + 1):
                 if p == pos_q1:
-                    top_line[p] = "┌"
+                    top_line[p] = glyph_tl
                 elif p == pos_q3:
-                    top_line[p] = "┐"
+                    top_line[p] = glyph_tr
                 elif p == pos_med:
-                    top_line[p] = self.BOX_TOP
+                    top_line[p] = glyph_top
                 else:
-                    top_line[p] = "─"
+                    top_line[p] = glyph_h
 
             # Middle line: box with whiskers
             mid_line = [" "] * plot_width
             # Left whisker
             for p in range(pos_min, pos_q1):
-                mid_line[p] = self.WHISKER_H
-            mid_line[pos_min] = self.BOX_LEFT
+                mid_line[p] = glyph_h
+            mid_line[pos_min] = glyph_left
             # Box
             for p in range(pos_q1, pos_q3 + 1):
                 if p in (pos_q1, pos_q3):
-                    mid_line[p] = "│"
+                    mid_line[p] = glyph_v
                 elif p == pos_med:
-                    mid_line[p] = self.MEDIAN_LINE
+                    mid_line[p] = glyph_v
                 else:
                     mid_line[p] = " "
             # Right whisker
             for p in range(pos_q3 + 1, pos_max + 1):
-                mid_line[p] = self.WHISKER_H
-            mid_line[pos_max] = self.BOX_RIGHT
+                mid_line[p] = glyph_h
+            mid_line[pos_max] = glyph_right
 
             # Bottom line: whisker caps
             bottom_line = [" "] * plot_width
-            bottom_line[pos_min] = self.WHISKER_V_BOTTOM
-            bottom_line[pos_max] = self.WHISKER_V_BOTTOM
+            bottom_line[pos_min] = cap_bottom
+            bottom_line[pos_max] = cap_bottom
             for p in range(pos_q1, pos_q3 + 1):
                 if p == pos_q1:
-                    bottom_line[p] = "└"
+                    bottom_line[p] = glyph_bl
                 elif p == pos_q3:
-                    bottom_line[p] = "┘"
+                    bottom_line[p] = glyph_br
                 elif p == pos_med:
-                    bottom_line[p] = self.BOX_BOTTOM
+                    bottom_line[p] = glyph_bottom
                 else:
-                    bottom_line[p] = "─"
+                    bottom_line[p] = glyph_h
 
             # Add outliers to middle line at their actual scaled positions
             if stats.outliers:
@@ -279,7 +292,9 @@ class BoxPlot(ChartBase):
                 # Markers overwrite any existing outlier dots to form a
                 # contiguous block at the right edge of the plot.
                 if max_truncated > 0:
-                    marker_str = outlier_severity_markers(max_truncated, scale_max)
+                    marker_str = outlier_severity_markers(
+                        max_truncated, scale_max, self.options._has_unicode()
+                    )
                     start = plot_width - len(marker_str)
                     for offset in range(len(marker_str)):
                         pos = start + offset
@@ -297,7 +312,7 @@ class BoxPlot(ChartBase):
             lines.append(f"{' ' * label_width}  {bottom_colored}")
 
         # X-axis scale
-        axis_line = ["─"] * plot_width
+        axis_line = [glyph_h] * plot_width
         lines.append(f"{' ' * label_width}  {''.join(axis_line)}")
 
         # Scale labels
@@ -362,7 +377,7 @@ class BoxPlot(ChartBase):
             header = " " * (name_col_w + 2)
             header += "  ".join(h.rjust(col_widths[j]) for j, h in enumerate(headers))
             lines.append(header)
-            sep = " " * (name_col_w + 2) + "  ".join("─" * col_widths[j] for j in range(num_cols))
+            sep = " " * (name_col_w + 2) + "  ".join(glyph_h * col_widths[j] for j in range(num_cols))
             lines.append(sep)
 
             # Data rows

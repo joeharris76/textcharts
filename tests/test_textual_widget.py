@@ -557,3 +557,35 @@ def test_all_chart_types_render_inside_textual():
             assert all(widget.render().plain.strip() for widget in widgets)
 
     asyncio.run(run())
+
+
+def test_textchart_dark_app_theme_applies_dark_palette():
+    from textcharts.base import DARK_PALETTE
+
+    dark_first = DARK_PALETTE[0].lstrip("#")
+    dark_esc = (
+        f"\033[38;2;{int(dark_first[0:2], 16)};{int(dark_first[2:4], 16)};{int(dark_first[4:6], 16)}m"
+    )
+
+    class DarkApp(App[None]):
+        def compose(self) -> ComposeResult:
+            yield TextChart(
+                LineChart(
+                    points=[
+                        LinePoint(series="S", x=0, y=1.0),
+                        LinePoint(series="S", x=1, y=2.0),
+                    ],
+                    title="Theme",
+                )
+            )
+
+    async def run() -> None:
+        app = DarkApp()
+        async with app.run_test(size=(100, 30)) as pilot:
+            await pilot.pause()
+            widget = app.query_one(TextChart)
+            prepared = widget._prepare_chart(widget.chart)
+            assert prepared.options.theme == "dark"
+            assert dark_esc in prepared.render()
+
+    asyncio.run(run())
