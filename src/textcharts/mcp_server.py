@@ -69,6 +69,7 @@ def _create_chart_handler(chart_name: str):
         theme: str = "light",
         show_legend: bool = True,
         show_values: bool = True,
+        outlier_cap: float | None = None,
         chart_params: dict[str, Any] | None = None,
     ) -> str:
         """Render a chart from data.
@@ -86,6 +87,7 @@ def _create_chart_handler(chart_name: str):
             theme: Color theme ("light" or "dark").
             show_legend: Show chart legend.
             show_values: Show numeric values on chart.
+            outlier_cap: Fixed scale cap for outliers (auto P95-based if omitted, 0 disables).
             chart_params: Chart-specific parameters (see tool description for available params).
         """
         options: dict[str, Any] = {
@@ -99,6 +101,8 @@ def _create_chart_handler(chart_name: str):
             options["width"] = width
         if height is not None:
             options["height"] = height
+        if outlier_cap is not None:
+            options["outlier_cap"] = outlier_cap
 
         # Extract chart-specific params
         chart_kwargs: dict[str, Any] = {}

@@ -84,3 +84,42 @@ def test_diverging_from_data_factory():
     assert isinstance(chart, DivergingBar)
     assert "Factory Test" in result
     assert "Q1" in result
+
+
+def test_lower_is_better_false_headers():
+    data = [
+        DivergingBarData("Q1", -30.0),  # regression when higher is better
+        DivergingBarData("Q2", +20.0),  # improvement when higher is better
+    ]
+    result = DivergingBar(data=data, options=_opts(), lower_is_better=False).render()
+    assert "Worse" in result
+    assert "Better" in result
+    assert "Faster" not in result
+    assert "Slower" not in result
+
+
+def test_lower_is_better_false_sort_and_counts():
+    data = [
+        DivergingBarData("Q3", -10.0),
+        DivergingBarData("Q1", +50.0),
+        DivergingBarData("Q2", +20.0),
+    ]
+    result = DivergingBar(data=data, options=_opts(), lower_is_better=False).render()
+    lines = result.splitlines()
+    labels = [line for line in lines if any(f"Q{n}" in line for n in [1, 2, 3])]
+    q1_idx = next(i for i, line in enumerate(labels) if "Q1" in line)
+    q2_idx = next(i for i, line in enumerate(labels) if "Q2" in line)
+    q3_idx = next(i for i, line in enumerate(labels) if "Q3" in line)
+    # Improvements (+50, +20) first strongest-to-weakest, then the regression (-10)
+    assert q1_idx < q2_idx < q3_idx
+    assert "2 improved" in result
+    assert "1 regressed" in result
+
+
+def test_diverging_from_data_passes_lower_is_better():
+    data = [DivergingBarData("Q1", +10.0)]
+    chart = diverging_from_data(data, options=_opts(), lower_is_better=False)
+    assert chart.lower_is_better is False
+    result = chart.render()
+    assert "Worse" in result
+    assert "Better" in result

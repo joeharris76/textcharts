@@ -48,6 +48,7 @@ def _build_parser() -> argparse.ArgumentParser:
         sub.add_argument("--unicode", dest="use_unicode", action="store_true", default=None, help="Enable Unicode")
         sub.add_argument("--no-unicode", dest="use_unicode", action="store_false", help="Disable Unicode")
         sub.add_argument("--theme", choices=["light", "dark"], help="Color theme")
+        sub.add_argument("--outlier-cap", dest="outlier_cap", type=float, help="Fixed scale cap for outliers")
 
         # Chart-specific parameters (skip any that shadow common options)
         common_names = {"width", "height", "use_color", "use_unicode", "theme", "title", "file"}
@@ -175,7 +176,7 @@ def main(argv: list[str] | None = None) -> None:
 
     # Build options dict from common args
     options: dict[str, Any] = {}
-    for key in ("width", "height", "use_color", "use_unicode", "theme"):
+    for key in ("width", "height", "use_color", "use_unicode", "theme", "outlier_cap"):
         val = getattr(args, key, None)
         if val is not None:
             options[key] = val

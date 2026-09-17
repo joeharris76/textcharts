@@ -194,6 +194,28 @@ class TestChartToolExecution:
         })
         assert len(text.strip()) > 0
 
+    def test_render_with_outlier_cap(self, server):
+        data = [{"label": f"B{i}", "value": v} for i, v in enumerate([10, 11, 12, 13, 14, 15, 5000])]
+        capped = _call_tool(server, "textcharts_bar", {
+            "data": data,
+            "use_color": False,
+            "use_unicode": False,
+            "outlier_cap": 20,
+        })
+        uncapped = _call_tool(server, "textcharts_bar", {
+            "data": data,
+            "use_color": False,
+            "use_unicode": False,
+            "outlier_cap": 0,
+        })
+        assert len(capped.strip()) > 0
+        assert capped != uncapped
+
+    def test_outlier_cap_in_input_schema(self, server):
+        tools = asyncio.run(server.list_tools())
+        bar_tool = next(t for t in tools if t.name == "textcharts_bar")
+        assert "outlier_cap" in bar_tool.inputSchema["properties"]
+
     def test_invalid_data_raises_tool_error(self, server):
         with pytest.raises(ToolError):
             asyncio.run(server.call_tool("textcharts_bar", {"data": "not_a_list"}))
