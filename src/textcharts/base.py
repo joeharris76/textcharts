@@ -139,7 +139,10 @@ def robust_p95(values: Sequence[float]) -> float:
     if not values:
         return 0.0
 
-    sorted_vals = sorted(values)
+    finite_vals = [v for v in values if math.isfinite(v)]
+    if not finite_vals:
+        return 0.0
+    sorted_vals = sorted(finite_vals)
     p95_idx = max(0, int(len(sorted_vals) * 0.95) - 1)
     p95 = sorted_vals[p95_idx]
 

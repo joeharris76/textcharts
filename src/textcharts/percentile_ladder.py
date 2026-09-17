@@ -129,7 +129,10 @@ class PercentileLadder(ChartBase):
 
         # Format the values annotation: "P50 | P90 | P95 | P99"
         # Find the max p99 to determine bar scaling and shared annotation width
-        max_p99 = max(d.p99 for d in self.data) if self.data else 1
+        finite_p99 = [d.p99 for d in self.data if math.isfinite(d.p99)]
+        if not finite_p99:
+            return "No data to display"
+        max_p99 = max(finite_p99) if self.data else 1
 
         # Cap scale so one extreme P99 doesn't compress all other bars
         scale_max = max_p99
@@ -228,8 +231,8 @@ class PercentileLadder(ChartBase):
             effective_width = max(1, bar_width - len(markers))
 
         percentiles = [datum.p50, datum.p90, datum.p95, datum.p99]
-        # Clamp percentiles to max_val for position calculation
-        clamped = [min(p, max_val) for p in percentiles]
+        # Clamp percentiles to max_val for position calculation (NaN/Inf map to 0)
+        clamped = [min(p, max_val) if math.isfinite(p) else 0 for p in percentiles]
 
         # Calculate the character position for each percentile
         positions = [min(effective_width, max(0, int((p / max_val) * effective_width))) for p in clamped]

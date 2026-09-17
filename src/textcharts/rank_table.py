@@ -72,11 +72,12 @@ class RankTable(ChartBase):
         # Compute rankings for each item
         rankings: dict[str, dict[str, int]] = {}  # item -> {group -> rank}
         for item in items:
-            # Get values for this item
+            # Get values for this item (skip missing and non-finite values,
+            # which cannot be ranked; they render as "-")
             item_values: list[tuple[str, float]] = []
             for group in groups:
                 val = self.data.values.get((group, item))
-                if val is not None:
+                if val is not None and math.isfinite(val):
                     item_values.append((group, val))
 
             # Sort by value ascending (lower = better rank)

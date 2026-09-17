@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import math
 from typing import TYPE_CHECKING
 
 from textcharts.base import (
@@ -145,8 +146,10 @@ class Heatmap(ChartBase):
         box = self.options.get_box_chars()
         width = self.options.get_effective_width()
 
-        # Find min/max for normalization
-        all_values = [v for row in self.matrix for v in row if v is not None]
+        # Find min/max for normalization (filter NaN/Inf)
+        all_values = [
+            v for row in self.matrix for v in row if v is not None and math.isfinite(v)
+        ]
         if not all_values:
             return "No data to display"
 
@@ -322,7 +325,7 @@ class Heatmap(ChartBase):
         intensity_chars: list[str],
     ) -> str:
         """Render a single heatmap cell (colored background or intensity chars)."""
-        if value is None:
+        if value is None or not math.isfinite(value):
             return (" " * max(0, cell_width - 1)) + "-"
 
         # Clamp for color normalization; values beyond scale_max map to max color

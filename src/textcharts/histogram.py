@@ -125,8 +125,10 @@ class Histogram(ChartBase):
         # so callers must divide by num_platforms to recover the query count.
         self._series_max_chunk_len: int | None = max(len(c) for c in chunks) if len(chunks) > 1 else None
 
-        # Calculate global statistics for consistent scaling
-        all_latencies = [d.value for d in sorted_data]
+        # Calculate global statistics for consistent scaling (filter NaN/Inf)
+        all_latencies = [d.value for d in sorted_data if math.isfinite(d.value)]
+        if not all_latencies:
+            return "No data to display"
         global_max = max(all_latencies) if all_latencies else 1
         global_mean = sum(all_latencies) / len(all_latencies) if all_latencies else 0
 
@@ -357,7 +359,7 @@ class Histogram(ChartBase):
     def _normalize_bars(self, chunk: list[HistogramBar], global_max: float, chart_height: int) -> list[float]:
         """Normalize bar heights to chart row units."""
         if global_max > 0:
-            normalized = [(d.value / global_max) * chart_height for d in chunk]
+            normalized = [(d.value / global_max) * chart_height if math.isfinite(d.value) else 0 for d in chunk]
             return [max(0.125, n) if n > 0 else 0 for n in normalized]
         return [0] * len(chunk)
 

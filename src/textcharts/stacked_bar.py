@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import logging
+import math
 from collections.abc import Callable
 from dataclasses import dataclass, field
 from typing import TYPE_CHECKING
@@ -110,8 +111,11 @@ class StackedBar(ChartBase):
         if bar_width < 10:
             bar_width = 10
 
-        # Find max total for scaling
-        max_total = max((d.total or 0 for d in self.data), default=1)
+        # Find max total for scaling (filter NaN/Inf)
+        finite_totals = [d.total or 0 for d in self.data if math.isfinite(d.total or 0)]
+        if not finite_totals:
+            return "No data to display"
+        max_total = max(finite_totals, default=1)
         if max_total <= 0:
             max_total = 1
 
@@ -183,7 +187,7 @@ class StackedBar(ChartBase):
     ) -> str:
         """Render a single stacked bar with colored segments."""
         total = datum.total or 0
-        if total <= 0 or max_total <= 0:
+        if not math.isfinite(total) or total <= 0 or max_total <= 0:
             return " " * bar_width
 
         # Truncated bars fill to full width; severity markers appended at end
@@ -207,7 +211,7 @@ class StackedBar(ChartBase):
 
         for i, phase_name in enumerate(phase_names):
             val = seg_values.get(phase_name, 0)
-            if val <= 0:
+            if not math.isfinite(val) or val <= 0:
                 continue
             seg_len = max(1, int((val / total) * total_bar_len))
             # Clamp so we don't exceed total_bar_len

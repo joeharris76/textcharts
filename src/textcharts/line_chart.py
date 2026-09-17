@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import logging
+import math
 from dataclasses import dataclass
 from statistics import mean
 from typing import TYPE_CHECKING
@@ -106,8 +107,10 @@ class LineChart(ChartBase):
                 # For string x values, preserve order of appearance
                 pass
 
-        # Find data bounds
-        all_y = [p.y for p in self.points]
+        # Find data bounds (filter NaN/Inf)
+        all_y = [p.y for p in self.points if math.isfinite(p.y)]
+        if not all_y:
+            return "No data to display"
         y_min, y_max = min(all_y), max(all_y)
 
         # Cap y_max at P95×2 so one spike doesn't compress all series
@@ -121,8 +124,11 @@ class LineChart(ChartBase):
                 self._y_capped = True
 
         if is_numeric_x:
-            all_x = [float(p.x) for p in self.points]  # type: ignore
-            x_min, x_max = min(all_x), max(all_x)
+            all_x = [float(p.x) for p in self.points if math.isfinite(float(p.x))]  # type: ignore
+            if all_x:
+                x_min, x_max = min(all_x), max(all_x)
+            else:
+                x_min, x_max = 0.0, 1.0
         else:
             # Categorical x: collect unique labels in order
             x_labels: list[str] = []
@@ -194,6 +200,16 @@ class LineChart(ChartBase):
             gy = int((y_val - y_min) / y_range * (plot_height - 1))
             return plot_height - 1 - gy  # Invert since row 0 is top
 
+        def _point_finite(pt: LinePoint) -> bool:
+            if not math.isfinite(pt.y):
+                return False
+            if is_numeric_x:
+                try:
+                    return math.isfinite(float(pt.x))  # type: ignore
+                except (TypeError, ValueError):
+                    return False
+            return True
+
         # Plot each series
         for series_name, series_points in series_map.items():
             marker, _ = series_styles[series_name]
@@ -201,6 +217,8 @@ class LineChart(ChartBase):
             # Draw lines between consecutive points
             for i in range(len(series_points) - 1):
                 p1, p2 = series_points[i], series_points[i + 1]
+                if not _point_finite(p1) or not _point_finite(p2):
+                    continue
                 gx1, gy1 = to_grid_x(p1.x), to_grid_y(p1.y)
                 gx2, gy2 = to_grid_x(p2.x), to_grid_y(p2.y)
 
@@ -220,6 +238,8 @@ class LineChart(ChartBase):
 
             # Draw points (on top of lines)
             for point in series_points:
+                if not _point_finite(point):
+                    continue
                 gx, gy = to_grid_x(point.x), to_grid_y(point.y)
                 if 0 <= gx < plot_width and 0 <= gy < plot_height:
                     grid[gy][gx] = marker
@@ -227,8 +247,9 @@ class LineChart(ChartBase):
         # Draw trend lines if requested
         if self.show_trend:
             for series_name, series_points in series_map.items():
-                if len(series_points) >= 3:
-                    trend_y = self._compute_trend([p.y for p in series_points])
+                finite_ys = [p.y for p in series_points if math.isfinite(p.y)]
+                if len(finite_ys) >= 3:
+                    trend_y = self._compute_trend(finite_ys)
                     for i, trend_val in enumerate(trend_y):
                         gx = int(i / (len(trend_y) - 1) * (plot_width - 1)) if len(trend_y) > 1 else plot_width // 2
                         gy = to_grid_y(trend_val)

@@ -143,7 +143,7 @@ class SparklineTable(ChartBase):
 
         for col, _ in visible_columns:
             vals = {p: col.values.get(p, 0) for p in self.data.rows}
-            valid_vals = [v for v in vals.values() if math.isfinite(v)]
+            valid_vals = [v for v in vals.values() if isinstance(v, (int, float)) and math.isfinite(v)]
             if not valid_vals:
                 col_normalized.append(dict.fromkeys(self.data.rows, 0.0))
                 col_best.append(None)
@@ -156,6 +156,9 @@ class SparklineTable(ChartBase):
             normalized = {}
             for p in self.data.rows:
                 v = vals.get(p, 0)
+                if not isinstance(v, (int, float)) or not math.isfinite(v):
+                    normalized[p] = 0.0
+                    continue
                 norm = (v - min_v) / rng if rng > 0 else 0.5
                 if not col.higher_is_better:
                     norm = 1.0 - norm
@@ -163,12 +166,13 @@ class SparklineTable(ChartBase):
 
             col_normalized.append(normalized)
 
+            finite_rows = [p for p in self.data.rows if isinstance(vals[p], (int, float)) and math.isfinite(vals[p])]
             if col.higher_is_better:
-                col_best.append(max(vals, key=lambda p: vals[p]))
-                col_worst.append(min(vals, key=lambda p: vals[p]))
+                col_best.append(max(finite_rows, key=lambda p: vals[p]))
+                col_worst.append(min(finite_rows, key=lambda p: vals[p]))
             else:
-                col_best.append(min(vals, key=lambda p: vals[p]))
-                col_worst.append(max(vals, key=lambda p: vals[p]))
+                col_best.append(min(finite_rows, key=lambda p: vals[p]))
+                col_worst.append(max(finite_rows, key=lambda p: vals[p]))
 
         return col_normalized, col_best, col_worst
 
@@ -186,6 +190,8 @@ class SparklineTable(ChartBase):
     ) -> str:
         """Render a single sparkline table cell with block char and value."""
         norm = normalized.get(row_name, 0)
+        if not math.isfinite(norm):
+            norm = 0.0
         val = col.values.get(row_name, 0)
 
         block_idx = min(len(blocks) - 1, max(0, int(norm * (len(blocks) - 1))))

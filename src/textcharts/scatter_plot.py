@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import logging
+import math
 from dataclasses import dataclass
 from typing import TYPE_CHECKING
 
@@ -91,9 +92,11 @@ class ScatterPlot(ChartBase):
         for p in self.points:
             p.is_pareto = p.name in pareto_names
 
-        # Find data bounds
-        x_values = [p.x for p in self.points]
-        y_values = [p.y for p in self.points]
+        # Find data bounds (filter NaN/Inf)
+        x_values = [p.x for p in self.points if math.isfinite(p.x)]
+        y_values = [p.y for p in self.points if math.isfinite(p.y)]
+        if not x_values or not y_values:
+            return "No data to display"
 
         x_min, x_max = min(x_values), max(x_values)
         y_min, y_max = min(y_values), max(y_values)
@@ -174,8 +177,9 @@ class ScatterPlot(ChartBase):
         }
 
         # Plot Pareto frontier line first (so points overlay it)
-        if self.show_pareto and len(pareto_points) >= 2:
-            sorted_pareto = sorted(pareto_points, key=lambda p: p.x)
+        finite_pareto = [p for p in pareto_points if math.isfinite(p.x) and math.isfinite(p.y)]
+        if self.show_pareto and len(finite_pareto) >= 2:
+            sorted_pareto = sorted(finite_pareto, key=lambda p: p.x)
             for i in range(len(sorted_pareto) - 1):
                 p1 = sorted_pareto[i]
                 p2 = sorted_pareto[i + 1]
@@ -192,9 +196,11 @@ class ScatterPlot(ChartBase):
                         if grid[ly][lx] == " ":
                             grid[ly][lx] = self.MARKER_FRONTIER
 
-        # Plot points
+        # Plot points (skip NaN/Inf)
         point_positions: dict[tuple[int, int], list[ScatterPoint]] = {}
         for point in self.points:
+            if not math.isfinite(point.x) or not math.isfinite(point.y):
+                continue
             gx, gy = to_grid(point.x, point.y)
             key = (gx, gy)
             if key not in point_positions:
@@ -286,7 +292,8 @@ class ScatterPlot(ChartBase):
 
     def _compute_pareto(self) -> list[ScatterPoint]:
         """Compute Pareto frontier (higher y is better, lower x is better)."""
-        sorted_points = sorted(self.points, key=lambda p: (p.x, -p.y))
+        finite = [p for p in self.points if math.isfinite(p.x) and math.isfinite(p.y)]
+        sorted_points = sorted(finite, key=lambda p: (p.x, -p.y))
         frontier: list[ScatterPoint] = []
         best_y = float("-inf")
 

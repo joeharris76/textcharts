@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import logging
+import math
 from dataclasses import dataclass
 from statistics import mean, stdev
 from typing import TYPE_CHECKING
@@ -39,7 +40,9 @@ def compute_quartiles(values: Sequence[float]) -> BoxPlotStats:
     if not values:
         return BoxPlotStats(0, 0, 0, 0, 0, 0, 0, [])
 
-    sorted_vals = sorted(values)
+    sorted_vals = sorted(v for v in values if math.isfinite(v))
+    if not sorted_vals:
+        return BoxPlotStats(0, 0, 0, 0, 0, 0, 0, [])
     n = len(sorted_vals)
 
     def percentile(p: float) -> float:
@@ -157,10 +160,10 @@ class BoxPlot(ChartBase):
             stats = compute_quartiles(s.values)
             stats_list.append((s.name, stats))
 
-        # Find global min/max for scale
+        # Find global min/max for scale (filter NaN/Inf)
         all_values: list[float] = []
         for s in self.series:
-            all_values.extend(s.values)
+            all_values.extend(v for v in s.values if math.isfinite(v))
 
         if not all_values:
             return "No data to display"
