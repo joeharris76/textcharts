@@ -126,6 +126,12 @@ class ComparisonBar(ChartBase):
                 truncate_threshold = sorted_vals[1] * 2
                 max_value = truncate_threshold
 
+        # An explicit outlier_cap overrides the automatic scale
+        explicit_cap = self._resolve_outlier_cap(max_value)
+        if explicit_cap is not None:
+            max_value, _ = explicit_cap
+            truncate_threshold = max_value if max_value < max(all_values) else None
+
         lines: list[str] = []
 
         # Title and subtitle
@@ -193,8 +199,8 @@ class ComparisonBar(ChartBase):
         neg_label = "improvement" if self.lower_is_better else "regression"
         pos_label = "regression" if self.lower_is_better else "improvement"
         if no_color:
-            down_arrow = "\u2193" if self.options.use_unicode else "v"
-            up_arrow = "\u2191" if self.options.use_unicode else "^"
+            down_arrow = "\u2193" if self.options._has_unicode() else "v"
+            up_arrow = "\u2191" if self.options._has_unicode() else "^"
             lines.append(f"  {b_marker} {baseline_short}  {c_marker} {comparison_short}")
             lines.append(f"  {down_arrow} {neg_label} (negative %)  {up_arrow} {pos_label} (positive %)")
         else:
@@ -258,10 +264,10 @@ class ComparisonBar(ChartBase):
         no_color = not self.options.use_color
         is_regression = pct_change > 0 if self.lower_is_better else pct_change < 0
         if pct_change > 0:
-            arrow = "\u2191" if self.options.use_unicode else "^"
+            arrow = "\u2191" if self.options._has_unicode() else "^"
             text = f"  +{pct_change:.1f}%"
         else:
-            arrow = "\u2193" if self.options.use_unicode else "v"
+            arrow = "\u2193" if self.options._has_unicode() else "v"
             text = f"  {pct_change:.1f}%"
         if no_color:
             return f"{text} {arrow}"
@@ -279,7 +285,7 @@ class ComparisonBar(ChartBase):
 
     def _format_approx(self) -> str:
         """Return the approximately-equal symbol."""
-        if self.options.use_unicode:
+        if self.options._has_unicode():
             return "\u2248"
         return "~"
 
@@ -290,6 +296,7 @@ def from_data(
     metric_label: str = "Value",
     options: ChartOptions | None = None,
     subject: str | None = None,
+    lower_is_better: bool = True,
 ) -> ComparisonBar:
     """Create ComparisonBar from comparison data.
 
@@ -320,4 +327,5 @@ def from_data(
         metric_label=metric_label,
         options=options,
         subject=subject,
+        lower_is_better=lower_is_better,
     )

@@ -299,3 +299,31 @@ def test_scatter_plot_ignores_non_finite_points():
     )
     result = chart.render()
     assert "OK" in result
+
+
+def test_box_plot_extreme_outlier_stays_in_grid():
+    chart = BoxPlot(
+        series=[BoxPlotSeries(name="s", values=[1, 2, 3, 100])],
+        options=ChartOptions(use_color=False),
+    )
+    result = chart.render()
+    assert isinstance(result, str) and result
+
+
+def test_box_plot_empty_series_beside_valid_series():
+    chart = BoxPlot(
+        series=[
+            BoxPlotSeries(name="empty", values=[]),
+            BoxPlotSeries(name="normal", values=[100, 101]),
+        ],
+        options=ChartOptions(use_color=False),
+    )
+    result = chart.render()
+    assert "normal" in result
+
+
+def test_box_plot_honors_explicit_outlier_cap():
+    series = [BoxPlotSeries("S", [10, 20, 30, 40, 50, 60, 500])]
+    capped = BoxPlot(series=series, options=ChartOptions(use_color=False, outlier_cap=50.0)).render()
+    auto = BoxPlot(series=series, options=ChartOptions(use_color=False)).render()
+    assert capped != auto

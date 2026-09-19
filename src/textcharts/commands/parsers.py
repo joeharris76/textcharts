@@ -259,6 +259,9 @@ def parse_summary(data: Any) -> Any:
     if "worst_items" in d and d["worst_items"] is not None:
         kwargs["worst_items"] = [(str(q[0]), float(q[1])) for q in d["worst_items"]]
 
+    if "lower_is_better" in d and d["lower_is_better"] is not None:
+        kwargs["lower_is_better"] = bool(d["lower_is_better"])
+
     if "environment" in d and d["environment"] is not None:
         kwargs["environment"] = {str(k): str(v) for k, v in d["environment"].items()}
     if "platform_config" in d and d["platform_config"] is not None:

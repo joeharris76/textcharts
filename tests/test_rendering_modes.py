@@ -288,3 +288,29 @@ def test_axis_labels_honor_terminal_unicode_detection(monkeypatch: pytest.Monkey
         options=ChartOptions(use_color=False, use_unicode=True, width=80),
     ).render()
     result.encode("ascii")
+
+
+def test_error_margin_falls_back_to_ascii(monkeypatch: pytest.MonkeyPatch):
+    chart = BarChart(
+        data=[BarData(label="A", value=10.0, error=1.0)],
+        options=ChartOptions(use_color=False, use_unicode=False, width=80),
+    )
+    result = chart.render()
+    assert "+/-" in result
+    result.encode("ascii")
+
+
+def test_terminal_detection_forces_ascii_glyphs(monkeypatch: pytest.MonkeyPatch):
+    no_unicode = TerminalCapabilities(
+        width=80, height=24, color_mode=ColorMode.NONE,
+        unicode_support=False, interactive=False,
+    )
+    monkeypatch.setattr(base, "detect_terminal_capabilities", lambda: no_unicode)
+    opts = ChartOptions(use_color=False, use_unicode=True, width=80)
+    charts = _ascii_chart_factory(opts)
+    for name, chart in charts.items():
+        result = chart.render()
+        try:
+            result.encode("ascii")
+        except UnicodeEncodeError:
+            pytest.fail(f"{name} emitted non-ASCII output on a non-Unicode terminal")

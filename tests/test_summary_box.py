@@ -258,3 +258,34 @@ def test_summary_box_default_labels():
     assert "Primary" in result
     assert "Total" in result
     assert "Items" in result
+
+
+def test_summary_counts_track_lower_is_better_direction():
+    stats = SummaryStats(
+        title="Throughput",
+        primary_baseline=100.0,
+        primary_comparison=120.0,
+        num_items=6,
+        num_improved=2,
+        num_stable=1,
+        num_regressed=3,
+        lower_is_better=False,
+    )
+    opts = ChartOptions(use_color=False, use_unicode=False)
+    result = SummaryBox(stats=stats, options=opts).render()
+    assert "^2 improved" in result
+    assert "v3 regressed" in result
+
+
+def test_summary_best_worst_track_lower_is_better_direction():
+    stats = SummaryStats(
+        title="Throughput",
+        num_items=2,
+        best_items=[("Q1", 99.0)],
+        worst_items=[("Q2", 5.0)],
+        lower_is_better=False,
+    )
+    opts = ChartOptions(use_color=False, use_unicode=False)
+    result = SummaryBox(stats=stats, options=opts).render()
+    assert "^Best" in result
+    assert "vWorst" in result

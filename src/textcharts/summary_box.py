@@ -271,17 +271,17 @@ class SummaryBox(ChartBase):
         if not two_col:
             lines.append(f"{box['lm']}{box['h'] * (inner + 2)}{box['rm']}")
 
-        down_arrow = "\u2193" if self.options.use_unicode else "v"
-        up_arrow = "\u2191" if self.options.use_unicode else "^"
+        down_arrow = "\u2193" if self.options._has_unicode() else "v"
+        up_arrow = "\u2191" if self.options._has_unicode() else "^"
+        # Arrows track the direction of change counted as improved/regressed.
+        imp_arrow, reg_arrow = (down_arrow, up_arrow) if self.stats.lower_is_better else (up_arrow, down_arrow)
         improved_text = f"{self.stats.num_improved} improved"
         regressed_text = f"{self.stats.num_regressed} regressed"
         if no_color:
-            improved_text = f"{down_arrow}{improved_text}"
-            regressed_text = f"{up_arrow}{regressed_text}"
-        imp_color = "#66a61e" if self.stats.lower_is_better else "#d95f02"
-        reg_color = "#d95f02" if self.stats.lower_is_better else "#66a61e"
-        improved = colors.colorize(improved_text, fg_color=imp_color)
-        regressed = colors.colorize(regressed_text, fg_color=reg_color)
+            improved_text = f"{imp_arrow}{improved_text}"
+            regressed_text = f"{reg_arrow}{regressed_text}"
+        improved = colors.colorize(improved_text, fg_color="#66a61e")
+        regressed = colors.colorize(regressed_text, fg_color="#d95f02")
         counts_text = f"{improved}  {self.stats.num_stable} stable  {regressed}"
         visible_len = len(improved_text) + 2 + len(f"{self.stats.num_stable} stable") + 2 + len(regressed_text)
         padding = max(0, inner - visible_len)
@@ -299,6 +299,7 @@ class SummaryBox(ChartBase):
         if not (two_col and not self.stats.is_comparison):
             lines.append(f"{box['lm']}{box['h'] * (inner + 2)}{box['rm']}")
 
+        # Best/worst arrows track the "good direction" of the metric.
         if self.stats.best_items:
             lines.append(
                 self._render_query_line(
@@ -309,7 +310,7 @@ class SummaryBox(ChartBase):
                     colors,
                     inner,
                     no_color,
-                    is_down=True,
+                    is_down=self.stats.lower_is_better,
                 )
             )
 
@@ -323,7 +324,7 @@ class SummaryBox(ChartBase):
                     colors,
                     inner,
                     no_color,
-                    is_down=False,
+                    is_down=not self.stats.lower_is_better,
                 )
             )
 
@@ -347,9 +348,9 @@ class SummaryBox(ChartBase):
             for q, v in queries[:3]
         )
         arrow = (
-            ("\u2193" if self.options.use_unicode else "v")
+            ("\u2193" if self.options._has_unicode() else "v")
             if is_down
-            else ("\u2191" if self.options.use_unicode else "^")
+            else ("\u2191" if self.options._has_unicode() else "^")
         )
         label = f"{arrow}{label_text}: " if no_color else f"{label_text}: "
         items = self._truncate_label(items, max(0, inner - len(label)))
@@ -382,7 +383,7 @@ class SummaryBox(ChartBase):
             b_val = self.stats.primary_baseline
             c_val = self.stats.primary_comparison
             pct = ((c_val - b_val) / b_val * 100) if b_val != 0 else 0.0
-            arrow = "\u2192" if self.options.use_unicode else "->"
+            arrow = "\u2192" if self.options._has_unicode() else "->"
             label_part = f"{self.stats.primary_label}:".ljust(lw + 1)
             metric_text = (
                 f"{label_part}{self._format_value(b_val)}{self.stats.metric_label}"
@@ -398,7 +399,7 @@ class SummaryBox(ChartBase):
             b_val = self.stats.total_baseline
             c_val = self.stats.total_comparison
             pct = ((c_val - b_val) / b_val * 100) if b_val != 0 else 0.0
-            arrow = "\u2192" if self.options.use_unicode else "->"
+            arrow = "\u2192" if self.options._has_unicode() else "->"
             b_str = self._format_metric(b_val)
             c_str = self._format_metric(c_val)
             label_part = f"{self.stats.total_label}:".ljust(lw + 1)
@@ -475,7 +476,7 @@ class SummaryBox(ChartBase):
         """Build plain metric text lines for comparison (no borders)."""
         texts: list[str] = []
         lw = self._label_width()
-        arrow = "\u2192" if self.options.use_unicode else "->"
+        arrow = "\u2192" if self.options._has_unicode() else "->"
         if self.stats.primary_baseline is not None and self.stats.primary_comparison is not None:
             b, c = self.stats.primary_baseline, self.stats.primary_comparison
             pct = ((c - b) / b * 100) if b != 0 else 0.0
@@ -535,7 +536,7 @@ class SummaryBox(ChartBase):
         """
         if width <= 2:
             return " " * width
-        dot_char = "·" if self.options.use_unicode else "."
+        dot_char = "·" if self.options._has_unicode() else "."
         dots = dot_char * (width - 2)
         leader = f" {dots} "
         return colors.colorize(leader, fg_color="#666666")
@@ -546,10 +547,10 @@ class SummaryBox(ChartBase):
         no_color = not self.options.use_color
         if pct < -2:
             if no_color:
-                arrow = "\u2193" if self.options.use_unicode else "v"
+                arrow = "\u2193" if self.options._has_unicode() else "v"
                 return f"{text}{arrow}"
         elif pct > 2 and no_color:
-            arrow = "\u2191" if self.options.use_unicode else "^"
+            arrow = "\u2191" if self.options._has_unicode() else "^"
             return f"{text}{arrow}"
         return text
 

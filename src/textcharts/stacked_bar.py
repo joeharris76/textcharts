@@ -92,7 +92,7 @@ class StackedBar(ChartBase):
 
         colors = self.options.get_colors()
         width = self.options.get_effective_width()
-        use_unicode = self.options.use_unicode
+        use_unicode = self.options._has_unicode()
 
         fills = _SEGMENT_FILLS_UNICODE if use_unicode else _SEGMENT_FILLS_ASCII
 
@@ -124,7 +124,7 @@ class StackedBar(ChartBase):
         if explicit is not None:
             scale_max, _ = explicit
         else:
-            totals = sorted(d.total or 0 for d in self.data)
+            totals = sorted(finite_totals)
             if len(totals) > 5:
                 p95 = robust_p95(totals)
                 median_val = totals[len(totals) // 2]

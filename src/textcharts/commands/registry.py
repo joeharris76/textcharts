@@ -181,6 +181,7 @@ def _build_registry() -> dict[str, CommandInfo]:
             ],
             chart_params=[
                 ParamInfo("metric_label", "string", "Label for the value axis", "Value"),
+                ParamInfo("lower_is_better", "boolean", "Treat decreases as improvements", True),
             ],
         ),
         "diverging": CommandInfo(
@@ -219,6 +220,10 @@ def _build_registry() -> dict[str, CommandInfo]:
                 DataFieldInfo("baseline_name", "string", "Baseline label", required=False, default="Baseline"),
                 DataFieldInfo("comparison_name", "string", "Comparison label", required=False, default="Comparison"),
                 DataFieldInfo("num_items", "integer", "Number of items", required=False, default=0),
+                DataFieldInfo(
+                    "lower_is_better", "boolean",
+                    "Treat decreases as improvements", required=False, default=True,
+                ),
                 DataFieldInfo("num_improved", "integer", "Count of improved items", required=False, default=0),
                 DataFieldInfo("num_stable", "integer", "Count of stable items", required=False, default=0),
                 DataFieldInfo("num_regressed", "integer", "Count of regressed items", required=False, default=0),
