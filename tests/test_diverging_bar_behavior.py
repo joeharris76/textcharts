@@ -123,3 +123,23 @@ def test_diverging_from_data_passes_lower_is_better():
     result = chart.render()
     assert "Worse" in result
     assert "Better" in result
+
+
+def test_summary_counts_track_change_direction():
+    data = [
+        DivergingBarData("Q1", +50.0),
+        DivergingBarData("Q2", -30.0),
+    ]
+    result = DivergingBar(data=data, options=_opts(use_unicode=False), lower_is_better=False).render()
+    assert "^1 improved" in result
+    assert "v1 regressed" in result
+
+
+def test_summary_counts_default_direction_unchanged():
+    data = [
+        DivergingBarData("Q1", -50.0),
+        DivergingBarData("Q2", +30.0),
+    ]
+    result = DivergingBar(data=data, options=_opts(use_unicode=False)).render()
+    assert "v1 improved" in result
+    assert "^1 regressed" in result

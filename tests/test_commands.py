@@ -241,6 +241,10 @@ class TestParsers:
         result = parse_input("summary", {})
         assert isinstance(result.title, str) and result.title
 
+    def test_parse_summary_lower_is_better(self):
+        result = parse_input("summary", {"primary_value": 100, "lower_is_better": False})
+        assert result.lower_is_better is False
+
     def test_parse_percentile_valid(self):
         result = parse_input("percentile", [
             {"name": "Q1", "p50": 10, "p90": 20, "p95": 25, "p99": 30},

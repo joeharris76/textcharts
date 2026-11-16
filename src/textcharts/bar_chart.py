@@ -174,7 +174,8 @@ class BarChart(ChartBase):
             # Format value with optional error
             value_str = self._format_value(datum.value)
             if datum.error is not None:
-                value_str += f" ±{self._format_value(datum.error)}"
+                plus_minus = "±" if self.options._has_unicode() else "+/-"
+                value_str += f" {plus_minus}{self._format_value(datum.error)}"
             value_str = value_str.rjust(value_width)
 
             # Colorize bar and label

@@ -1,12 +1,14 @@
 # AGENTS.md — textcharts
 
-Instructions for AI agents working in this repository. Keep changes minimal,
-prefer the project's existing patterns, and use `uv` for all Python.
+Instructions for AI agents working in this repository. Keep changes minimal
+and follow the project's existing patterns.
 
 ## TODO tracker (authoritative: project-isolated `todo-db` database)
 
-As of **2026-07-21** this project's tracker was migrated from the legacy YAML
-system to a **project-isolated `todo-db` database**. The database is the record.
+The tracker is a **project-isolated `todo-db` database**; it is the record. It
+runs the `todo-db` 0.3.2 wheel vendored in `_project/scripts/vendor/`, driven
+through the `_project/scripts/todo` adapter. There is no sibling `todo-db`
+checkout and no PyPI resolution.
 
 - **Database:** `.todo-db/standalone.sqlite` — local SQLite, git-ignored, never
   committed. Identity is pinned to `project_id=textcharts`; a mismatched
@@ -24,26 +26,17 @@ system to a **project-isolated `todo-db` database**. The database is the record.
   _project/scripts/todo <cmd> --help  # full CLI contract; exit 2 means fix the cause
   ```
 
-- **Rebuild** the database from the retained YAML at any time (zero-loss,
-  deterministic): `_project/scripts/rebuild_todo_db.sh`. It refuses to
-  overwrite an existing database.
+- **Rebuild:** `_project/scripts/rebuild_todo_db.sh` rebuilds the database from
+  the retained YAML using the vendored wheel (`uv run --project _project/scripts
+  --locked`). It refuses to overwrite an existing database; set `TODO_DB_PATH`
+  to rebuild into a different path (verified into a temporary path, ending in
+  a passing zero-loss check and audit-chain verification).
+- The global `todo` skill drives a different tracker (tractable) and does not
+  apply in this repository. Use the adapter above.
 
-- The unpublished `todo-db` tool is resolved from a sibling checkout
-  (`TODO_DB_HOME`, default `/Users/joe/Developer/todo-db`). There is no PyPI
-  resolution.
-
-## Skills: `todo` vs `todo-db`
-
-- **`todo`** — idea → specification authoring ONLY (ideate / brainstorm /
-  refine / write a spec). It performs no tracker reads or writes.
-- **`todo-db`** — every tracker query and lifecycle mutation (create, list,
-  ready, claim, start, done, defer, promote, dismiss, complete, block, lint,
-  verify, batch, …). Tracker state lives in the database and flows through the
-  `_project/scripts/todo` adapter.
-
-Skill text is distributed by skill-sync (mirror mode) from
-`~/.skill-sync/skills`; the copies under `.claude/`, `.codex/`, `.gemini/` are
-generated mirrors — never edit them as a source of truth.
+The skill copies under `.claude/`, `.codex/`, `.gemini/` are skill-sync mirrors
+of the catalog pinned in `skill-sync.yaml`. Edit the catalog (the
+`skill-sync-skills` repository), never the mirrors.
 
 ## Legacy YAML corpus (read-only rollback)
 
@@ -51,11 +44,8 @@ generated mirrors — never edit them as a source of truth.
 and `_project/TODO_ENTRY_TEMPLATE.yaml` are the **pre-migration snapshot**,
 retained verbatim for provenance and rollback. **Do not** hand-edit them as live
 tracker state and do not delete them — legacy removal is a separate, explicitly
-approved step. Every field the `todo-db` schema does not model (tags,
-estimated_effort, owners, impact, files_affected, success_metrics,
-context_sections, open_questions, sections, last_updated, moved_from) is
-retained verbatim inside each imported item's `description` (see
-`_project/scripts/todo_migrate_transform.py`), so the migration is lossless.
+approved step. Imported items keep every unmodelled legacy field verbatim in
+`description` (see `_project/scripts/todo_migrate_transform.py`).
 
 ## Isolation
 

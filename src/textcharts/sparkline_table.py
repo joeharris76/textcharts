@@ -70,7 +70,7 @@ class SparklineTable(ChartBase):
 
         colors = self.options.get_colors()
         width = self.options.get_effective_width()
-        use_unicode = self.options.use_unicode
+        use_unicode = self.options._has_unicode()
 
         blocks = _SPARK_BLOCKS_UNICODE if use_unicode else _SPARK_BLOCKS_ASCII
 

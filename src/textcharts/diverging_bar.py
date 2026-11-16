@@ -230,27 +230,27 @@ class DivergingBar(ChartBase):
             n_regressed = sum(1 for d in self.data if d.pct_change < -threshold)
         n_stable = len(self.data) - n_improved - n_regressed
         no_color = not self.options.use_color
+        up = "\u2191" if self.options._has_unicode() else "^"
+        down = "\u2193" if self.options._has_unicode() else "v"
+        # Arrows track the direction of change counted as improved/regressed.
+        imp_arrow, reg_arrow = (down, up) if self.lower_is_better else (up, down)
         if no_color:
-            down = "\u2193" if self.options.use_unicode else "v"
-            up = "\u2191" if self.options.use_unicode else "^"
-            improved_text = f"{down}{n_improved} improved"
-            regressed_text = f"{up}{n_regressed} regressed"
+            improved_text = f"{imp_arrow}{n_improved} improved"
+            regressed_text = f"{reg_arrow}{n_regressed} regressed"
         else:
-            imp_color = "#66a61e" if self.lower_is_better else "#d95f02"
-            reg_color = "#d95f02" if self.lower_is_better else "#66a61e"
-            improved_text = colors.colorize(f"{n_improved} improved", fg_color=imp_color)
-            regressed_text = colors.colorize(f"{n_regressed} regressed", fg_color=reg_color)
+            improved_text = colors.colorize(f"{n_improved} improved", fg_color="#66a61e")
+            regressed_text = colors.colorize(f"{n_regressed} regressed", fg_color="#d95f02")
         return f"  {improved_text}  {n_stable} stable  {regressed_text}"
 
     def _overflow_arrow_left(self) -> str:
         """Left-pointing overflow arrow for clipped improvements."""
-        if self.options.use_unicode:
+        if self.options._has_unicode():
             return "\u25c4\u2500\u2500"  # ◄──
         return "<--"
 
     def _overflow_arrow_right(self) -> str:
         """Right-pointing overflow arrow for clipped regressions."""
-        if self.options.use_unicode:
+        if self.options._has_unicode():
             return "\u2500\u2500\u25ba"  # ──►
         return "-->"
 

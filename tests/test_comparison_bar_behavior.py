@@ -69,6 +69,21 @@ def test_comparison_from_data_factory():
     assert "Q1" in result
 
 
+def test_comparison_from_data_passes_lower_is_better():
+    data = [ComparisonBarData("Q1", 100.0, 80.0)]
+    chart = comparison_from_data(data, options=_opts(), lower_is_better=False)
+    assert chart.lower_is_better is False
+
+
+def test_comparison_honors_explicit_outlier_cap():
+    data = [ComparisonBarData("Q", 10, 500)]
+    capped = ComparisonBar(
+        data=data, options=_opts(outlier_cap=50.0)
+    ).render()
+    auto = ComparisonBar(data=data, options=_opts()).render()
+    assert capped != auto
+
+
 def test_scale_note_and_legend():
     data = [ComparisonBarData("Q1", 100.0, 200.0, "Run1", "Run2")]
     result = ComparisonBar(data=data, options=_opts()).render()

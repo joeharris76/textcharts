@@ -172,8 +172,16 @@ class BoxPlot(ChartBase):
 
         # Cap the scale at max whisker × 1.5 to prevent extreme outliers from
         # crushing the box plots.  If the actual data max is lower, use that instead.
+        # An explicit outlier_cap overrides the automatic scale.
         max_whisker = max(stats.max_val for _, stats in stats_list)
         scale_max = min(max_whisker * 1.5, global_max)
+        explicit_cap = self._resolve_outlier_cap(global_max)
+        if explicit_cap is not None:
+            scale_max, _ = explicit_cap
+
+        # The scale must at least cover the box tops; otherwise quartile
+        # positions fall outside the grid and crash rendering.
+        scale_max = max(scale_max, max(stats.q3 for _, stats in stats_list))
 
         value_range = scale_max - global_min if scale_max > global_min else 1
 
@@ -215,11 +223,15 @@ class BoxPlot(ChartBase):
             color = palette[i % len(palette)]
             label = self._truncate_label(name, name_width).ljust(label_width)
 
-            # Convert values to positions
+            # Convert values to positions (clamped to the grid so empty or
+            # out-of-scale series cannot index outside it)
             def to_pos(val: float) -> int:
                 if value_range == 0:
                     return plot_width // 2
-                return int((val - global_min) / value_range * (plot_width - 1))
+                if not math.isfinite(val):
+                    return 0
+                raw = int((val - global_min) / value_range * (plot_width - 1))
+                return max(0, min(plot_width - 1, raw))
 
             pos_min = to_pos(stats.min_val)
             pos_q1 = to_pos(stats.q1)

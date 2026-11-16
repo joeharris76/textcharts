@@ -120,7 +120,7 @@ class PercentileLadder(ChartBase):
 
         colors = self.options.get_colors()
         width = self.options.get_effective_width()
-        use_unicode = self.options.use_unicode
+        use_unicode = self.options._has_unicode()
 
         fills = _BAND_FILLS_UNICODE if use_unicode else _BAND_FILLS_ASCII
 
@@ -141,7 +141,7 @@ class PercentileLadder(ChartBase):
         if explicit is not None:
             scale_max, truncation_active = explicit
         else:
-            all_p99 = sorted(d.p99 for d in self.data)
+            all_p99 = sorted(finite_p99)
             if len(all_p99) > 5:
                 p95_val = robust_p95(all_p99)
                 median_val = all_p99[len(all_p99) // 2]

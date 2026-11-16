@@ -256,10 +256,10 @@ class Histogram(ChartBase):
     def _get_outlier_char(self, no_color: bool, used_fills: set[str] | None = None) -> str:
         """Select an outlier glyph that stays distinct from normal series fills."""
         if not no_color:
-            return "▓" if self.options.use_unicode else "#"
+            return "▓" if self.options._has_unicode() else "#"
 
         used = used_fills or set()
-        if self.options.use_unicode:
+        if self.options._has_unicode():
             # Prefer shaded/symbol glyphs not used in the default fill palette.
             candidates = ("▩", "▨", "▥", "▤", "◈", "◆")
             for ch in candidates:
@@ -477,7 +477,7 @@ class Histogram(ChartBase):
     ) -> str:
         """Build the footer line with mean and legend markers."""
         footer_parts: list[str] = []
-        bar_glyph = "█" if self.options.use_unicode else "#"
+        bar_glyph = "█" if self.options._has_unicode() else "#"
         footer_parts.append(
             f"{colors.colorize(bar_glyph, fg_color=self.options.get_palette()[0])} {self.y_label}"
         )
