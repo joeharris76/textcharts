@@ -27,11 +27,10 @@ checkout and no PyPI resolution.
   ```
 
 - **Rebuild:** `_project/scripts/rebuild_todo_db.sh` rebuilds the database from
-  the retained YAML, but it does not work today. It runs `uv run --project
-  "$TODO_DB_HOME"` and `TODO_DB_HOME` defaults to `/Users/joe/Developer/todo-db`,
-  which does not exist. It also refuses to overwrite an existing database. Do
-  not tell the user a rebuild is available until the script is pointed at the
-  vendored wheel.
+  the retained YAML using the vendored wheel (`uv run --project _project/scripts
+  --locked`). It refuses to overwrite an existing database; set `TODO_DB_PATH`
+  to rebuild into a different path (verified into a temporary path, ending in
+  a passing zero-loss check and audit-chain verification).
 - The global `todo` skill drives a different tracker (tractable) and does not
   apply in this repository. Use the adapter above.
 
