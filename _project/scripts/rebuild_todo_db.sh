@@ -17,7 +17,7 @@ set -euo pipefail
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 PROJECT_DIR="$(cd "$SCRIPT_DIR/../.." && pwd)"
 
-TODO_DB_HOME="${TODO_DB_HOME:-/Users/joe/Developer/todo-db}"
+# Tool runtime: the vendored todo-db wheel, locked by _project/scripts/uv.lock.
 DB="${TODO_DB_PATH:-$PROJECT_DIR/.todo-db/standalone.sqlite}"
 PROJECT_ID="${TODO_DB_PROJECT_ID:-textcharts}"
 REPOSITORY="${TODO_DB_REPOSITORY:-https://github.com/joeharris76/textcharts.git}"
@@ -26,7 +26,7 @@ REPOSITORY="${TODO_DB_REPOSITORY:-https://github.com/joeharris76/textcharts.git}
 export TODO_DB_PROJECT_ID="$PROJECT_ID"
 export TODO_DB_REPOSITORY="$REPOSITORY"
 
-TDB() { uv run --project "$TODO_DB_HOME" --extra legacy --extra audit todo-db "$@"; }
+TDB() { uv run --project "$SCRIPT_DIR" --locked -- todo-db "$@"; }
 
 if [[ -f "$DB" ]]; then
   echo "rebuild: $DB already exists; refusing to overwrite. Remove it first to rebuild." >&2
@@ -37,7 +37,7 @@ WORK="$(mktemp -d "${TMPDIR:-/tmp}/textcharts-todo-db.XXXXXX")"
 trap 'rm -rf "$WORK"' EXIT
 
 echo "rebuild: transforming retained YAML (zero-loss) -> $WORK"
-uv run --project "$TODO_DB_HOME" python "$SCRIPT_DIR/todo_migrate_transform.py" \
+uv run --project "$SCRIPT_DIR" --locked -- python "$SCRIPT_DIR/todo_migrate_transform.py" \
   "$PROJECT_DIR/_project/TODO" "$PROJECT_DIR/_project/DONE" "$WORK"
 
 echo "rebuild: initializing $DB with identity $PROJECT_ID"
@@ -50,10 +50,10 @@ TDB --db "$DB" import-yaml --todo-dir "$WORK/TODO" --done-dir "$WORK/DONE" \
 
 echo "rebuild: verifying zero-loss retention + audit chain"
 TDB --db "$DB" export --output "$WORK/export.json"
-uv run --project "$TODO_DB_HOME" python "$SCRIPT_DIR/todo_zero_loss_check.py" \
+uv run --project "$SCRIPT_DIR" --locked -- python "$SCRIPT_DIR/todo_zero_loss_check.py" \
   "$WORK/export.json" "$WORK/residuals.json" \
   "$PROJECT_DIR/_project/TODO" "$PROJECT_DIR/_project/DONE"
-uv run --project "$TODO_DB_HOME" python "$SCRIPT_DIR/todo_parity_check.py" \
+uv run --project "$SCRIPT_DIR" --locked -- python "$SCRIPT_DIR/todo_parity_check.py" \
   "$WORK/export.json" "$PROJECT_DIR/_project/TODO" "$PROJECT_DIR/_project/DONE" >/dev/null
 TDB --db "$DB" audit verify
 echo "rebuild: done -> $DB"
